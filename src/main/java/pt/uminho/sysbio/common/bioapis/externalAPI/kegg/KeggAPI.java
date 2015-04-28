@@ -16,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.jcs.JCS;
-//import javax.xml.rpc.ServiceException;
 import org.apache.jcs.access.exception.CacheException;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
@@ -151,8 +150,53 @@ public class KeggAPI {
 	 */
 	public static String[] findGenes(String query) throws Exception {
 
-		String [] res = KeggRestful.findGenesQuery(query);
-		return res;
+		try {
+
+			String [] res = KeggAPI.findGenes(query,0);
+			return res;
+		} 
+		catch (Exception e) {
+
+			System.out.println("Query "+query);
+			throw e;
+		}
+	}
+
+	/**
+	 * @param query
+	 * @return
+	 * @throws Exception
+	 */
+	public static String[] findGenes(String query, int trial) throws Exception {
+
+		try {
+
+			String [] res = KeggRestful.findGenesQuery(query);
+			return res;
+		} 
+		catch (Exception e) {
+
+			if(trial<=5) {
+				
+				try {
+
+					int xMilliseconds = trial*60000;
+					System.out.println("Waiting "+xMilliseconds+" milliseconds on KEGG API.");
+					Thread.sleep(xMilliseconds);
+				}	
+				catch(InterruptedException ie) {
+
+					ie.printStackTrace();
+				}
+				
+				trial = trial + 1;
+				return KeggAPI.findGenes(query,trial);
+			}
+			else {
+				
+				throw e;
+			}
+		}
 	}
 
 	/**

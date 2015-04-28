@@ -144,6 +144,7 @@ public class NcbiTaxonStub_API {
 		try {
 
 			result = this.getTaxonListMethod(taxonomy_ids);
+			
 		}
 		catch (Error e) {
 
@@ -189,7 +190,6 @@ public class NcbiTaxonStub_API {
 		Map<String,String[]> result = new HashMap<String, String[]>();
 
 		try {
-
 			
 			String[] array = new String[2];
 			EFetchTaxonServiceStub.EFetchRequest req_taxon = new EFetchTaxonServiceStub.EFetchRequest();
@@ -217,7 +217,9 @@ public class NcbiTaxonStub_API {
 					}
 				}
 
-				result.put(res_taxon.getTaxaSet().getTaxon()[i].getTaxId(), array);
+				if(res_taxon.getTaxaSet().getTaxon()[i].getTaxId() != null)
+					result.put(res_taxon.getTaxaSet().getTaxon()[i].getTaxId(), array);
+				
 				array = new String[2];
 			}
 			return result;

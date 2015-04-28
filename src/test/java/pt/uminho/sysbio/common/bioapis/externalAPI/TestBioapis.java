@@ -1,10 +1,16 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.biojava3.core.sequence.ProteinSequence;
+import org.biojava3.core.sequence.io.FastaReaderHelper;
 import org.junit.Test;
 
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiTaxonStub_API;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
@@ -15,39 +21,259 @@ import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryBuilder;
 import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryService;
 
 public class TestBioapis{
+
+	//	@Test
+	//	public void uni() throws Exception{
+	//		
+	//		NcbiTaxonStub_API ncsa = new NcbiTaxonStub_API(10);
+	//		Map<String,String[]> ncbi_ids= ncsa.getTaxonList(393595+"", 0);
+	//		System.out.println(ncbi_ids);
+	//	}
+
+	//	@Test
+	//	public void getLocusTest() throws Exception{
+	//		
+	//		Map<String, ProteinSequence> genome = FastaReaderHelper.readFastaProteinSequence(new File("D:/Dropbox/WORK/ProjectoRita/files/genome_a_adp1_1.faa"));
+	//		genome = NcbiAPI.getNCBILocusTags(genome);
+	//		
+	//		System.out.println(genome.keySet());
+	//	}
+
 	
 	@Test
-	public void uni(){
+	public void s() {
 		
-		EntryData a = UniProtAPI.getEntryData("NP_418195");
+		EntryData entryData = UniProtAPI.getEntryData("NP_116711.1");
+		System.out.println(entryData.getLocusTag());
+	}
+	
+	//@Test
+	public void t(){
 		
-		System.out.println(a);
+		List<String> uniprotIDs = new ArrayList<String>();
+		uniprotIDs.add("D4GW84");
+		uniprotIDs.add("D4GW84");
+		uniprotIDs.add("M0HTC3");
+		uniprotIDs.add("M0H6T8");
+		uniprotIDs.add("M0G1U9");
+		uniprotIDs.add("M0F7V8");
+		uniprotIDs.add("M0G0J8");
+		uniprotIDs.add("M0I4K3");
+		uniprotIDs.add("M0J778");
+		uniprotIDs.add("M0G5K5");
+		uniprotIDs.add("M0IBJ7");
+		uniprotIDs.add("M0HBN8");
+		uniprotIDs.add("I3R868");
+		uniprotIDs.add("M0H497");
+		uniprotIDs.add("M0HH44");
+		uniprotIDs.add("E4NR62");
+		uniprotIDs.add("E7QS61");
+		uniprotIDs.add("G5C4L3");
+		uniprotIDs.add("W5NYH2");
+		uniprotIDs.add("L8IY38");
+		uniprotIDs.add("G3WNM0");
+		uniprotIDs.add("F7H6X2");
+		uniprotIDs.add("Q32Q12");
+		uniprotIDs.add("M0KTZ5");
+		uniprotIDs.add("M0JIB6");
+		uniprotIDs.add("D8J308");
+		uniprotIDs.add("E9PZF0");
+		uniprotIDs.add("M0KLS2");
+		uniprotIDs.add("Q401C5");
+		uniprotIDs.add("F6YGJ2");
+		uniprotIDs.add("F6WF21");
+		uniprotIDs.add("M0KJ03");
+		uniprotIDs.add("G0HW59");
+		uniprotIDs.add("V5TJX6");
+		uniprotIDs.add("G7NHN3");
+		uniprotIDs.add("E2RC20");
+		uniprotIDs.add("M0LD49");
+		uniprotIDs.add("G1LN32");
+		uniprotIDs.add("M0JYC7");
+		uniprotIDs.add("Q401C6");
+		uniprotIDs.add("Q5V5M1");
+		uniprotIDs.add("Q75U63");
+		uniprotIDs.add("Q75U59");
+		uniprotIDs.add("Q75U62");
+		uniprotIDs.add("C7NZG2");
+		uniprotIDs.add("Q75U57");
+		uniprotIDs.add("Q75U64");
+		uniprotIDs.add("Q75U61");
+		uniprotIDs.add("G1KAF8");
+		uniprotIDs.add("Q75U60");
+		uniprotIDs.add("Q75U58");
+		uniprotIDs.add("K7G5Z3");
+		uniprotIDs.add("R4VSS2");
+		uniprotIDs.add("J3JF97");
+		uniprotIDs.add("I3LY75");
+		uniprotIDs.add("H0ZGE2");
+		uniprotIDs.add("M0DJ68");
+		uniprotIDs.add("W5KKR1");
+		uniprotIDs.add("U3JFA9");
+		uniprotIDs.add("U3I4Q4");
+		uniprotIDs.add("Q75WL0");
+		uniprotIDs.add("R0LU38");
+		uniprotIDs.add("M7BLZ6");
+		uniprotIDs.add("D2HTU0");
+		uniprotIDs.add("M0E928");
+		uniprotIDs.add("M0FAZ3");
+		uniprotIDs.add("M0NN01");
+		uniprotIDs.add("M0DC48");
+		uniprotIDs.add("M0F5K4");
+		uniprotIDs.add("M0PEV6");
+		uniprotIDs.add("V6DYF1");
+		uniprotIDs.add("L5NES0");
+		uniprotIDs.add("Q75WL4");
+		uniprotIDs.add("Q75WL2");
+		uniprotIDs.add("V4XUZ0");
+		uniprotIDs.add("M0PCV0");
+		uniprotIDs.add("B9LPY5");
+		uniprotIDs.add("M0FBW0");
+		uniprotIDs.add("U1PKE7");
+		uniprotIDs.add("M0ESG9");
+		uniprotIDs.add("Q75WL3");
+		uniprotIDs.add("M0P585");
+		uniprotIDs.add("M0E1G1");
+		uniprotIDs.add("M0NHF3");
+		uniprotIDs.add("V4J0V8");
+		uniprotIDs.add("W0JZV4");
+		uniprotIDs.add("U1R130");
+		uniprotIDs.add("M0DZY1");
+		uniprotIDs.add("Q18GB1");
+		uniprotIDs.add("F7PP39");
+		uniprotIDs.add("U1PMX2");
+		uniprotIDs.add("Q75WL5");
+		uniprotIDs.add("Q3IPM6");
+		uniprotIDs.add("C7NTU9");
+		uniprotIDs.add("U2YEX4");
+		uniprotIDs.add("Q75WK9");
+		uniprotIDs.add("U1P6G3");
+		uniprotIDs.add("G2MM24");
+		uniprotIDs.add("U1MRT0");
+		uniprotIDs.add("B0R502");
+		uniprotIDs.add("V4XDJ0");
 		
+		UniProtQueryService uniProtQueryService = UniProtJAPI.factory.getUniProtQueryService();
 		
+		Query query = UniProtQueryBuilder.buildIDListQuery(uniprotIDs);
+		
+		EntryIterator<UniProtEntry> entries = uniProtQueryService.getEntryIterator(query);
+		
+		for (UniProtEntry entry : entries) {
+
+			String primary_accession = entry.getPrimaryUniProtAccession().getValue();
+		System.out.println(primary_accession);	
+		}
+	}
+	
+
+	/**
+	 * 
+	 */
+	//@Test
+	public void getEntry() {
+		
+		List<String> uniprotIDs = new ArrayList<String>();
+		uniprotIDs.add("AGI21893.1");
+		uniprotIDs.add("AGI21889");
+		uniprotIDs.add("AGI21891");
+		uniprotIDs.add("T2E8P7");
+		uniprotIDs.add("Q9I0B1");
+		uniprotIDs.add("T2ER45");
+		uniprotIDs.add("M2ADX4");
+		
+		Query query = UniProtQueryBuilder.buildIDListQuery(uniprotIDs);
+		
+		System.out.println("query "+query);
+		
+		UniProtQueryService uniProtQueryService = UniProtJAPI.factory.getUniProtQueryService();
+
+		EntryIterator<UniProtEntry> entries = uniProtQueryService.getEntryIterator(query);
+
+		for (UniProtEntry entry : entries) {
+
+			String locus = null;
+			
+			System.out.println(entry.getUniProtId()+" "+entry.getGenes().size());
+
+			if(entry.getGenes().get(0).getOrderedLocusNames().size()>0) {
+				
+				locus = entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
+				System.out.println("oln "+entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue());
+			}
+
+			if(locus==null) {
+
+				if(entry.getGenes().get(0).getORFNames().size()>0) {
+					
+					locus = entry.getGenes().get(0).getORFNames().get(0).getValue();
+					System.out.println("orf "+entry.getGenes().get(0).getORFNames().get(0).getValue());
+				}
+
+			}
+			System.out.println("\t"+locus);
+		}
+	}
+	
+	//@Test
+	public void  getEntryTest() {
+		
+		String query = "AGI21890.1";
+				
+		EntryData entryData = UniProtAPI.getEntryData(query);
+		System.out.println(entryData.getEcnumber());
+		System.out.println(entryData.getUniprotReviewStatus());
+		System.out.println(entryData.getEntryID());
+		System.out.println(entryData.getLocusTag());
 	}
 
-	//@Test
-	public void tests() {
-		   // Create UniProt query service
-	    UniProtQueryService uniProtQueryService = UniProtJAPI.factory.getUniProtQueryService();
-	    
-	    //Create a list of accession numbers (both primary and seconday are acceptable)
-	    List<String> accList = new ArrayList<String>();
-	    accList.add("O60243");
-	    accList.add("Q8IZP7");
-	    accList.add("P02070");
-	    //Isoform IDs are acceptable as well 
-	    accList.add("Q4R572-1");
-	    //as well as entry IDs 
-	    accList.add("14310_ARATH");
-	    
-	    Query query = UniProtQueryBuilder.buildIDListQuery(accList);
-	    
-	    EntryIterator<UniProtEntry> entries = uniProtQueryService.getEntryIterator(query);
-	    for (UniProtEntry entry : entries) {
-	        System.out.println("entry.getUniProtId() = " + entry.getUniProtId());
-	    }
+	
+	public void getTaxa() throws Exception{
+
+		String t = "1544797";
+		NcbiTaxonStub_API ncsa = new NcbiTaxonStub_API(10);
+
+		Map<String,String[]> ncbi_ids = ncsa.getTaxonList(t);
+
+		for (String k : ncbi_ids.keySet()) {
+
+			System.out.println(k);
+
+			for (String s : ncbi_ids.get(k))
+				System.out.println("\t"+s);
+		}
 	}
+
+	//	@Test
+	//	public void uni(){
+	//		
+	//		EntryData a = UniProtAPI.getEntryData("NP_418195");
+	//		
+	//		System.out.println(a);
+	//	}
+
+	//@Test
+	//	public void tests() {
+	//		   // Create UniProt query service
+	//	    UniProtQueryService uniProtQueryService = UniProtJAPI.factory.getUniProtQueryService();
+	//	    
+	//	    //Create a list of accession numbers (both primary and seconday are acceptable)
+	//	    List<String> accList = new ArrayList<String>();
+	//	    accList.add("O60243");
+	//	    accList.add("Q8IZP7");
+	//	    accList.add("P02070");
+	//	    //Isoform IDs are acceptable as well 
+	//	    accList.add("Q4R572-1");
+	//	    //as well as entry IDs 
+	//	    accList.add("14310_ARATH");
+	//	    
+	//	    Query query = UniProtQueryBuilder.buildIDListQuery(accList);
+	//	    
+	//	    EntryIterator<UniProtEntry> entries = uniProtQueryService.getEntryIterator(query);
+	//	    for (UniProtEntry entry : entries) {
+	//	        System.out.println("entry.getUniProtId() = " + entry.getUniProtId());
+	//	    }
+	//	}
 
 	////	@Test
 	////	public void testBioapis() throws Exception{
@@ -195,577 +421,6 @@ public class TestBioapis{
 	////		query.add("EEU04176.1");
 	////		query.add("EEU04176.1");
 	////		query.add("EEU04176.1");
-	////		query.add("EEU04176.1");
-	////		query.add("EEU04176.1");
-	////		query.add("EEU04176.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("AEP68293.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("EGA75150.1");
-	////		query.add("CAY79505.1");
-	////		query.add("CAY79505.1");
-	////		query.add("CAY79505.1");
-	////		query.add("CAY79505.1");
-	////		query.add("CAY79505.1");
-	////		query.add("CAY79505.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68300.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("AEP68270.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EDV09895.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EGA58845.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EDZ72370.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("EGA83051.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68277.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("AEP68276.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EDN59204.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("EHN07391.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68304.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AEP68282.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AAA34698.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68306.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68312.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("AEP68314.1");
-	////		query.add("CAA27202.1");
-	////		query.add("CAA27202.1");
-	////		query.add("CAA27202.1");
-	////		query.add("CAA27202.1");
-	////		query.add("CAA27202.1");
-	////		query.add("CAA27202.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("AEP68353.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EGA79053.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EHN02574.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("EJS43883.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("AAA34697.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("CDH11800.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("AAA34699.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("CDH17483.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("EHN02544.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CDF89726.1");
-	////		query.add("CAY79521.1");
-	////		query.add("CAY79521.1");
-	////		query.add("CAY79521.1");
-	////		query.add("CAY79521.1");
-	////		query.add("CAY79521.1");
-	////		query.add("CAY79521.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EJS43847.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("EGA78968.1");
-	////		query.add("CAA27203.1");
-	////		query.add("CAA27203.1");
-	////		query.add("CAA27203.1");
-	////		query.add("CAA27203.1");
-	////		query.add("CAA27203.1");
-	////		query.add("CAA27203.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("EGA86979.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003677245.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_003681444.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_002499357.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("XP_003676449.1");
-	////		query.add("CCK70052.1");
-	////		query.add("CCK70052.1");
-	////		query.add("CCK70052.1");
-	////		query.add("CCK70052.1");
-	////		query.add("CCK70052.1");
-	////		query.add("CCK70052.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("AGO13413.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_004182526.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("XP_003668909.1");
-	////		query.add("CCK71806.1");
-	////		query.add("CCK71806.1");
-	////		query.add("CCK71806.1");
-	////		query.add("CCK71806.1");
-	////		query.add("CCK71806.1");
-	////		query.add("CCK71806.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("XP_003959214.1");
-	////		query.add("CAA43855.1");
-	////		query.add("CAA43855.1");
-	////		query.add("CAA43855.1");
-	////		query.add("CAA43855.1");
-	////		query.add("CAA43855.1");
-	////		query.add("CAA43855.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("BAO41703.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_003959496.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_004180593.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_003647226.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001643699.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_001525198.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_003672143.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_002614796.1");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_001386689.2");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("XP_006684677.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("EEQ43548.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_003686647.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_002422011.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("XP_007373806.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("EJT42730.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002555058.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_002545633.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("XP_003869587.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("CCE42960.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EMG48741.1");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("EDK36867.2");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_001487588.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199854.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("XP_004199002.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCA39705.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("CCH42795.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("XP_002492685.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("CDK24636.1");
-	////		query.add("XP_007739515.1");
-	////		query.add("XP_007739515.1");
-	////		query.add("XP_007739515.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("EHY59872.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("ETI19252.1");
-	////		query.add("XP_007723625.1");
-	////		query.add("XP_007723625.1");
-	////		query.add("XP_007723625.1");
-	////		query.add("XP_007583986.1");
-	////		query.add("XP_007583986.1");
-	////		query.add("XP_007583986.1");
-	////		query.add("XP_007761315.1");
-	////		query.add("XP_007761315.1");
-	////		query.add("XP_007761315.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("EKG17827.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("XP_002144584.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EDZ72350.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("EYE93877.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("GAD98651.1");
-	////		query.add("CDK24838.1");
-	////		query.add("CDK24838.1");
-	////		query.add("CDK24838.1");
 	////		query.add("CDK24838.1");
 	////		query.add("CDK24838.1");
 	////		query.add("CDK24838.1");

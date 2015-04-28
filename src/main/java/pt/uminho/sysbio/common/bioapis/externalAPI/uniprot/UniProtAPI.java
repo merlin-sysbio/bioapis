@@ -1,10 +1,12 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI.uniprot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.axis2.AxisFault;
@@ -246,7 +248,7 @@ public class UniProtAPI {
 	 * @param errorCount
 	 * @return
 	 */
-	public static UniProtEntry getUniProtEntryID(String crossReference, int errorCount){
+	public static UniProtEntry getUniProtEntryID(String crossReference, int errorCount) {
 
 		try {
 
@@ -264,53 +266,27 @@ public class UniProtAPI {
 
 					DatabaseCrossReference dbcr = it.next();
 
-					DatabaseType database = dbcr.getDatabase();
+					//DatabaseType database = dbcr.getDatabase();
+					//if(database.equals(DatabaseType.REFSEQ)) {	
 
-					if(database.equals(DatabaseType.REFSEQ)) {	
+					String x_ref = dbcr.getPrimaryId().getValue();
 
-						String x_ref = dbcr.getPrimaryId().getValue();
+					for(String id:x_ref.split(":")) {
+						
+						if(id.trim().equalsIgnoreCase(crossReference.trim())) {
 
-						for(String id:x_ref.split(":")) {
-
-							if(id.trim().equalsIgnoreCase(crossReference.trim())) {
-
-								return uniProtEntry;
-							}
-
-							if(crossReference.contains(".") && id.contains(".")) {
-
-								id = id.trim().split("\\.")[0];
-								String cross = crossReference.split("\\.")[0];
-								if(id.equalsIgnoreCase(cross)) {
-
-									return uniProtEntry;
-								}
-							}
+							return uniProtEntry;
 						}
 
+						id = id.trim().split("\\.")[0];
+						String cross = crossReference.split("\\.")[0];
+						
+						if(id.equalsIgnoreCase(cross)) {
+
+							return uniProtEntry;
+						}
 					}
 
-//					List<DatabaseCrossReference> cr= uniProtEntry.getDatabaseCrossReferences(database);
-//					for(int j=0;j<cr.size();j++) {
-//
-//						for(String id:cr.get(j).toString().split(":")) {
-//
-//							if(id.trim().equalsIgnoreCase(crossReference.trim())) {
-//
-//								return uniProtEntry;
-//							}
-//
-//							if(crossReference.contains(".") && id.contains(".")) {
-//
-//								id = id.trim().split("\\.")[0];
-//								String cross = crossReference.split("\\.")[0];
-//								if(id.equalsIgnoreCase(cross)) {
-//
-//									return uniProtEntry;
-//								}
-//							}
-//						}
-//					}
 				}
 			}
 			return null;
@@ -327,6 +303,24 @@ public class UniProtAPI {
 				return null;
 			}
 		}
+	}
+	
+	/**
+	 * @param crossReferences
+	 * @return
+	 */
+	public static Map<String, String> getUniProtLocus(Collection<String> crossReferences) {
+		
+		Map<String, String> out = new TreeMap<>();
+		
+		for(String crossReference : crossReferences) {
+			
+			System.out.println(crossReference);
+			String locus = UniProtAPI.getLocusTag(UniProtAPI.getUniProtEntryID(crossReference, 0));
+			out.put(crossReference, locus);
+		}
+		
+		return out;
 	}
 
 	/**
@@ -438,20 +432,50 @@ public class UniProtAPI {
 		return null;
 	}
 
+	//	/**
+	//	 * @param entry
+	//	 * @return
+	//	 */
+	//	public static List<OrderedLocusName> getLocusTag(UniProtEntry entry) {
+	//
+	//		if(entry!=null) {
+	//
+	//			if(entry.getGenes().size()>0) {
+	//				
+	//				entry.getGenes().get(0).getORFNames();	
+	//				return entry.getGenes().get(0).getOrderedLocusNames();	
+	//			}
+	//		}
+	//		return null;
+	//	}
+	//	
 	/**
 	 * @param entry
 	 * @return
 	 */
-	public static List<OrderedLocusName> getLocusTag(UniProtEntry entry) {
+	public static List<String> getLocusTags(UniProtEntry entry) {
+
+		List<String> out = null;
 
 		if(entry!=null) {
 
+			out = new ArrayList<String>();
+
 			if(entry.getGenes().size()>0) {
 
-				return entry.getGenes().get(0).getOrderedLocusNames();	
+				if(entry.getGenes().get(0).getOrderedLocusNames()!=null) {
+
+					for(OrderedLocusName oln : entry.getGenes().get(0).getOrderedLocusNames())
+						out.add(oln.getValue());
+				}
+				else if(entry.getGenes().get(0).getORFNames()!=null) {
+
+					for(ORFName oln : entry.getGenes().get(0).getORFNames())
+						out.add(oln.getValue());
+				}
 			}
 		}
-		return null;
+		return out;
 	}
 
 	/**
@@ -462,7 +486,7 @@ public class UniProtAPI {
 
 		UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryID(query,0);
 
-		return UniProtAPI.getLocusTag(uniProtEntry).get(0).getValue();
+		return UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
 	}
 
 	/**
@@ -897,32 +921,21 @@ public class UniProtAPI {
 		else
 			genesList.addAll(homologuesList);
 
-		//System.out.println(genesList);
+		//System.out.println("genesList "+genesList);
 
 		Query query = UniProtQueryBuilder.buildIDListQuery(genesList);
+
+		//System.out.println("query "+query);
 
 		EntryIterator<UniProtEntry> entries = uniProtQueryService.getEntryIterator(query);
 		for (UniProtEntry entry : entries) {
 
 			String primary_accession = entry.getPrimaryUniProtAccession().getValue();
-			
-			//System.out.println(primary_accession);
 
-			String locus = null;
+			//System.out.println("primary_accession "+primary_accession);
+			//System.out.println("homologuesData.getUniProtEntryID() "+homologuesData.getUniProtEntryID());
 
-			try {
-				locus = entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
-			}
-			catch(Exception e) {locus=null;}
-
-			if(locus==null) {
-
-				try {
-					locus = entry.getGenes().get(0).getORFNames().get(0).getValue();
-				}
-				catch(Exception e) {locus = primary_accession;}
-
-			}
+			String locus = UniProtAPI.getLocusTag(entry);
 
 			if(primary_accession.equalsIgnoreCase(homologuesData.getUniProtEntryID())) {
 
@@ -1001,6 +1014,36 @@ public class UniProtAPI {
 
 		return UniProtAPI.getEntryData(query,0);
 	}
+	
+	/**
+	 * @param entry
+	 * @return
+	 */
+	public static String getLocusTag(UniProtEntry entry) {
+		
+		String out = null;
+		
+		try {
+			
+			out = entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
+		}
+		catch(Exception e) {
+			out=null;
+			}
+
+		if(out==null) {
+
+			try {
+
+				out = entry.getGenes().get(0).getORFNames().get(0).getValue();
+			}
+			catch(Exception e) {
+				
+				out = entry.getPrimaryUniProtAccession().getValue();
+			}
+		}
+		return out;
+	}
 
 	/**
 	 * @param query
@@ -1010,9 +1053,15 @@ public class UniProtAPI {
 	private static EntryData getEntryData(String query, int errorCount) {
 
 		EntryData entry;
+
+		UniProtEntry uniProtEntry;
+
 		try {
 
-			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryID(query,0);
+			uniProtEntry = UniProtAPI.getUniProtEntryID(query,0);
+
+			if(uniProtEntry==null)
+				uniProtEntry = UniProtAPI.getUniprotEntry(entryRetrievalService, query, errorCount);
 
 			entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 
@@ -1037,6 +1086,7 @@ public class UniProtAPI {
 			String locus = null;
 
 			try {
+
 				locus = uniProtEntry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
 			}
 			catch(Exception e) {locus=null;}
@@ -1047,10 +1097,20 @@ public class UniProtAPI {
 
 					locus = uniProtEntry.getGenes().get(0).getORFNames().get(0).getValue();
 				}
+				catch(Exception e) {}
+			}
+
+			if(locus==null) {
+
+				try {
+
+					locus = uniProtEntry.getGenes().get(0).getGeneName().getValue();
+				}
 				catch(Exception e) {locus = uniProtEntry.getPrimaryUniProtAccession().getValue();}
 			}
 
 			entry.setLocusTag(locus);
+
 		}
 		catch (Exception e) {
 
@@ -1095,7 +1155,7 @@ public class UniProtAPI {
 		try {
 			String[] result = new String[2];
 
-			System.out.println(organismmName);
+			//System.out.println(organismmName);
 
 			Query query = UniProtQueryBuilder.buildOrganismQuery(organismmName);
 			EntryIterator<UniProtEntry> entryIterator = uniProtQueryService.getEntryIterator(query);

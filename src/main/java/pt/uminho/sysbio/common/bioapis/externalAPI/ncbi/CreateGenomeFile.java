@@ -393,16 +393,16 @@ public class CreateGenomeFile {
 			
 			String locus = locustags.get(acc);
 			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryID(acc,0);
-			if(uniProtEntry!=null && UniProtAPI.getLocusTag(uniProtEntry)!=null && UniProtAPI.getLocusTag(uniProtEntry).size()>0) {
+			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
 				
-				locus = UniProtAPI.getLocusTag(uniProtEntry).get(0).getValue();
+				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
 			}
 			else {
 				
 				uniProtEntry = UniProtAPI.getUniProtEntryID(locustags.get(acc),0);
-				if(uniProtEntry!=null && UniProtAPI.getLocusTag(uniProtEntry)!=null && UniProtAPI.getLocusTag(uniProtEntry).size()>0) {
+				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
 					
-					locus = UniProtAPI.getLocusTag(uniProtEntry).get(0).getValue();
+					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
 				}
 			}
 

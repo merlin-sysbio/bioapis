@@ -47,7 +47,7 @@ public class NcbiAPI {
 		Map<String, String> idLocus = NcbiAPI.getNCBILocusTags(genome.keySet());
 
 		for (String id : idLocus.keySet()) {
-
+			
 			ProteinSequence pSequence = genome.get(id);
 			pSequence.setOriginalHeader(idLocus.get(id));
 			newGenome.put(idLocus.get(id), genome.get(id));

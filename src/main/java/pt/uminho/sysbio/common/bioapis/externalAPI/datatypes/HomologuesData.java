@@ -1,5 +1,6 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI.datatypes;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -597,5 +598,27 @@ public class HomologuesData {
 	 */
 	public void setUniprotLocusTag(String uniprotLocusTag) {
 		this.uniprotLocusTag = uniprotLocusTag;
+	}
+
+	@Override
+	public String toString() {
+		return "HomologuesData [locus_Tag=" + locus_Tag + ", sequences="
+				+ sequences + ", organism=" + organism + ", taxonomy="
+				+ taxonomy + ", product=" + product + ", calculated_mol_wt="
+				+ calculated_mol_wt + ", definition=" + definition
+				+ ", blast_locus_tag=" + blast_locus_tag + ", organelles="
+				+ organelles + ", genes=" + genes + ", eValue=" + eValue
+				+ ", bits=" + bits + ", ecnumber=" + ecnumber + ", locusID="
+				+ locusID + ", organismID=" + organismID + ", fastaSequence="
+				+ fastaSequence + ", chromosome=" + chromosome + ", organelle="
+				+ organelle + ", locus_protein_note=" + locus_protein_note
+				+ ", locus_tag=" + locus_tag + ", locus_gene_note="
+				+ locus_gene_note + ", gene=" + gene + ", taxonomyID="
+				+ Arrays.toString(taxonomyID) + ", sequence_code="
+				+ sequence_code + ", uniprotStatus=" + uniprotStatus
+				+ ", dataRetrieved=" + dataRetrieved + ", taxonomyMap="
+				+ taxonomyMap + ", refSeqGI=" + refSeqGI + ", ncbiLocusTag="
+				+ ncbiLocusTag + ", uniProtEntryID=" + uniProtEntryID
+				+ ", uniprotLocusTag=" + uniprotLocusTag + "]";
 	}
 }

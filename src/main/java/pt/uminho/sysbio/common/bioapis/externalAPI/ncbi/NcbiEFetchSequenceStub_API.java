@@ -26,7 +26,6 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
 import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
-import uk.ac.ebi.kraken.interfaces.uniprot.genename.OrderedLocusName;
 
 
 /**
@@ -83,7 +82,7 @@ public class NcbiEFetchSequenceStub_API {
 				trialCounter++;
 				return NcbiEFetchSequenceStub_API.getFetchResult(service, req);
 			}
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new RemoteException();
 		}
 	}
@@ -124,17 +123,17 @@ public class NcbiEFetchSequenceStub_API {
 			queryList.add(links);
 
 			for(String query:queryList) {
-
+				
 				EFetchSequenceServiceStub.EFetchRequest req = new EFetchSequenceServiceStub.EFetchRequest();
 				req.setDb("protein");
 				req.setRetmax("10000");
 				query = new String(query.getBytes(),"UTF-8");
 				req.setId(query);
-
+				
 				EFetchSequenceServiceStub.EFetchResult res = NcbiEFetchSequenceStub_API.getFetchResult(service, req);
 
 				for (int i = 0; i < res.getGBSet().getGBSetSequence().length; i++) {
-
+					
 					EFetchSequenceServiceStub.GBSeq_type0 obj = res.getGBSet().getGBSetSequence()[i].getGBSeq();
 
 					for(int j=0;j<obj.getGBSeq_featureTable().getGBSeq_featureTableSequence().length;j++) {
@@ -160,10 +159,16 @@ public class NcbiEFetchSequenceStub_API {
 
 						//System.out.println(obj.getGBSeq_accessionVersion());
 						UniProtEntry uni = UniProtAPI.getUniProtEntryID(obj.getGBSeq_accessionVersion(),0);
-						List<OrderedLocusName> g = UniProtAPI.getLocusTag(uni); 
+//						List<OrderedLocusName> g = UniProtAPI.getLocusTag(uni); 
+//						if(g!= null && g.size()>0) {
+//
+//							String locus = g.get(0).getValue();
+//							result.put(obj.getGBSeq_accessionVersion(), locus);
+//						}
+						List<String> g = UniProtAPI.getLocusTags(uni); 
 						if(g!= null && g.size()>0) {
 
-							String locus = g.get(0).getValue();
+							String locus = g.get(0);
 							result.put(obj.getGBSeq_accessionVersion(), locus);
 						}
 					}
@@ -172,6 +177,8 @@ public class NcbiEFetchSequenceStub_API {
 			return result;
 		}
 		catch (Exception e) {
+			
+		//	e.printStackTrace();
 
 			if(queryResponseConcatenationSize>0) {
 
@@ -190,8 +197,7 @@ public class NcbiEFetchSequenceStub_API {
 			}
 			else {
 
-				e.printStackTrace();
-				System.err.println("get locus error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				System.err.println("Get locus error!");
 				return null;
 			}
 		}
@@ -200,14 +206,13 @@ public class NcbiEFetchSequenceStub_API {
 	/**
 	 * @param geneID
 	 * @return
+	 * @throws RemoteException 
 	 */
-	public String getTaxonomy(String geneID) {
+	public String getTaxonomy(String geneID) throws Exception {
 
 		String taxID = null;
 		EFetchSequenceServiceStub.EFetchRequest req = new EFetchSequenceServiceStub.EFetchRequest();
 		req.setDb("protein");
-
-		try {
 
 			req.setId(geneID);
 
@@ -238,12 +243,6 @@ public class NcbiEFetchSequenceStub_API {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
-
-			e.printStackTrace();
-			return null;
-		}
 		return taxID;	
 	}
 
@@ -314,7 +313,7 @@ public class NcbiEFetchSequenceStub_API {
 							UniProtEntry uni = UniProtAPI.getUniProtEntryID(acc,0); 
 							if(uni!=null) {
 
-								String locus = UniProtAPI.getLocusTag(uni).get(0).getValue();
+								String locus = UniProtAPI.getLocusTags(uni).get(0);//.getValue();
 								sequences.put(locus, 
 										new ProteinSequence(obj.getGBSeq_sequence().toUpperCase()));
 								added.add(obj.getGBSeq_accessionVersion());
@@ -455,9 +454,9 @@ public class NcbiEFetchSequenceStub_API {
 					UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryID(acc,0);
 					if(uniProtEntry!=null) {
 
-						if(UniProtAPI.getLocusTag(uniProtEntry)!=null && UniProtAPI.getLocusTag(uniProtEntry).size()>0) {
+						if(UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
 
-							String locus = UniProtAPI.getLocusTag(uniProtEntry).get(0).getValue();
+							String locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
 							ncbiData.addLocusTag(acc, locus);
 							ncbiData.addSequence(acc, new ProteinSequence(obj.getGBSeq_sequence().toUpperCase()));
 							added.add(acc);
