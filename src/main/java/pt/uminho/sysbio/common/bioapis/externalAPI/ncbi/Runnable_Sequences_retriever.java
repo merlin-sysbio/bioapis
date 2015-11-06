@@ -1,7 +1,5 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI.ncbi;
 
-import gov.nih.nlm.ncbi.www.soap.eutils.EFetchSequenceServiceStub;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +40,6 @@ public class Runnable_Sequences_retriever implements Runnable {
 	@Override
 	public void run() {
 
-		EFetchSequenceServiceStub.EFetchRequest req = new EFetchSequenceServiceStub.EFetchRequest();
-		req.setDb("protein");
-
 		NcbiData ncbiData = new NcbiData(this.locus_Tag, this.sequences);
 
 		while(this.queryArray.size()>0) {
@@ -54,10 +49,8 @@ public class Runnable_Sequences_retriever implements Runnable {
 
 			try {
 
-
-				NcbiEFetchSequenceStub_API stub = new NcbiEFetchSequenceStub_API(1);
-
-				ncbiData = stub.getSequences(query, req, this.sourceDB, ncbiData);
+				EntrezFetch entrezFetch = new EntrezFetch();
+				ncbiData = entrezFetch.getSequences(query, this.sourceDB, ncbiData);
 			}
 			catch (RemoteException e){
 

@@ -10,16 +10,9 @@
 	<name>bioapis</name>
 	<url>http://maven.apache.org</url>
 
-<!-- 	<distributionManagement>
-		<repository>
-			<id>watson</id>
-			<url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>watson</id>
-			<url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement> -->
+	<!-- <distributionManagement> <repository> <id>watson</id> <url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-releases</url> 
+		</repository> <snapshotRepository> <id>watson</id> <url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-snapshots</url> 
+		</snapshotRepository> </distributionManagement> -->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,16 +30,9 @@
 		</build> -->
 	<build>
 		<plugins>
-			<!-- <plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.2</version>
-				<extensions>true</extensions>
-				<configuration>
-				  <serverId>watson</serverId>
-				  <nexusUrl>http://192.168.1.99:8081/nexus</nexusUrl>
-				</configuration>
-			</plugin> -->
+			<!-- <plugin> <groupId>org.sonatype.plugins</groupId> <artifactId>nexus-staging-maven-plugin</artifactId> 
+				<version>1.6.2</version> <extensions>true</extensions> <configuration> <serverId>watson</serverId> 
+				<nexusUrl>http://192.168.1.99:8081/nexus</nexusUrl> </configuration> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -59,10 +45,10 @@
 	</build>
 	<repositories>
 		<repository>
-        <id>ebi-repo</id>
-        <name>ebi-repo</name>
-        <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-    </repository>
+			<id>ebi-repo</id>
+			<name>ebi-repo</name>
+			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
+		</repository>
 		<repository>
 			<id>biojava-maven-repo</id>
 			<name>BioJava repository</name>
@@ -97,16 +83,18 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
-		<dependency>
-        <groupId>uk.ac.ebi.uniprot.kraken</groupId>
-        <artifactId>uniprotjapi</artifactId>
-        <version>2015.04</version>
+		   <dependency>
+        <groupId>uk.ac.ebi.uniprot</groupId>
+        <artifactId>japi</artifactId>
+        <version>1.0.0</version>
     </dependency>
-		<!-- <dependency>
-			<groupId>org.biojava</groupId>
-			<artifactId>biojava3-core</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+<!-- 		<dependency>
+			<groupId>uk.ac.ebi.uniprot.kraken</groupId>
+			<artifactId>uniprotjapi</artifactId>
+			<version>2015.07</version>
 		</dependency> -->
+		<!-- <dependency> <groupId>org.biojava</groupId> <artifactId>biojava3-core</artifactId> 
+			<version>4.0.0-SNAPSHOT</version> </dependency> -->
 		<dependency>
 			<groupId>org.biojava</groupId>
 			<artifactId>biojava3-alignment</artifactId>
@@ -118,44 +106,14 @@
 			<version>1.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-kernel</artifactId>
-			<version>${axis2.version}</version>
+			<groupId>com.squareup.retrofit</groupId>
+			<artifactId>retrofit</artifactId>
+			<version>1.9.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-adb</artifactId>
-			<version>${axis2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-local</artifactId>
-			<version>${axis2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-http</artifactId>
-			<version>${axis2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-dom</artifactId>
-			<version>${axiom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-api</artifactId>
-			<version>${axiom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-impl</artifactId>
-			<version>${axiom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
+			<groupId>com.squareup.retrofit</groupId>
+			<artifactId>converter-simplexml</artifactId>
+			<version>1.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

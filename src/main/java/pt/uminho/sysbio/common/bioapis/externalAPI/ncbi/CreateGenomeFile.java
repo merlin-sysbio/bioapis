@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.axis2.AxisFault;
 import org.biojava3.core.sequence.ProteinSequence;
 import org.biojava3.core.sequence.io.FastaReaderHelper;
 
@@ -54,14 +53,55 @@ public class CreateGenomeFile {
 	
 	/**
 	 * @param genomeID
-	 * @throws Exception 
+	 * @param path
+	 * @param numberOfDaysOld
+	 * @param sourceDB
+	 * @param extension
+	 * @throws Exception
+	 */
+	public CreateGenomeFile(String genomeID, String path, int numberOfDaysOld, String sourceDB, String extension) throws Exception {
+
+		this.today = CreateGenomeFile.setToday();
+		this.genomeID = genomeID;
+		this.tempPath = path;
+		this.createTempFile(numberOfDaysOld, sourceDB, extension);
+	}
+	
+	/**
+	 * @param genomeID
+	 * @param extension
+	 * @return
+	 * @throws Exception
 	 */
 	public static Map<String, ProteinSequence> getGenomeFromID(String genomeID, String extension) throws Exception {
 		
-		String tempPath = FileUtils.getCurrentTempDirectory();
-		if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, genomeID, CreateGenomeFile.setToday(), extension)) {
+		try {
 			
-			return FastaReaderHelper.readFastaProteinSequence(new File(FileUtils.getCurrentTempDirectory()+genomeID+extension));
+			String tempPath = FileUtils.getCurrentTempDirectory();
+			if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, genomeID, CreateGenomeFile.setToday(), extension)) {
+				
+				return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+genomeID+extension));
+			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			throw e;
+		}
+		return null;
+	}
+	
+	/**
+	 * @param genomeID
+	 * @param path
+	 * @param extension
+	 * @return
+	 * @throws Exception
+	 */
+	public static Map<String, ProteinSequence> getGenomeFromID(String genomeID, String path, String extension) throws Exception {
+		
+		if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,path, genomeID, CreateGenomeFile.setToday(), extension)) {
+			
+			return FastaReaderHelper.readFastaProteinSequence(new File(path+genomeID+extension));
 		}
 		return null;
 	}
@@ -250,7 +290,7 @@ public class CreateGenomeFile {
 			fstream.close();
 
 			if(logFileDate!=null) {
-				
+
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd");
 				Date date1 = sdf.parse(today);
 				Date date2 = sdf.parse(logFileDate.replace("\"", ""));
@@ -310,13 +350,13 @@ public class CreateGenomeFile {
 		List<String> ids_list = new ArrayList<String>();
 		ids_list.add(this.genomeID);
 
-		NcbiServiceStub_API stub = new NcbiServiceStub_API(2);
-		List<List<String>> links_list = stub.getLinksList(ids_list, "taxonomy", "protein",0);
+		EntrezLink entrezLink = new EntrezLink();
+		List<List<String>> links_list = entrezLink.getLinksList(ids_list, NcbiDatabases.taxonomy, NcbiDatabases.protein,1000);
 
-		NcbiEFetchSequenceStub_API fetch_stubApi;
-		fetch_stubApi = new NcbiEFetchSequenceStub_API(2);
+		EntrezFetch entrezFetch;
+		entrezFetch = new EntrezFetch();
 		
-		Pair<Map<String, String>,Map<String, ProteinSequence>> pair = fetch_stubApi.getLocusAndSequencePairFromID(links_list,500,sourceDB);
+		Pair<Map<String, String>,Map<String, ProteinSequence>> pair = entrezFetch.getLocusAndSequencePairFromID(links_list,500,sourceDB);
 
 		pair = this.checkForDuplicates(pair);
 
@@ -392,14 +432,14 @@ public class CreateGenomeFile {
 		for(String acc : locus_to_be_checked) {
 			
 			String locus = locustags.get(acc);
-			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryID(acc,0);
+			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(acc,0);
 			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
 				
 				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
 			}
 			else {
 				
-				uniProtEntry = UniProtAPI.getUniProtEntryID(locustags.get(acc),0);
+				uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(locustags.get(acc),0);
 				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
 					
 					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
@@ -444,14 +484,14 @@ public class CreateGenomeFile {
 		this.genomeID = genomeID;
 	}
 
-	public static void main(String [] args) throws Exception{
-		//new CreateGenomeFile("83333",5,"",".faa"); // ecoli k12
-		
-		NcbiEFetchSequenceStub_API fetchStub = new NcbiEFetchSequenceStub_API(50);
-		Set<String> querySet = new HashSet<String>();
-		querySet.add("NP_207514.1");
-		System.out.println(fetchStub.getLocusFromID(querySet,10).get("NP_207514.1"));
-	}
+//	public static void main(String [] args) throws Exception{
+//		//new CreateGenomeFile("83333",5,"",".faa"); // ecoli k12
+//		
+//		NcbiEFetchSequenceStub_API fetchStub = new NcbiEFetchSequenceStub_API(50);
+//		Set<String> querySet = new HashSet<String>();
+//		querySet.add("NP_207514.1");
+//		System.out.println(fetchStub.getLocusFromID(querySet,10).get("NP_207514.1"));
+//	}
 
 	/**
 	 * @return the isNCBIGenome

@@ -1,7 +1,9 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI.datatypes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,14 +16,14 @@ import org.biojava3.core.sequence.ProteinSequence;
  */
 public class HomologuesData {
 
-	private ConcurrentHashMap<String, String> locus_Tag;
+	private ConcurrentHashMap<String, String> locusTags;
 	private ConcurrentHashMap<String, ProteinSequence> sequences;
 	private Map<String, String> organism, taxonomy, product, calculated_mol_wt, definition, blast_locus_tag, organelles, genes;
 	private Map<String, Double> eValue, bits;
 	private TreeMap<String, String[]> ecnumber;
-	private LinkedList<String> locusID = new LinkedList<String>();
+	private List<String> locusIDs = new LinkedList<String>();
 	private String organismID, fastaSequence;
-	private String chromosome, organelle, locus_protein_note, locus_tag, locus_gene_note, gene;
+	private String chromosome, organelle, locus_protein_note, locusTag, locus_gene_note, gene;
 	private String[] taxonomyID;
 	private String sequence_code;
 	private ConcurrentHashMap<String, Boolean> uniprotStatus;
@@ -31,13 +33,14 @@ public class HomologuesData {
 	private String ncbiLocusTag;
 	private String uniProtEntryID;
 	private String uniprotLocusTag;
+	private String query;
 
 	/**
 	 * 
 	 */
 	public HomologuesData() {
 
-		this.locus_Tag = new ConcurrentHashMap<>();
+		this.locusTags = new ConcurrentHashMap<>();
 		this.sequences = new ConcurrentHashMap<>();
 		this.organism = new TreeMap<String, String>();
 		this.taxonomy= new TreeMap<String, String>();
@@ -54,6 +57,7 @@ public class HomologuesData {
 		this.bits= new TreeMap<String, Double>();
 		this.gene = "";
 		this.chromosome = "";
+		this.locusIDs = new ArrayList<String>();
 	}
 
 	/**
@@ -62,7 +66,7 @@ public class HomologuesData {
 	 */
 	public void addLocusTag(String name, String locus){
 
-		this.locus_Tag.put(name, locus);
+		this.locusTags.put(name, locus);
 	}
 
 	/**
@@ -104,10 +108,11 @@ public class HomologuesData {
 
 	/**
 	 * @param locus
+	 * @param index 
 	 */
-	public void addLocusID(String locus){
+	public void addLocusID(String locus, int index){
 
-		this.locusID.add(locus);
+		this.locusIDs.add(index, locus);
 	}
 
 	/**
@@ -152,7 +157,7 @@ public class HomologuesData {
 	 */
 	public void addBlastLocusTags(String name, String value) {
 
-		this.blast_locus_tag.put(name, (String) value);
+		this.blast_locus_tag.put(name,value);
 	}
 
 	/**
@@ -194,15 +199,15 @@ public class HomologuesData {
 	/**
 	 * @return
 	 */
-	public Map<String, String> getLocus_Tag() {
-		return locus_Tag;
+	public Map<String, String> getLocusTags() {
+		return locusTags;
 	}
 
 	/**
 	 * @param locus_Tag
 	 */
-	public void setLocus_Tag(ConcurrentHashMap<String, String> locus_Tag) {
-		this.locus_Tag = locus_Tag;
+	public void setLocusTags(ConcurrentHashMap<String, String> locusTags) {
+		this.locusTags = locusTags;
 	}
 
 	/**
@@ -310,15 +315,15 @@ public class HomologuesData {
 	/**
 	 * @return the locusID
 	 */
-	public LinkedList<String> getLocusID() {
-		return locusID;
+	public List<String> getLocusIDs() {
+		return locusIDs;
 	}
 
 	/**
 	 * @param locusID the locusID to set
 	 */
-	public void setLocusID(LinkedList<String> locusID) {
-		this.locusID = locusID;
+	public void setLocusIDs(List<String> locusIDs) {
+		this.locusIDs = locusIDs;
 	}
 
 	/**
@@ -397,15 +402,15 @@ public class HomologuesData {
 	/**
 	 * @return the locus_tag
 	 */
-	public String getLocus_tag() {
-		return locus_tag;
+	public String getLocusTag() {
+		return locusTag;
 	}
 
 	/**
 	 * @param locus_tag the locus_tag to set
 	 */
-	public void setLocus_tag(String locus_tag) {
-		this.locus_tag = locus_tag;
+	public void setLocusTag(String locusTag) {
+		this.locusTag = locusTag;
 	}
 
 	/**
@@ -602,17 +607,17 @@ public class HomologuesData {
 
 	@Override
 	public String toString() {
-		return "HomologuesData [locus_Tag=" + locus_Tag + ", sequences="
-				+ sequences + ", organism=" + organism + ", taxonomy="
+		return "HomologuesData [locus_Tag size =" + locusTags.size() + ", sequences size ="
+				+ sequences.size() + ", organism=" + organism + ", taxonomy="
 				+ taxonomy + ", product=" + product + ", calculated_mol_wt="
 				+ calculated_mol_wt + ", definition=" + definition
 				+ ", blast_locus_tag=" + blast_locus_tag + ", organelles="
-				+ organelles + ", genes=" + genes + ", eValue=" + eValue
+				+ organelles + ", genes=" + genes.size() + ", eValue=" + eValue.size()
 				+ ", bits=" + bits + ", ecnumber=" + ecnumber + ", locusID="
-				+ locusID + ", organismID=" + organismID + ", fastaSequence="
+				+ locusIDs + ", organismID=" + organismID + ", fastaSequence="
 				+ fastaSequence + ", chromosome=" + chromosome + ", organelle="
 				+ organelle + ", locus_protein_note=" + locus_protein_note
-				+ ", locus_tag=" + locus_tag + ", locus_gene_note="
+				+ ", locus_tag=" + locusTag + ", locus_gene_note="
 				+ locus_gene_note + ", gene=" + gene + ", taxonomyID="
 				+ Arrays.toString(taxonomyID) + ", sequence_code="
 				+ sequence_code + ", uniprotStatus=" + uniprotStatus
@@ -620,5 +625,19 @@ public class HomologuesData {
 				+ taxonomyMap + ", refSeqGI=" + refSeqGI + ", ncbiLocusTag="
 				+ ncbiLocusTag + ", uniProtEntryID=" + uniProtEntryID
 				+ ", uniprotLocusTag=" + uniprotLocusTag + "]";
+	}
+
+	/**
+	 * @return the query
+	 */
+	public String getQuery() {
+		return query;
+	}
+
+	/**
+	 * @param query the query to set
+	 */
+	public void setQuery(String query) {
+		this.query = query;
 	}
 }
