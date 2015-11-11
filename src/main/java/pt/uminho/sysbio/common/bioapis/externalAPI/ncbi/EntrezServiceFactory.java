@@ -42,7 +42,6 @@ public class EntrezServiceFactory {
 		Builder builder = new RestAdapter.Builder()
 		   .setEndpoint(this.baseURL)
 		   .setConverter(new SimpleXMLConverter());
-		
 		if(verbose)
 			 builder.setLogLevel(LogLevel.FULL);
 		

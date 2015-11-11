@@ -147,7 +147,7 @@ public class EntrezFetch {
 		}
 		catch (Exception e) {
 
-			//e.printStackTrace();
+			e.printStackTrace();
 
 			if(queryResponseConcatenationSize>0) {
 

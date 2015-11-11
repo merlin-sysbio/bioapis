@@ -3,7 +3,6 @@
  */
 package pt.uminho.sysbio.common.bioapis.externalAPI.ncbi;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,9 +82,9 @@ public class EntrezSearch {
 	 * @param ids
 	 * @param queryResponseConcatenationSize
 	 * @return
-	 * @throws RemoteException
+	 * @throws Exception 
 	 */
-	public List<Pair<String, String>> getDatabaseIDs(NcbiDatabases database, List<String> ids, int queryResponseConcatenationSize) throws RemoteException {
+	public List<Pair<String, String>> getDatabaseIDs(NcbiDatabases database, List<String> ids, int queryResponseConcatenationSize) throws Exception {
 
 		try {
 
@@ -97,10 +96,8 @@ public class EntrezSearch {
 
 			for(int i=0; i<ids.size();i++) {
 
-				if(index>0) {
-
+				if(index>0)
 					results=results.concat(",");
-				}
 
 				String id=ids.get(i);
 				if(id.contains("|")) {
@@ -141,15 +138,18 @@ public class EntrezSearch {
 			int counter = 0;
 			for(String query : queryList) {
 
-				String term = query.toString().replace("[", "").replace("]", "");
+				String term = new String(query.toString().replace("[", "").replace("]", "").getBytes(), "UTF-8");
 				ESearchResult eSearchResult = entrezService.eSearch(database, term, "xml",  ids.size()+"");
 
 				if(eSearchResult.idList!=null){
 					// results output
 					for (int i = 0; i < eSearchResult.count; i++) {
 
-						result.add(counter, new Pair<String,String>(ids.get(counter),eSearchResult.idList.get(i)));
-						counter++;
+						if(counter<ids.size()) {
+
+							result.add(counter, new Pair<String,String>(ids.get(counter),eSearchResult.idList.get(i)));
+							counter++;
+						}
 					}
 				}
 			}
