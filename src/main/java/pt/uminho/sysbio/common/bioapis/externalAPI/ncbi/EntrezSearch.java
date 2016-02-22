@@ -6,9 +6,9 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.ncbi;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezLink.KINGDOM;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
-import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
 
 /**
  * @author oscar

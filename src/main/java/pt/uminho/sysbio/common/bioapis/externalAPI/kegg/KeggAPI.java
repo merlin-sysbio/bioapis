@@ -18,11 +18,12 @@ import java.util.regex.Pattern;
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.collection.CollectionUtils;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggECNumberEntry;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggOrthologyEntry;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggReactionInformation;
-import pt.uminho.sysbio.common.utilities.datastructures.collection.CollectionUtils;
+import uk.ac.ebi.uniprot.dataservice.client.exception.ServiceException;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;

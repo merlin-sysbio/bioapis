@@ -27,10 +27,10 @@ import org.biojava3.core.sequence.io.FastaReader;
 import org.biojava3.core.sequence.io.GenericFastaHeaderParser;
 import org.biojava3.core.sequence.io.ProteinSequenceCreator;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.MyNcbiTaxon;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.TaxonomyContainer;
-import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 
 /**

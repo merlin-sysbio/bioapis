@@ -11,14 +11,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.biojava3.core.sequence.ProteinSequence;
 import org.junit.Test;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
+import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.CreateGenomeFile;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
-import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
-import pt.uminho.sysbio.common.utilities.io.FileUtils;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.uniprot.dataservice.client.Client;
 import uk.ac.ebi.uniprot.dataservice.client.QueryResult;
@@ -30,18 +30,21 @@ import uk.ac.ebi.uniprot.dataservice.query.Query;
 
 public class TestBioapis{
 
+	
 	@Test
 	public void testeEspecial() throws IOException {
 		
 		//System.out.println(UniProtAPI.getEntryFromUniProtID("P40886", 0).getUniProtId());
 		
-		System.out.println(UniProtAPI.getUniProtEntryFromXRef("P40886.2", 0).getUniProtId());
+		//System.out.println(UniProtAPI.getUniProtEntryFromXRef("P40886.2", 0).getUniProtId());
 		
 		//List<String> l = FileUtils.readLines("C:/Users/Oscar/Desktop/Set.txt");
 		
 		//System.out.println(UniProtAPI.getEntriesFromUniProtIDs(new HashSet<String> (l),0));
 		
-		UniProtAPI.stopUniProtService();
+		
+		
+		//UniProtAPI.stopUniProtService();
 	}
 	
 	public void testGenome() throws Exception{

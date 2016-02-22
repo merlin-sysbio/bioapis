@@ -15,10 +15,10 @@ import org.biojava3.core.sequence.AccessionID;
 import org.biojava3.core.sequence.DataSource;
 import org.biojava3.core.sequence.ProteinSequence;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
-import pt.uminho.sysbio.common.utilities.datastructures.list.ListUtilities;
-import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
 import uk.ac.ebi.kraken.interfaces.common.Sequence;
 import uk.ac.ebi.kraken.interfaces.uniprot.DatabaseCrossReference;
 import uk.ac.ebi.kraken.interfaces.uniprot.DatabaseType;

@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -9,10 +10,6 @@
 
 	<name>bioapis</name>
 	<url>http://maven.apache.org</url>
-
-	<!-- <distributionManagement> <repository> <id>watson</id> <url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-releases</url> 
-		</repository> <snapshotRepository> <id>watson</id> <url>http://192.168.1.99:8081/nexus/content/repositories/biosystems-snapshots</url> 
-		</snapshotRepository> </distributionManagement> -->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,9 +27,29 @@
 		</build> -->
 	<build>
 		<plugins>
-			<!-- <plugin> <groupId>org.sonatype.plugins</groupId> <artifactId>nexus-staging-maven-plugin</artifactId> 
-				<version>1.6.2</version> <extensions>true</extensions> <configuration> <serverId>watson</serverId> 
-				<nexusUrl>http://192.168.1.99:8081/nexus</nexusUrl> </configuration> </plugin> -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.6</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>biosystems-snapshots</serverId>
+					<nexusUrl>http://192.168.1.99/nexus/</nexusUrl>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -54,14 +71,13 @@
 			<name>BioJava repository</name>
 			<url>http://www.biojava.org/download/maven/</url>
 		</repository>
+		<repository>
+			<id>nexus</id>
+			<name>Nexus BioSystems Server</name>
+			<url>http://192.168.1.99/nexus/content/groups/public/</url>
+		</repository>
 	</repositories>
-
 	<dependencies>
-		<dependency>
-			<groupId>pt.uminho.sysbio.common</groupId>
-			<artifactId>utilities</artifactId>
-			<version>${pt.uminho.sysbio.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>uk.ac.ebi.chebi.webapps.chebiWS.client</groupId>
 			<artifactId>chebiWS-client</artifactId>
@@ -70,7 +86,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -83,16 +99,13 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
-		   <dependency>
-        <groupId>uk.ac.ebi.uniprot</groupId>
-        <artifactId>japi</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-<!-- 		<dependency>
-			<groupId>uk.ac.ebi.uniprot.kraken</groupId>
-			<artifactId>uniprotjapi</artifactId>
-			<version>2015.07</version>
-		</dependency> -->
+		<dependency>
+			<groupId>uk.ac.ebi.uniprot</groupId>
+			<artifactId>japi</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		<!-- <dependency> <groupId>uk.ac.ebi.uniprot.kraken</groupId> <artifactId>uniprotjapi</artifactId> 
+			<version>2015.07</version> </dependency> -->
 		<!-- <dependency> <groupId>org.biojava</groupId> <artifactId>biojava3-core</artifactId> 
 			<version>4.0.0-SNAPSHOT</version> </dependency> -->
 		<dependency>
@@ -130,7 +143,26 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.1.3</version>
 		</dependency>
-		<!-- <dependency> <groupId>gov.nih.nlm.ncbi</groupId> <artifactId>eutils-axis2</artifactId> 
-			<version>2.0</version> </dependency> -->
+			<dependency>
+			<groupId>pt.uminho.sysbio.merlin</groupId>
+			<artifactId>merlin-utilities</artifactId>
+			<version>${pt.uminho.sysbio.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>pt.uminho.ceb.biosystems.mew</groupId>
+			<artifactId>utilities</artifactId> 
+			<version>0.0.1.M-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
+	
+	  <distributionManagement>
+  	<snapshotRepository>
+	    <id>biosystems-snapshots</id>
+	    <url>http://192.168.1.99/nexus/content/repositories/biosystems-snapshots</url>
+	</snapshotRepository>
+	<repository>
+	    <id>biosystems-releases</id>
+		<url>http://192.168.1.99/nexus/content/repositories/biosystems-releases</url>
+	</repository>
+  </distributionManagement>
 </project>

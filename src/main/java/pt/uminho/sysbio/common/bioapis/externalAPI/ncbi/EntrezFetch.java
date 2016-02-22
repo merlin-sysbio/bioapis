@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.biojava3.core.sequence.ProteinSequence;
 
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBFeature;
@@ -22,8 +24,6 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSeq;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
-import pt.uminho.sysbio.common.utilities.datastructures.list.ListUtilities;
-import pt.uminho.sysbio.common.utilities.datastructures.pair.Pair;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 
