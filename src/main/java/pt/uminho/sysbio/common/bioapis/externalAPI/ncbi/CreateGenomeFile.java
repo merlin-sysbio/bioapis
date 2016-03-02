@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.axis2.AxisFault;
-import org.biojava3.core.sequence.ProteinSequence;
-import org.biojava3.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
@@ -110,14 +110,17 @@ public class CreateGenomeFile {
 	/**
 	 * @param genomeID
 	 * @param fastaFiles
+	 * @param extension
+	 * @param isNCBIGenome
 	 * @throws Exception
 	 */
-	public CreateGenomeFile(String genomeID, List<File> fastaFiles, String extension) throws Exception {
+	public CreateGenomeFile(String genomeID, List<File> fastaFiles, String extension, boolean isNCBIGenome) throws Exception {
 		
 		this.today = CreateGenomeFile.setToday();
 		String path = FileUtils.getCurrentTempDirectory();
 		this.genomeID = genomeID;
 		this.tempPath = path;
+		this.isNCBIGenome = isNCBIGenome;
 		this.createGenomeFileFromFasta(fastaFiles, extension);
 	}
 
@@ -131,10 +134,8 @@ public class CreateGenomeFile {
 		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,this.tempPath,this.genomeID,this.today,extension)) {
 			
 			Map<String, ProteinSequence> sequences= new HashMap<String, ProteinSequence>();
-			for(File fastFile : fastaFiles) {
-				
+			for(File fastFile : fastaFiles)				
 				sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastFile));
-			}
 
 			this.buildFastFile(null, sequences, extension);
 			this.createLogFile(extension);
@@ -199,17 +200,20 @@ public class CreateGenomeFile {
 		FileWriter fstream = new FileWriter(this.tempPath+this.genomeID+extension);  
 		BufferedWriter out = new BufferedWriter(fstream); 
 
-		for(String key:sequences.keySet())
-		{
+		for(String key:sequences.keySet()) {
+			
+			String fileKey = key;
+			//Temp solution for new NCBI FASTA Headers
+			if(this.isNCBIGenome())
+				fileKey = fileKey.split("\\s")[0];
+			
 			if(locusTag!=null && locusTag.containsKey(key) && locusTag.get(key)!=null)
-			{
-				out.write(">"+key+"|"+locusTag.get(key)+"\n");
-			}
+				out.write(">"+fileKey+"|"+locusTag.get(key)+"\n");
 			else
-			{
-				out.write(">"+key+"\n");
-			}
+				out.write(">"+fileKey+"\n");
+			
 			out.write(sequences.get(key).getSequenceAsString()+"\n");
+			
 		}
 		out.close();
 	}

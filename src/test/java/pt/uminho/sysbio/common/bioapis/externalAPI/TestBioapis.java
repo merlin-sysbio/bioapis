@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.biojava3.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.junit.Test;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.biojava3.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.ProteinSequence;
 
 /**
  * @author Oscar

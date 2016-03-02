@@ -11,9 +11,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.biojava3.core.sequence.AccessionID;
-import org.biojava3.core.sequence.DataSource;
-import org.biojava3.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
+import org.biojava.nbio.core.sequence.AccessionID;
+import org.biojava.nbio.core.sequence.DataSource;
+import org.biojava.nbio.core.sequence.ProteinSequence;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
@@ -749,8 +750,9 @@ public class UniProtAPI {
 	/**
 	 * @param entry
 	 * @return
+	 * @throws CompoundNotFoundException 
 	 */
-	public static ProteinSequence getProteinSequenceFromEntry(UniProtEntry entry) {
+	public static ProteinSequence getProteinSequenceFromEntry(UniProtEntry entry) throws CompoundNotFoundException {
 		Sequence sequence = entry.getSequence();
 		ProteinSequence proteinSequence = new ProteinSequence(sequence.getValue());
 		AccessionID accession = 

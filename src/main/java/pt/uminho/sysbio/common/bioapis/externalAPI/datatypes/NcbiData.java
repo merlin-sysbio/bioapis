@@ -2,7 +2,7 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.datatypes;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.biojava3.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.ProteinSequence;
 
 public class NcbiData {
 
