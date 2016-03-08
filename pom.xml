@@ -19,7 +19,7 @@
 		<axis2.version>1.6.2</axis2.version>
 		<axiom.version>1.2.14</axiom.version>
 	</properties>
-
+	
 	<!-- <build> <sourceDirectory>D:\workspaces\maven\bioapis\src</sourceDirectory> 
 		<scriptSourceDirectory>D:\workspaces\maven\bioapis\src\main\scripts</scriptSourceDirectory> 
 		<testSourceDirectory>D:\workspaces\maven\bioapis\test</testSourceDirectory> 
@@ -32,10 +32,10 @@
 				<artifactId>nexus-staging-maven-plugin</artifactId>
 				<version>1.6.6</version>
 				<extensions>true</extensions>
-				<configuration>
+				<!-- <configuration>
 					<serverId>biosystems-snapshots</serverId>
-					<nexusUrl>http://192.168.1.99/nexus/</nexusUrl>
-				</configuration>
+					<nexusUrl>http://193.137.11.210/nexus/</nexusUrl>
+				</configuration> -->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -72,11 +72,6 @@
 			<url>http://www.biojava.org/download/maven/</url>
 		</repository>
 		<repository>
-			<id>nexus</id>
-			<name>Nexus BioSystems Server</name>
-			<url>http://192.168.1.99/nexus/content/groups/public/</url>
-		</repository>
-		<repository>
 	      	<id>oss.sonatype.org-snapshot</id>
 	      	<url>http://oss.sonatype.org/content/repositories/snapshots</url>
 	      	<releases>
@@ -86,6 +81,12 @@
 	        	<enabled>true</enabled>
 	      	</snapshots>
 	    </repository>
+	    <repository>
+			<id>nexus</id>
+			<name>Nexus BioSystems Server</name>
+			<!-- <url>http://192.168.1.99/nexus/content/groups/public/</url> -->
+			<url>http://193.137.11.210/nexus/content/groups/public/</url>
+		</repository> 
 	</repositories>
 	<dependencies>
 		<dependency>
