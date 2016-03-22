@@ -1067,7 +1067,9 @@ public class UniProtAPI {
 				try {
 					homologuesData.setGene(entry.getGenes().get(0).getGeneName().getValue());
 				}
-				catch (Exception e) {e.printStackTrace();}
+				catch (Exception e) {
+					//e.printStackTrace();
+					}
 			}
 
 			homologuesData.addLocusID(primary_accession, genesList.indexOf(primary_accession));
