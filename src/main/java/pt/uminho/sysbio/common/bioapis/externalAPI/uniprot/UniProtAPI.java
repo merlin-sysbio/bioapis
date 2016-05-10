@@ -18,6 +18,7 @@ import org.biojava.nbio.core.sequence.ProteinSequence;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
+import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
 import uk.ac.ebi.kraken.interfaces.common.Sequence;
@@ -121,7 +122,7 @@ public class UniProtAPI {
 	}
 
 	/**
-	 * @param uniprot_id
+	 * @param uniprotIDs
 	 * @param errorCount
 	 * @return
 	 */
@@ -167,6 +168,8 @@ public class UniProtAPI {
 	}
 
 	/**
+	 * Get entry from Locus Tag.
+	 * 
 	 * @param locusTag
 	 * @param errorCount
 	 * @return
@@ -583,6 +586,8 @@ public class UniProtAPI {
 	}
 
 	/**
+	 * Get entry from UniProt accession.
+	 * 
 	 * @param entryRetrievalService
 	 * @param uniprotID
 	 * @param errorCount
@@ -1021,11 +1026,16 @@ public class UniProtAPI {
 
 		UniProtEntry geneEntry = UniProtAPI.getEntryFromUniProtID(homologuesData.getUniProtEntryID(),0); 
 
-		if(geneEntry!=null)
+		int aux = 0;
+
+		if(geneEntry!=null) {
+
 			genesList.add(0,geneEntry.getPrimaryUniProtAccession().getValue());
+			aux=1;
+		}
 
 		for(int i = 0; i<homologuesList.size();i++)
-			genesList.add(i,homologuesList.get(i).getA());
+			genesList.add((aux+i),homologuesList.get(i).getA());
 
 		int dummy = 0;
 
@@ -1048,28 +1058,29 @@ public class UniProtAPI {
 
 			String locus = UniProtAPI.getLocusTag(entry);
 
+			if(locus.equalsIgnoreCase(primary_accession))
+				locus = homologuesData.getQuery();
+
 			if(primary_accession.equalsIgnoreCase(homologuesData.getUniProtEntryID())) {
 
 				homologuesData.addEValue(primary_accession,0.0);
 				homologuesData.addBits(primary_accession,-1);
 				homologuesData.setLocusTag(locus);
 
-				if(isNCBIGenome) {
-
+				if(isNCBIGenome)
 					homologuesData.setOrganismID(entry.getOrganism().getScientificName().getValue());
-				}
-				else {
-
+				else
 					homologuesData.setOrganismID(homologuesData.getTaxonomyID()[0]);
-				}
+
 				homologuesData.setFastaSequence(entry.getSequence().getValue());
 
 				try {
+
 					homologuesData.setGene(entry.getGenes().get(0).getGeneName().getValue());
 				}
 				catch (Exception e) {
 					//e.printStackTrace();
-					}
+				}
 			}
 
 			homologuesData.addLocusID(primary_accession, genesList.indexOf(primary_accession));
@@ -1122,6 +1133,8 @@ public class UniProtAPI {
 	}
 
 	/**
+	 * Get parsed UniProt entry data from locus tag.
+	 * 
 	 * @param query
 	 * @return
 	 */
@@ -1131,10 +1144,23 @@ public class UniProtAPI {
 	}
 
 	/**
+	 * Get parsed UniProt entry data from UniProt accession.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static EntryData getEntryDataFromAccession(String accession) {
+
+		return UniProtAPI.getEntryDataFromAccession(accession,0);
+	}
+
+
+	/**
 	 * @param entry
 	 * @return
 	 */
 	public static String getLocusTag(UniProtEntry entry) {
+
 
 		String out = null;
 
@@ -1143,6 +1169,7 @@ public class UniProtAPI {
 			out = entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
 		}
 		catch(Exception e) {
+
 			out=null;
 		}
 
@@ -1175,56 +1202,36 @@ public class UniProtAPI {
 
 		try {
 
-
-
 			if(uniProtEntry==null)
 				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
 
 			entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 
-			String uniprot_ecnumber = null;
-			Set<String> ecnumbers = UniProtAPI.get_ecnumbers(uniProtEntry);
-			if(ecnumbers!= null) {
-
-				uniprot_ecnumber = "";
-
-				for(String ecnumber : ecnumbers) {
-
-					uniprot_ecnumber += ecnumber+", ";
-				}
-				if(uniprot_ecnumber.contains(", ")) {
-
-					uniprot_ecnumber = uniprot_ecnumber.substring(0, uniprot_ecnumber.lastIndexOf(", "));
-				}
-			}
-			entry.setEcnumber(uniprot_ecnumber);
+//			String uniprot_ecnumber = null;
+//			Set<String> ecnumbers = UniProtAPI.get_ecnumbers(uniProtEntry);
+//			if(ecnumbers!= null) {
+//
+//				uniprot_ecnumber = "";
+//
+//				for(String ecnumber : ecnumbers)
+//					uniprot_ecnumber += ecnumber+", ";
+//
+//				if(uniprot_ecnumber.contains(", "))
+//					uniprot_ecnumber = uniprot_ecnumber.substring(0, uniprot_ecnumber.lastIndexOf(", "));
+//			}
+//			entry.setEcnumber(uniprot_ecnumber);
+			
+			entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
+			
 			entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
+			
+			if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
+				entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
 
-			String locus = null;
+			String locus = UniProtAPI.getLocusTag(uniProtEntry);
 
-			try {
-
-				locus = uniProtEntry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
-			}
-			catch(Exception e) {locus=null;}
-
-			if(locus==null) {
-
-				try {
-
-					locus = uniProtEntry.getGenes().get(0).getORFNames().get(0).getValue();
-				}
-				catch(Exception e) {}
-			}
-
-			if(locus==null) {
-
-				try {
-
-					locus = uniProtEntry.getGenes().get(0).getGeneName().getValue();
-				}
-				catch(Exception e) {locus = uniProtEntry.getPrimaryUniProtAccession().getValue();}
-			}
+			if(locus.equals(entry.getEntryID()))
+				locus = query;
 
 			entry.setLocusTag(locus);
 
@@ -1244,10 +1251,9 @@ public class UniProtAPI {
 				if(errorCount<5) {
 
 					MySleep.myWait(1000);
-					if(query.contains(".")) {
-
+					if(query.contains("."))
 						query = query.split("\\.")[0];
-					}
+
 					return UniProtAPI.getEntryData(query+".*", errorCount);
 				}
 
@@ -1255,9 +1261,61 @@ public class UniProtAPI {
 
 					entry = new EntryData(query.replace(".*", ""));
 					entry.setUniprotReviewStatus(null);
-					entry.setEcnumber(null);
+					entry.setEcNumbers(null);
 					entry.setLocusTag(query.replace(".*", ""));
 				}
+			}
+		}
+
+		return entry;
+	}
+
+	/**
+	 * @param accession
+	 * @param errorCount
+	 * @return
+	 */
+	private static EntryData getEntryDataFromAccession(String accession, int errorCount) {
+
+		EntryData entry;
+
+		UniProtEntry uniProtEntry;
+
+		uniProtEntry = UniProtAPI.getUniprotEntry(accession,0);
+
+		try {
+
+			entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
+			entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
+			entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
+			
+			if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
+				entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
+
+			String locus = UniProtAPI.getLocusTag(uniProtEntry);
+
+			if(locus.equals(entry.getEntryID()))
+				locus = accession;
+
+			entry.setLocusTag(locus);
+
+		}
+		catch (Exception e) {
+
+			errorCount+=1;
+			e. printStackTrace();
+
+			if(errorCount<3) {
+
+				MySleep.myWait(1000);
+				return UniProtAPI.getEntryDataFromAccession(accession, errorCount);
+			}
+			else {
+
+				entry = new EntryData(accession.replace(".*", ""));
+				entry.setUniprotReviewStatus(null);
+				entry.setEcNumbers(null);
+				entry.setLocusTag(accession.replace(".*", ""));
 			}
 		}
 

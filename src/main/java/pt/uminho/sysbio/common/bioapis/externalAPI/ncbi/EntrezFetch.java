@@ -16,6 +16,7 @@ import org.biojava.nbio.core.sequence.ProteinSequence;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
+import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBFeature;
@@ -92,12 +93,13 @@ public class EntrezFetch {
 			String links="";
 			int index=0;
 
+			double size = genes.size();
+
 			for(int i=0; i<ids_list.size();i++) {
 
-				if(index>0) {
-
+				if(index>0)
 					links=links.concat(",");
-				}
+
 				links=links.concat(ids_list.get(i).replace("\"", ""));
 				index++;
 
@@ -110,7 +112,14 @@ public class EntrezFetch {
 			}
 			queryList.add(links);
 
+			int counter = 0;
+			boolean existsLocusTags = true;
 			for(String query:queryList) {
+
+				counter +=query.split(",").length;
+
+				double progress = counter/size;
+				System.out.println("NCBIAPI.getLocusFromID query "+progress*100+"%");
 
 				query = new String(query.getBytes(),"UTF-8");
 				GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, query, "xml");
@@ -124,13 +133,14 @@ public class EntrezFetch {
 
 					Map<String, String> features = getFeatures(gbSeq, "CDS");
 
+					result.put(primary_accession, primary_accession);
 					if(features.containsKey("locus_tag")) {
 
 						result.put(primary_accession, features.get("locus_tag"));
 						temp.add(primary_accession);
 					}
 
-					if(!temp.contains(primary_accession)) {
+					if(!temp.contains(primary_accession) && existsLocusTags) {
 
 						UniProtEntry uni = UniProtAPI.getUniProtEntryFromXRef(primary_accession,0);
 
@@ -139,6 +149,15 @@ public class EntrezFetch {
 
 							String locus = g.get(0);
 							result.put(primary_accession, locus);
+
+							System.out.println("locus.equalsIgnoreCase(primary_accession) "+locus.equalsIgnoreCase(primary_accession));
+
+							if(locus.equalsIgnoreCase(primary_accession))
+								existsLocusTags = false;
+						}
+						else {
+
+							existsLocusTags = false;
 						}
 					}
 				}
@@ -170,6 +189,61 @@ public class EntrezFetch {
 				return null;
 			}
 		}
+	}
+
+	/**
+	 * @param accession
+	 * @param errorCount
+	 * @return
+	 */
+	public EntryData getEntryDataFromAccession(String accession, int errorCount) {
+
+		EntryData entryData = new EntryData(accession);
+		entryData.setLocusTag(accession);
+
+		GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, accession, "xml");
+
+		List<GBSeq> gbSeqs = gbSet.gBSeq;
+
+		for (int i = 0; i < gbSeqs.size(); i++) {
+
+			GBSeq gbSeq = gbSeqs.get(i);
+			String primary_accession = gbSeq.accessionVersion;
+
+			entryData.setEntryID(primary_accession);
+
+			Map<String, String> features = getFeatures(gbSeq, "CDS");
+
+			if(features.containsKey("locus_tag"))
+				entryData.setLocusTag(features.get("locus_tag"));
+
+			features = getFeatures(gbSeq, "source");
+
+			if(features.containsKey("EC_number"))
+				entryData.addEcNumber(features.get("EC_number"));
+
+			features = getFeatures(gbSeq, "Protein");
+
+			if(features.containsKey("product"))
+				entryData.setFunction(features.get("product"));
+
+			if(features.containsKey("EC_number"))
+				entryData.addEcNumber(features.get("EC_number"));
+
+			features = getFeatures(gbSeq, "source");
+
+			if(features.containsKey("db_xref")) {
+
+				if(features.get("db_xref").startsWith("UniProtKB/Swiss-Prot"))
+					entryData.setUniprotReviewStatus("true");
+
+				if(features.get("db_xref").startsWith("UniProtKB/TrEMBL"))
+					entryData.setUniprotReviewStatus("false");
+			}
+
+		}
+
+		return entryData;
 	}
 
 	/**
@@ -244,7 +318,7 @@ public class EntrezFetch {
 
 					GBSeq gbSeq = gbSeqs.get(i);
 					String primary_accession = gbSeq.accessionVersion;
-					
+
 					Map<String, String> features = getFeatures(gbSeq, "CDS");
 
 					if(features.containsKey("locus_tag")) {
@@ -381,7 +455,7 @@ public class EntrezFetch {
 			GBSeq gbSeq = gbSeqs.get(i);
 
 			String primary_accession = gbSeq.accessionVersion;
-			
+
 			Map<String, String> features = getFeatures(gbSeq, "CDS");
 
 			if(features.containsKey("locus_tag")) {
@@ -490,7 +564,7 @@ public class EntrezFetch {
 				}
 
 				Map<String, String> features = getFeatures(gbSeq, "source");
-				
+
 				if(primary_accession!=null && !accessionNumbers.contains(primary_accession))
 					accessionNumbers.add(primary_accession);
 
@@ -708,4 +782,6 @@ public class EntrezFetch {
 				throw new Exception();
 		}
 	}
+
+
 }

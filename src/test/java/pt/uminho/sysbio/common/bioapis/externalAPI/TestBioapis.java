@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
+import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.CreateGenomeFile;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
-import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.uniprot.dataservice.client.Client;
@@ -214,7 +214,7 @@ public class TestBioapis{
 		String query = "AGI21890.1";
 
 		EntryData entryData = UniProtAPI.getEntryData(query);
-		System.out.println(entryData.getEcnumber());
+		System.out.println(entryData.getEcNumbers());
 		System.out.println(entryData.getUniprotReviewStatus());
 		System.out.println(entryData.getEntryID());
 		System.out.println(entryData.getLocusTag());

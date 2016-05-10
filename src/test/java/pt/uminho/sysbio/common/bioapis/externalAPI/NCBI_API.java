@@ -1,13 +1,9 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
@@ -16,6 +12,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
 
 public class NCBI_API {
 
+	//@Test
 	public void test() {
 		
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
@@ -42,16 +39,15 @@ public class NCBI_API {
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
 		
-		GBSet gbSet = entrezService.eFetch(NcbiDatabases.protein, "LmxM.28.2120", "xml");
+		GBSet gbSet = entrezService.eFetch(NcbiDatabases.protein, "CDZ96150.1", "xml");
 		System.out.println(gbSet.gBSeq);
 		
-		
-		//System.out.println(NcbiAPI.getNcbiGI("LmxM.28.2120,LmxM.19.1240,LmxM.07.0770,LmxM.14.1310,LmxM.04.0210,LmxM.30.1490,LmxM.31.1200,LmxM.33.0010,LmxM.20.0220,LmxM.17.1440"));
-		Set<String> s = new HashSet<>();
-		s.add("LmxM.28.2120");
+//		System.out.println(NcbiAPI.getNcbiGI("LmxM.28.2120,LmxM.19.1240,LmxM.07.0770,LmxM.14.1310,LmxM.04.0210,LmxM.30.1490,LmxM.31.1200,LmxM.33.0010,LmxM.20.0220,LmxM.17.1440"));
+//		Set<String> s = new HashSet<>();
+//		s.add("LmxM.28.2120");
 //		s.add("LmxM.19.1240");
 //		s.add("LmxM.07.0770");
-		System.out.println(NcbiAPI.getNCBILocusTags(s));
+//		System.out.println(NcbiAPI.getNCBILocusTags(s));
 	}
 
 }

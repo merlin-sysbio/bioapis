@@ -28,6 +28,7 @@ import org.biojava.nbio.core.sequence.io.GenericFastaHeaderParser;
 import org.biojava.nbio.core.sequence.io.ProteinSequenceCreator;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
+import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.MyNcbiTaxon;
 import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.TaxonomyContainer;
@@ -91,7 +92,6 @@ public class NcbiAPI {
 	public static Map<String, String> getNCBILocusTags(Set<String> keys) throws Exception {
 
 		EntrezFetch entrezFetch = new EntrezFetch();
-
 		Map<String, String> idLocus = entrezFetch.getLocusFromID(keys,500);
 
 		return idLocus;
@@ -663,10 +663,8 @@ public class NcbiAPI {
 
 			EntrezTaxonomy entrezTaxon = new EntrezTaxonomy();
 
-			for(String q : queryList) {
-
+			for(String q : queryList)
 				ncbiData.getTaxonomyMap().putAll(entrezTaxon.getTaxonList(q));
-			}
 
 			for(String gene : taxonomyID.keySet()) {
 
@@ -745,6 +743,36 @@ public class NcbiAPI {
 				throw e;
 			}
 		}
+	}
+	
+	/**
+	 * Get parsed UniProt entry data from NCBI accession.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static EntryData getEntryDataFromAccession(String accession) {
+
+		try {
+			return NcbiAPI.getEntryDataFromAccession(accession,0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * @param accession
+	 * @param errorCount
+	 * @return
+	 * @throws Exception 
+	 * 
+	 */
+	private static EntryData getEntryDataFromAccession(String accession, int errorCount) throws Exception {
+
+		EntrezFetch entrezFetch = new EntrezFetch();
+		return entrezFetch.getEntryDataFromAccession(accession, errorCount);
 	}
 
 	/**

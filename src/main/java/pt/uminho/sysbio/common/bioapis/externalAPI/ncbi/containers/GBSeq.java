@@ -42,16 +42,17 @@ public class GBSeq {
 	
 	@Element(name="GBSeq_definition", required=false)
 	public String definition;
-	
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
+	public String toString() {
+		return "GBSeq [locus=" + locus + ", length=" + length + ", molType=" + molType + ", primaryAccession="
+				+ primaryAccession + ", accessionVersion=" + accessionVersion + ", xReferences=" + xReferences
+				+ ", organism=" + organism + ", taxonomy=" + taxonomy + ", features=" + features + ", sequence="
+				+ sequence + ", definition=" + definition + "]";
+	}
 	
-//	@Override
-//	public String toString() {
-//		return String.format("GBSeq[locus=%s, length=%d, strandedness=%s]", locus, length, primaryAccession);
-//	}
-	
-	
+
 }

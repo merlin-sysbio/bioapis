@@ -15,5 +15,15 @@ public class GBFeature {
 	
 	@ElementList(name="GBFeature_quals")
 	public List<GBQualifier> qualifiers = new ArrayList<> ();
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "GBFeature [featureKey=" + featureKey + ", qualifiers=" + qualifiers + "]";
+	}
+	
+	
 	
 }
