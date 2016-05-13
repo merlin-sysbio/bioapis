@@ -1016,11 +1016,12 @@ public class UniProtAPI {
 	 * @param cancel
 	 * @param uniprotStatus
 	 * @param isNCBIGenome
+	 * @param taxonomyID 
 	 * @return
 	 * @throws Exception
 	 */
 	public static HomologuesData getUniprotData(HomologuesData homologuesData, List<Pair<String, String>> homologuesList, 
-			AtomicBoolean cancel, boolean uniprotStatus, boolean isNCBIGenome) throws Exception {
+			AtomicBoolean cancel, boolean uniprotStatus, boolean isNCBIGenome, String taxonomyID) throws Exception {
 
 		List<String> genesList = new ArrayList<>();
 
@@ -1053,8 +1054,8 @@ public class UniProtAPI {
 
 			String primary_accession = entry.getPrimaryUniProtAccession().getValue();
 
-			//System.out.println("primary_accession "+primary_accession);
-			//System.out.println("homologuesData.getUniProtEntryID() "+homologuesData.getUniProtEntryID());
+//			System.out.println("primary_accession "+primary_accession);
+//			System.out.println("homologuesData.getUniProtEntryID() "+homologuesData.getUniProtEntryID());
 
 			String locus = UniProtAPI.getLocusTag(entry);
 
@@ -1067,10 +1068,10 @@ public class UniProtAPI {
 				homologuesData.addBits(primary_accession,-1);
 				homologuesData.setLocusTag(locus);
 
-				if(isNCBIGenome)
-					homologuesData.setOrganismID(entry.getOrganism().getScientificName().getValue());
-				else
-					homologuesData.setOrganismID(homologuesData.getTaxonomyID()[0]);
+				//				if(isNCBIGenome)
+				//					homologuesData.setOrganismID(entry.getOrganism().getScientificName().getValue());
+				//				else
+				homologuesData.setOrganismID(homologuesData.getOrganismTaxa()[0]);
 
 				homologuesData.setFastaSequence(entry.getSequence().getValue());
 
@@ -1086,6 +1087,16 @@ public class UniProtAPI {
 			homologuesData.addLocusID(primary_accession, genesList.indexOf(primary_accession));
 			homologuesData.addLocusTag(primary_accession, locus);
 			homologuesData.addBlastLocusTags(primary_accession, locus);
+
+			boolean goTaxonomyID = false;
+			for(NcbiTaxonomyId ncbiTaxonomyID : entry.getNcbiTaxonomyIds())			
+				if(ncbiTaxonomyID.getValue().equalsIgnoreCase(taxonomyID))
+					goTaxonomyID=true;
+
+			if(goTaxonomyID && homologuesData.getEvalue(primary_accession)<1e-30 &&
+					(homologuesData.getLocusTag()==null ||
+					homologuesData.getLocusTag().equalsIgnoreCase(homologuesData.getQuery())))
+				homologuesData.setLocusTag(locus);
 
 			String name = null;
 
@@ -1133,14 +1144,15 @@ public class UniProtAPI {
 	}
 
 	/**
-	 * Get parsed UniProt entry data from locus tag.
+	 * Get parsed UniProt entry data from locus tag and taxonomy identifier.
 	 * 
 	 * @param query
+	 * @param taxonomyID
 	 * @return
 	 */
-	public static EntryData getEntryData(String query) {
+	public static EntryData getEntryData(String query, long taxonomyID) {
 
-		return UniProtAPI.getEntryData(query,0);
+		return UniProtAPI.getEntryData(query, taxonomyID, 0);
 	}
 
 	/**
@@ -1189,10 +1201,11 @@ public class UniProtAPI {
 
 	/**
 	 * @param query
+	 * @param taxonomyID 
 	 * @param errorCount
 	 * @return
 	 */
-	private static EntryData getEntryData(String query, int errorCount) {
+	private static EntryData getEntryData(String query, long taxonomyID, int errorCount) {
 
 		EntryData entry;
 
@@ -1205,35 +1218,49 @@ public class UniProtAPI {
 			if(uniProtEntry==null)
 				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
 
-			entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
+			boolean go = false;
+			for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())			
+				if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
+					go=true;
 
-//			String uniprot_ecnumber = null;
-//			Set<String> ecnumbers = UniProtAPI.get_ecnumbers(uniProtEntry);
-//			if(ecnumbers!= null) {
-//
-//				uniprot_ecnumber = "";
-//
-//				for(String ecnumber : ecnumbers)
-//					uniprot_ecnumber += ecnumber+", ";
-//
-//				if(uniprot_ecnumber.contains(", "))
-//					uniprot_ecnumber = uniprot_ecnumber.substring(0, uniprot_ecnumber.lastIndexOf(", "));
-//			}
-//			entry.setEcnumber(uniprot_ecnumber);
-			
-			entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
-			
-			entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
-			
-			if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
-				entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
+			if(go) {
+				entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 
-			String locus = UniProtAPI.getLocusTag(uniProtEntry);
+				//			String uniprot_ecnumber = null;
+				//			Set<String> ecnumbers = UniProtAPI.get_ecnumbers(uniProtEntry);
+				//			if(ecnumbers!= null) {
+				//
+				//				uniprot_ecnumber = "";
+				//
+				//				for(String ecnumber : ecnumbers)
+				//					uniprot_ecnumber += ecnumber+", ";
+				//
+				//				if(uniprot_ecnumber.contains(", "))
+				//					uniprot_ecnumber = uniprot_ecnumber.substring(0, uniprot_ecnumber.lastIndexOf(", "));
+				//			}
+				//			entry.setEcnumber(uniprot_ecnumber);
 
-			if(locus.equals(entry.getEntryID()))
-				locus = query;
+				entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
 
-			entry.setLocusTag(locus);
+				entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
+
+				if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
+					entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
+
+				String locus = UniProtAPI.getLocusTag(uniProtEntry);
+
+				if(locus.equals(entry.getEntryID()))
+					locus = query;
+
+				entry.setLocusTag(locus);
+			}
+			else {
+
+				entry = new EntryData(query.replace(".*", ""));
+				entry.setUniprotReviewStatus(null);
+				entry.setEcNumbers(null);
+				entry.setLocusTag(query.replace(".*", ""));
+			}
 
 		}
 		catch (Exception e) {
@@ -1288,7 +1315,7 @@ public class UniProtAPI {
 			entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 			entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
 			entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
-			
+
 			if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
 				entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
 
@@ -1419,5 +1446,19 @@ public class UniProtAPI {
 
 		UniProtAPI.getInstance();
 		uniProtService.stop();
+	}
+
+
+
+	/**
+	 * Get parsed UniProt entry data from locus tag.
+	 * 
+	 * @param query
+	 * @param taxonomyID
+	 * @return
+	 */
+	public static EntryData getEntryData(String query) {
+
+		return UniProtAPI.getEntryData(query, -1, 0);
 	}
 }

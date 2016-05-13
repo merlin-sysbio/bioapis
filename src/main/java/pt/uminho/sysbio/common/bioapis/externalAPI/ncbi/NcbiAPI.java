@@ -579,13 +579,14 @@ public class NcbiAPI {
 	 * @param isNCBIGenome
 	 * @param cancel
 	 * @param uniprotStatus 
+	 * @param taxonomyID 
 	 * @return
 	 * @throws Exception
 	 */
 	public static HomologuesData getNcbiData(HomologuesData homologuesData, List<Pair<String, String>> resultsList, 
-			int trialNumber, boolean isNCBIGenome, AtomicBoolean cancel, boolean uniprotStatus) throws Exception {
+			int trialNumber, boolean isNCBIGenome, AtomicBoolean cancel, boolean uniprotStatus, String taxonomyID) throws Exception {
 
-		Map<String, String> taxonomyID = new HashMap<>();
+		Map<String, String> taxonomyIDs = new HashMap<>();
 
 		try {
 
@@ -593,8 +594,8 @@ public class NcbiAPI {
 				resultsList.add(0, new Pair<String,String>(homologuesData.getQuery(), homologuesData.getRefSeqGI()));
 			
 			EntrezFetch entrezFetch = new EntrezFetch();
-			homologuesData = entrezFetch.getNcbiData(homologuesData, isNCBIGenome, cancel, resultsList,  taxonomyID, uniprotStatus);
-			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyID, taxonomyID.size(), 0, cancel);
+			homologuesData = entrezFetch.getNcbiData(homologuesData, isNCBIGenome, cancel, resultsList,  taxonomyIDs, uniprotStatus, taxonomyID);
+			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyIDs, taxonomyIDs.size(), 0, cancel);
 		}
 		catch (Exception e) {
 
@@ -614,10 +615,11 @@ public class NcbiAPI {
 						throw e1;
 					}
 				}
-				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, isNCBIGenome, cancel, uniprotStatus);
+				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, isNCBIGenome, cancel, uniprotStatus, taxonomyID);
 			}
 			else {
 					homologuesData.setDataRetrieved(false);
+					System.out.println(homologuesData.getQuery());
 					throw new Exception();
 			}
 
@@ -954,6 +956,7 @@ public class NcbiAPI {
 		if(genome.keySet().size()>0) {
 
 			List<String> list = new ArrayList<>(genome.keySet());
+			
 			String geneID = list.get(0);
 
 			EntrezFetch entrezFetch = new EntrezFetch();
@@ -1033,6 +1036,59 @@ public class NcbiAPI {
 		EntrezTaxonomy entrezTaxonomy = new EntrezTaxonomy();
 	
 		return entrezTaxonomy.getTaxonList(tax_ids);
+	}
+
+	/**
+	 * @param homologuesData
+	 * @param resultsList
+	 * @param trialNumber
+	 * @param isNCBIGenome
+	 * @param cancel
+	 * @param uniprotStatus
+	 * @return
+	 * @throws Exception
+	 */
+	public static HomologuesData getNcbiData(HomologuesData homologuesData, List<Pair<String, String>> resultsList, 
+			int trialNumber, boolean isNCBIGenome, AtomicBoolean cancel, boolean uniprotStatus) throws Exception {
+
+		Map<String, String> taxonomyIDs = new HashMap<>();
+
+		try {
+
+			if(isNCBIGenome && !resultsList.get(0).getB().equalsIgnoreCase(homologuesData.getRefSeqGI()))
+				resultsList.add(0, new Pair<String,String>(homologuesData.getQuery(), homologuesData.getRefSeqGI()));
+			
+			EntrezFetch entrezFetch = new EntrezFetch();
+			homologuesData = entrezFetch.getNcbiData(homologuesData, isNCBIGenome, cancel, resultsList,  taxonomyIDs, uniprotStatus);
+			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyIDs, taxonomyIDs.size(), 0, cancel);
+		}
+		catch (Exception e) {
+
+			//e.printStackTrace();
+
+			int newTrial = trialNumber+1;
+			if(newTrial<20 && !cancel.get()) {
+
+				try {
+
+					Thread.sleep(2000); //miliseconds
+				}
+				catch (InterruptedException e1) {
+
+					if(!cancel.get()) {
+						
+						throw e1;
+					}
+				}
+				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, isNCBIGenome, cancel, uniprotStatus);
+			}
+			else {
+					homologuesData.setDataRetrieved(false);
+					throw new Exception();
+			}
+
+		}
+		return homologuesData;
 	}
 	
 }

@@ -24,7 +24,7 @@ public class HomologuesData {
 	private List<String> locusIDs = new LinkedList<String>();
 	private String organismID, fastaSequence;
 	private String chromosome, organelle, locus_protein_note, locusTag, locus_gene_note, gene;
-	private String[] taxonomyID;
+	private String[] organismTaxa;
 	private String sequence_code;
 	private ConcurrentHashMap<String, Boolean> uniprotStatus;
 	private boolean dataRetrieved;
@@ -414,17 +414,17 @@ public class HomologuesData {
 	}
 
 	/**
-	 * @return the taxID
+	 * @return the organism taxa
 	 */
-	public String[] getTaxonomyID() {
-		return taxonomyID;
+	public String[] getOrganismTaxa() {
+		return organismTaxa;
 	}
 
 	/**
-	 * @param taxID the taxID to set
+	 * @param organismTaxa the organism taxa to set
 	 */
-	public void setTaxonomyID(String[] taxonomyID) {
-		this.taxonomyID = taxonomyID;
+	public void setOrganismTaxa(String[] organismTaxa) {
+		this.organismTaxa = organismTaxa;
 	}
 
 	/**
@@ -534,13 +534,10 @@ public class HomologuesData {
 	 */
 	public double getBits(String accessionNumber){
 		
-		for (String id : this.getBits().keySet()) {
-			
-			if(id.contains(accessionNumber)) {
-				
+		for (String id : this.getBits().keySet())			
+			if(id.contains(accessionNumber))
 				return this.getBits().get(id);
-			}
-		}
+
 		return -1;
 	}
 
@@ -618,8 +615,8 @@ public class HomologuesData {
 				+ fastaSequence + ", chromosome=" + chromosome + ", organelle="
 				+ organelle + ", locus_protein_note=" + locus_protein_note
 				+ ", locus_tag=" + locusTag + ", locus_gene_note="
-				+ locus_gene_note + ", gene=" + gene + ", taxonomyID="
-				+ Arrays.toString(taxonomyID) + ", sequence_code="
+				+ locus_gene_note + ", gene=" + gene + ", organismTaxa="
+				+ Arrays.toString(organismTaxa) + ", sequence_code="
 				+ sequence_code + ", uniprotStatus=" + uniprotStatus
 				+ ", dataRetrieved=" + dataRetrieved + ", taxonomyMap="
 				+ taxonomyMap + ", refSeqGI=" + refSeqGI + ", ncbiLocusTag="

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -79,10 +80,10 @@ public class CreateGenomeFile {
 		try {
 			
 			String tempPath = FileUtils.getCurrentTempDirectory();
-			if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, genomeID, CreateGenomeFile.setToday(), extension)) {
-				
+			
+			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, genomeID, CreateGenomeFile.setToday(), extension))				
 				return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+genomeID+extension));
-			}
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -134,6 +135,11 @@ public class CreateGenomeFile {
 		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,this.tempPath,this.genomeID,this.today,extension)) {
 			
 			Map<String, ProteinSequence> sequences= new HashMap<String, ProteinSequence>();
+			
+			for(File fastFile : fastaFiles)
+				for(Entry<String, ProteinSequence> id : FastaReaderHelper.readFastaProteinSequence(fastFile).entrySet())
+					System.out.println(id.getKey()+"\t"+id.getValue().getOriginalHeader());
+			
 			for(File fastFile : fastaFiles)				
 				sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastFile));
 
