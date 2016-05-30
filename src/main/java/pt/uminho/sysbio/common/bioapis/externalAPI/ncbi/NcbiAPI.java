@@ -26,6 +26,8 @@ import org.biojava.nbio.core.sequence.compound.AminoAcidCompoundSet;
 import org.biojava.nbio.core.sequence.io.FastaReader;
 import org.biojava.nbio.core.sequence.io.GenericFastaHeaderParser;
 import org.biojava.nbio.core.sequence.io.ProteinSequenceCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
@@ -40,6 +42,8 @@ import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
  */
 public class NcbiAPI {
 
+
+	final static Logger logger = LoggerFactory.getLogger(NcbiAPI.class);
 
 	/**
 	 * @param map
@@ -121,25 +125,22 @@ public class NcbiAPI {
 		File aFile = new File(path);
 		List<String> contents = new ArrayList<String>();
 
-		try 
-		{
+		try {
+			
 			BufferedReader input =  new BufferedReader(new FileReader(aFile));
 			String line = null;
+			
 			while (( line = input.readLine()) != null)
-			{
 				if(trim)
-				{
 					contents.add(line.trim());
-				}
 				else
-				{
 					contents.add(line);
-				}
-				//contents.add(System.getProperty("line.separator"));
-			}
 			input.close();
 		}
-		catch (IOException ex){ex.printStackTrace();}
+		catch (IOException ex) {
+			
+			logger.trace("StackTrace {}", ex);
+		}
 
 		return contents;
 	}
@@ -179,16 +180,12 @@ public class NcbiAPI {
 	 * @param queryMap
 	 */
 	public static Map<String, ProteinSequence> filterCandidatesGenBank(Set<String> candidates, Map<String, ProteinSequence> queryMap){
+	
 		if(candidates!=null)
-		{
 			for(String geneID: new TreeSet<String>(queryMap.keySet()))
-			{
 				if(!candidates.contains(geneID))
-				{
 					queryMap.remove(geneID);
-				}
-			}
-		}
+
 		return queryMap;
 	}
 
@@ -203,15 +200,13 @@ public class NcbiAPI {
 			for(String query: new TreeSet<String>(queryMap.keySet()))
 			{
 				String geneID = query;
-				if(query.contains(" "))
-				{
+				if(query.contains(" ")) {
+					
 					StringTokenizer stq = new StringTokenizer(query," ");
 					geneID = stq.nextToken();
 				}
 				if(!candidates.contains(geneID))
-				{
 					queryMap.remove(query);
-				}
 			}
 		}
 		return queryMap;
@@ -293,7 +288,8 @@ public class NcbiAPI {
 					int number_of_helices = Integer.parseInt(st.nextToken().trim());
 					if(number_of_helices>=minimum_number_of_helices)
 					{
-						//	este parser n�o resulta, os identificadores com _ perdem-se. usar alguma api para fazer parsing, por exemplo se come�ar por gi usar entrez protein se come�ar por GNV usar este parser...api
+						//	este parser nao resulta, os identificadores com _ perdem-se. usar alguma api para fazer parsing,
+						// por exemplo se come�ar por gi usar entrez protein se come�ar por GNV usar este parser...api
 						// verificar para que sao os metodos no construtor e descreve-los bem...
 
 						///String locus = ids_locus.get(id.split("ref_")[1].replace(".","\t").split("\t")[0]);
@@ -346,6 +342,7 @@ public class NcbiAPI {
 	 * @throws IOException
 	 */
 	public static Map<String,Integer> readTMHMMGenbankNCBI(File file, int minimum_number_of_helices) throws NumberFormatException, IOException{
+		
 		BufferedReader reader = null;
 		Map<String,Integer> tmhmmScore=new TreeMap<String, Integer>();
 		reader = new BufferedReader(new FileReader(file));
@@ -368,26 +365,19 @@ public class NcbiAPI {
 					if(number_of_helices>=minimum_number_of_helices) {
 
 						String separator = "\\|";
-
 						if(id.contains("_") && !id.contains("|"))
 							separator = "_";
 
 						String temp;
-						if(id.contains("ref")) {
-
+						if(id.contains("ref"))
 							temp=id.split("ref"+separator)[1];
-						} 
-						else if(id.contains("emb")) {
-
+						else if(id.contains("emb"))
 							temp=id.split("emb"+separator)[1];
-						}
-						else if(id.contains("gb")) {
-
+						else if(id.contains("gb"))
 							temp=id.split("gb"+separator)[1];
-						}
 						else {
 
-							System.out.println("NEW identifier on "+id);
+							logger.warn("NEW identifier on {}",id);
 							temp=null;
 						}
 						tmhmmScore.put(temp.substring(0, temp.length()-1),number_of_helices);
@@ -425,10 +415,8 @@ public class NcbiAPI {
 					st = new StringTokenizer(text,":");
 					st.nextToken();
 					int number_of_helices = Integer.parseInt(st.nextToken().trim());
-					if(number_of_helices>=minimum_number_of_helices) {
-
+					if(number_of_helices>=minimum_number_of_helices)
 						tmhmmScore.put(id,number_of_helices);
-					}
 				}
 			}
 		}
@@ -477,26 +465,14 @@ public class NcbiAPI {
 	 * @return
 	 */
 	public static Map<String, ProteinSequence> replace_ids_with_locus(Map<String, ProteinSequence> ids, Map<String,String> ids_locus){
+		
 		Map<String, ProteinSequence> locus_protein = new HashMap<String, ProteinSequence>();
-		//		Map<String, ProteinSequence> temp = new HashMap<String, ProteinSequence>();
 
-		//		for(int i=0; i<locus.size();i++)
-		//		{
-		//			String temp_string = locus.get(i).replace(".","\t").split("\t")[0];
-		//			temp.put(temp_string, ids.get(locus.get(i)));
-		//		}
-		//		ids_locus = UtilsMethods.get_locus_from_id(new ArrayList<String>(ids.keySet()));
-
-		for(String key:ids.keySet())
-		{
+		for(String key:ids.keySet()) {
+			
 			String surrogate_key = key;
-			//			if(key.contains("."))
-			//			{
-			//				surrogate_key=key.split("\\.")[0];
-			//			}
 			locus_protein.put(ids_locus.get(surrogate_key),ids.get(key));
 		}
-		//temp=null;
 		return locus_protein;
 	}
 
@@ -506,26 +482,14 @@ public class NcbiAPI {
 	 * @return
 	 */
 	public static Map<String, Integer> replace_tmhmm_ids_with_locus(Map<String, Integer> ids, Map<String,String> ids_locus){
+		
 		Map<String, Integer> locus_tmhmm = new HashMap<String, Integer>();
-		//		Map<String, ProteinSequence> temp = new HashMap<String, ProteinSequence>();
 
-		//		for(int i=0; i<locus.size();i++)
-		//		{
-		//			String temp_string = locus.get(i).replace(".","\t").split("\t")[0];
-		//			temp.put(temp_string, ids.get(locus.get(i)));
-		//		}
-		//		ids_locus = UtilsMethods.get_locus_from_id(new ArrayList<String>(ids.keySet()));
-
-		for(String key:ids.keySet())
-		{
+		for(String key:ids.keySet()) {
+			
 			String surrogate_key = key;
-			//			if(key.contains("."))
-			//			{
-			//				surrogate_key=key.split("\\.")[0];
-			//			}
 			locus_tmhmm.put(ids_locus.get(surrogate_key),ids.get(key));
 		}
-		//temp=null;
 		return locus_tmhmm;
 	}
 
@@ -548,10 +512,8 @@ public class NcbiAPI {
 				
 				String query=locus_tag_list.get(ids_counter);
 				int request_counter = 0;
-				//while (ids_counter<locus_tag_list.size() && query.length()<8050 && request_counter<250)
 				while (request_counter<initalNumberOfRequests) {
 					
-					//System.out.println(ids.get(ids_counter));
 					query=query.concat(","+locus_tag_list.get(ids_counter));
 					ids_counter++;
 					request_counter++;
@@ -565,10 +527,10 @@ public class NcbiAPI {
 			return temp;
 		}
 		catch (Exception e) {
-			
-				e.printStackTrace();
-				System.err.println("get locus error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				throw e;
+
+			logger.error("NCBI API get locus error!! {}",locus_tag_list);
+			logger.trace("StackTrace {}",e);
+			throw e;
 		}
 	}
 
@@ -576,7 +538,6 @@ public class NcbiAPI {
 	 * @param homologuesData
 	 * @param resultsList
 	 * @param trialNumber
-	 * @param isNCBIGenome
 	 * @param cancel
 	 * @param uniprotStatus 
 	 * @param taxonomyID 
@@ -584,22 +545,20 @@ public class NcbiAPI {
 	 * @throws Exception
 	 */
 	public static HomologuesData getNcbiData(HomologuesData homologuesData, List<Pair<String, String>> resultsList, 
-			int trialNumber, boolean isNCBIGenome, AtomicBoolean cancel, boolean uniprotStatus, String taxonomyID) throws Exception {
+			int trialNumber, AtomicBoolean cancel, boolean uniprotStatus, String taxonomyID) throws Exception {
 
 		Map<String, String> taxonomyIDs = new HashMap<>();
 
 		try {
-
-			if(isNCBIGenome && !resultsList.get(0).getB().equalsIgnoreCase(homologuesData.getRefSeqGI()))
+			
+			if(homologuesData.getRefSeqGI()!=null && !resultsList.get(0).getB().equalsIgnoreCase(homologuesData.getRefSeqGI()))
 				resultsList.add(0, new Pair<String,String>(homologuesData.getQuery(), homologuesData.getRefSeqGI()));
 			
 			EntrezFetch entrezFetch = new EntrezFetch();
-			homologuesData = entrezFetch.getNcbiData(homologuesData, isNCBIGenome, cancel, resultsList,  taxonomyIDs, uniprotStatus, taxonomyID);
+			homologuesData = entrezFetch.getNcbiData(homologuesData, cancel, resultsList,  taxonomyIDs, uniprotStatus, taxonomyID);
 			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyIDs, taxonomyIDs.size(), 0, cancel);
 		}
 		catch (Exception e) {
-
-			//e.printStackTrace();
 
 			int newTrial = trialNumber+1;
 			if(newTrial<20 && !cancel.get()) {
@@ -610,16 +569,18 @@ public class NcbiAPI {
 				}
 				catch (InterruptedException e1) {
 
-					if(!cancel.get()) {
-						
+					if(!cancel.get())						
 						throw e1;
-					}
 				}
-				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, isNCBIGenome, cancel, uniprotStatus, taxonomyID);
+				
+				logger.trace("getNcbiData error trial {}",newTrial);
+				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, cancel, uniprotStatus, taxonomyID);
 			}
 			else {
 					homologuesData.setDataRetrieved(false);
-					System.out.println(homologuesData.getQuery());
+					
+					logger.error("getNcbiData error on query: {}",homologuesData.getQuery());
+					logger.trace("StackTrace {}",e);
 					throw new Exception();
 			}
 
@@ -677,8 +638,6 @@ public class NcbiAPI {
 		}
 		catch (Exception e) {
 
-			e.printStackTrace();
-
 			int newTrial = trialNumber+1;
 
 			if(newTrial<5 && !cancel.get()) {
@@ -689,23 +648,22 @@ public class NcbiAPI {
 				}
 				catch (InterruptedException e1) {
 
-					if(!cancel.get()) {
-
+					if(!cancel.get())
 						throw e1;
-					}
 				}
-				if(queryResponseConcatenationSize>1) {
-
+				if(queryResponseConcatenationSize>1)
 					queryResponseConcatenationSize = queryResponseConcatenationSize/2;
-				}
+				
+				logger.trace("processOrganismsTaxonomy error trial {}",trialNumber);
 				processOrganismsTaxonomy(ncbiData, taxonomyID,queryResponseConcatenationSize,newTrial, cancel);
 			}
 			else {
 
-				if(!cancel.get()) {
-
+				if(!cancel.get())
 					ncbiData.setDataRetrieved(false);
-				}
+				
+				logger.error("processOrganismsTaxonomy error on query: {}",taxonomyID);
+				logger.trace("StackTrace {}",e);
 			}
 		}
 		return ncbiData;
@@ -732,16 +690,19 @@ public class NcbiAPI {
 			return results;
 		}
 		catch (Exception e) {
+			
 
 			if(trialNumber<15) {
 
 				trialNumber=trialNumber+1;
+				
+				logger.trace("newNcbiRefSeqID error trial {}",trialNumber);
 				return NcbiAPI.newNcbiRefSeqID(orgID, trialNumber);
 			}
 			else {
 
-				e.printStackTrace();
-				System.out.println(NcbiAPI.class.toString()+" newOrgID error "+e.getMessage()+" trial "+trialNumber+"\nQuery\t"+query);
+				logger.error("newOrgID error {} trial {} query {}",e.getMessage(),trialNumber,query);
+				logger.trace("StackTrace {}",e);
 				throw e;
 			}
 		}
@@ -759,7 +720,8 @@ public class NcbiAPI {
 			return NcbiAPI.getEntryDataFromAccession(accession,0);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			
+			logger.trace("StackTrace {}",e);
 		}
 		return null;
 	}
@@ -806,20 +768,20 @@ public class NcbiAPI {
 			return results;
 		}
 		catch (Exception e) {
-
+			
 			if(trialNumber<5) {
 
 				trialNumber++;
-				if(queryResponseConcatenationSize>1) {
-
+				if(queryResponseConcatenationSize>1)
 					queryResponseConcatenationSize = queryResponseConcatenationSize/2;
-				}
+				
+				logger.trace("getProteinDatabaseIDS error trial {}",trialNumber);
 				return NcbiAPI.getProteinDatabaseIDS(resultsList, trialNumber, queryResponseConcatenationSize);
 			}
 			else {
 
-				System.out.println(NcbiAPI.class+" homology data getProteinDatabaseIDS error "+e.getMessage()+" trial "+trialNumber);
-				System.out.println(NcbiAPI.class+" "+resultsList);
+				logger.error("homology data getProteinDatabaseIDS error {} trial {} query {}",e.getMessage(),trialNumber,resultsList);
+				logger.trace("StackTrace {}",e);
 				throw e;
 			}
 		}
@@ -838,7 +800,7 @@ public class NcbiAPI {
 		if(results.size()>0)
 			ret = results.get(0).getB();
 		else
-			System.out.println(NcbiAPI.class+" New locus for "+orgID+" currently unavailable.");
+			logger.warn(" New locus for {} currently unavailable.",orgID);
 
 		return ret;
 	}
@@ -867,11 +829,13 @@ public class NcbiAPI {
 			if(trialNumber<10) {
 
 				trialNumber=trialNumber+10;
+				logger.debug("newTaxID trial {}",trialNumber);
 				return newTaxID(orgID, trialNumber);
 			}
 			else {
-
-				System.out.println(NcbiAPI.class+" "+e.getMessage()+" trial "+trialNumber);
+				
+				logger.error("new tax id error {} trial {} query {}",e.getMessage(),trialNumber,orgID);
+				logger.trace("StackTrace {}",e);
 				throw e;
 			}
 		}
@@ -890,10 +854,12 @@ public class NcbiAPI {
 		}
 		catch (Error e) {
 
+			logger.trace("StackTrace {}",e);
 			throw new Error("Service unavailable");
 		}
 		catch (Exception e) {
 
+			logger.trace("StackTrace {}",e);
 			throw e;
 		}
 	}
@@ -985,14 +951,13 @@ public class NcbiAPI {
 
 			List<String> ordered_name = new ArrayList<String>(result.keySet());
 			java.util.Collections.sort(ordered_name);
-			for(String name : ordered_name) {
-				
-				System.out.println(name +"\t ncbi id: "+result.get(name)[0] );
-				System.out.println();
-			}
+		
+			for(String name : ordered_name)			
+				logger.info("name {} ncbi id {} ", name ,result.get(name)[0]);
 
 			long endTime = System.currentTimeMillis();
-			System.out.println("Total elapsed time in execution of query is :"+ String.format("%d min, %d sec", 
+			
+			logger.info("Total elapsed time in execution of query is : {}", String.format("%d min, %d sec",
 					TimeUnit.MILLISECONDS.toMinutes(endTime-startTime),TimeUnit.MILLISECONDS.toSeconds(endTime-startTime) -TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-startTime))));
 
 	}
@@ -1021,7 +986,8 @@ public class NcbiAPI {
 			referenceTaxonomy.add(ncbi_ids.get(tax_id)[0].trim());
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
+			
+			logger.trace("StackTrace {}",e);
 		}
 		return referenceTaxonomy;
 	}
@@ -1034,61 +1000,6 @@ public class NcbiAPI {
 	public static Map<String,String[]> getTaxonList(String tax_ids) throws Exception {
 
 		EntrezTaxonomy entrezTaxonomy = new EntrezTaxonomy();
-	
 		return entrezTaxonomy.getTaxonList(tax_ids);
 	}
-
-	/**
-	 * @param homologuesData
-	 * @param resultsList
-	 * @param trialNumber
-	 * @param isNCBIGenome
-	 * @param cancel
-	 * @param uniprotStatus
-	 * @return
-	 * @throws Exception
-	 */
-	public static HomologuesData getNcbiData(HomologuesData homologuesData, List<Pair<String, String>> resultsList, 
-			int trialNumber, boolean isNCBIGenome, AtomicBoolean cancel, boolean uniprotStatus) throws Exception {
-
-		Map<String, String> taxonomyIDs = new HashMap<>();
-
-		try {
-
-			if(isNCBIGenome && !resultsList.get(0).getB().equalsIgnoreCase(homologuesData.getRefSeqGI()))
-				resultsList.add(0, new Pair<String,String>(homologuesData.getQuery(), homologuesData.getRefSeqGI()));
-			
-			EntrezFetch entrezFetch = new EntrezFetch();
-			homologuesData = entrezFetch.getNcbiData(homologuesData, isNCBIGenome, cancel, resultsList,  taxonomyIDs, uniprotStatus);
-			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyIDs, taxonomyIDs.size(), 0, cancel);
-		}
-		catch (Exception e) {
-
-			//e.printStackTrace();
-
-			int newTrial = trialNumber+1;
-			if(newTrial<20 && !cancel.get()) {
-
-				try {
-
-					Thread.sleep(2000); //miliseconds
-				}
-				catch (InterruptedException e1) {
-
-					if(!cancel.get()) {
-						
-						throw e1;
-					}
-				}
-				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, isNCBIGenome, cancel, uniprotStatus);
-			}
-			else {
-					homologuesData.setDataRetrieved(false);
-					throw new Exception();
-			}
-
-		}
-		return homologuesData;
-	}
-	
 }

@@ -34,6 +34,8 @@ public class HomologuesData {
 	private String uniProtEntryID;
 	private String uniprotLocusTag;
 	private String query;
+	private String uniprotReviewStatus;
+	private String ecNumbers;
 
 	/**
 	 * 
@@ -112,7 +114,7 @@ public class HomologuesData {
 	 */
 	public void addLocusID(String locus, int index){
 
-		this.locusIDs.add(index, locus);
+		this.locusIDs.set(index, locus);
 	}
 
 	/**
@@ -550,13 +552,10 @@ public class HomologuesData {
 		
 		double eValue = 0;
 		
-		for (String id : this.getEValue().keySet()) {
-			
-			if(id.contains(locus)) {
-				
+		for (String id : this.getEValue().keySet())			
+			if(id.contains(locus))				
 				return this.getEValue().get(id);
-			}
-		}
+
 		return eValue;
 	}
 
@@ -637,4 +636,35 @@ public class HomologuesData {
 	public void setQuery(String query) {
 		this.query = query;
 	}
+
+	/**
+	 * @param ecNumbers
+	 */
+	public void setEntryUniprotECnumbers(String ecNumbers) {
+		
+		this.ecNumbers = ecNumbers;
+	}
+
+	/**
+	 * @param uniprotReviewStatus
+	 */
+	public void setEntryUniProtStarred(String uniprotReviewStatus) {
+		
+		this.uniprotReviewStatus = uniprotReviewStatus;
+	}
+
+	/**
+	 * @return the uniprotReviewStatus
+	 */
+	public String getEntryUniProtStarred() {
+		return uniprotReviewStatus;
+	}
+
+	/**
+	 * @return the ecNumbers
+	 */
+	public String getEntryUniprotECnumbers() {
+		return ecNumbers;
+	}
+
 }

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +34,6 @@ public class CreateGenomeFile {
 	private String tempPath;
 	private String genomeID;
 	private String today;
-	private boolean isNCBIGenome;
 
 	/**
 	 * @param genomeID
@@ -112,16 +110,14 @@ public class CreateGenomeFile {
 	 * @param genomeID
 	 * @param fastaFiles
 	 * @param extension
-	 * @param isNCBIGenome
 	 * @throws Exception
 	 */
-	public CreateGenomeFile(String genomeID, List<File> fastaFiles, String extension, boolean isNCBIGenome) throws Exception {
+	public CreateGenomeFile(String genomeID, List<File> fastaFiles, String extension) throws Exception {
 		
 		this.today = CreateGenomeFile.setToday();
 		String path = FileUtils.getCurrentTempDirectory();
 		this.genomeID = genomeID;
 		this.tempPath = path;
-		this.isNCBIGenome = isNCBIGenome;
 		this.createGenomeFileFromFasta(fastaFiles, extension);
 	}
 
@@ -135,10 +131,6 @@ public class CreateGenomeFile {
 		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,this.tempPath,this.genomeID,this.today,extension)) {
 			
 			Map<String, ProteinSequence> sequences= new HashMap<String, ProteinSequence>();
-			
-			for(File fastFile : fastaFiles)
-				for(Entry<String, ProteinSequence> id : FastaReaderHelper.readFastaProteinSequence(fastFile).entrySet())
-					System.out.println(id.getKey()+"\t"+id.getValue().getOriginalHeader());
 			
 			for(File fastFile : fastaFiles)				
 				sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastFile));
@@ -203,15 +195,16 @@ public class CreateGenomeFile {
 	 */
 	private void buildFastFile(Map<String, String> locusTag, Map<String, ProteinSequence> sequences, String extension) throws IOException{
 		
-		FileWriter fstream = new FileWriter(this.tempPath+this.genomeID+extension);  
+		File myFile = new File(this.tempPath+this.genomeID+extension);
+		
+		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
 
 		for(String key:sequences.keySet()) {
 			
 			String fileKey = key;
 			//Temp solution for new NCBI FASTA Headers
-			if(this.isNCBIGenome())
-				fileKey = fileKey.split("\\s")[0];
+			fileKey = fileKey.split("\\s")[0];
 			
 			if(locusTag!=null && locusTag.containsKey(key) && locusTag.get(key)!=null)
 				out.write(">"+fileKey+"|"+locusTag.get(key)+"\n");
@@ -504,17 +497,4 @@ public class CreateGenomeFile {
 //		System.out.println(fetchStub.getLocusFromID(querySet,10).get("NP_207514.1"));
 //	}
 
-	/**
-	 * @return the isNCBIGenome
-	 */
-	public boolean isNCBIGenome() {
-		return isNCBIGenome;
-	}
-
-	/**
-	 * @param isNCBIGenome the isNCBIGenome to set
-	 */
-	public void setNCBIGenome(boolean isNCBIGenome) {
-		this.isNCBIGenome = isNCBIGenome;
-	}
 }

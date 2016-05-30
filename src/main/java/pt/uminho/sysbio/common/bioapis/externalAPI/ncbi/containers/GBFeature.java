@@ -13,7 +13,7 @@ public class GBFeature {
 	@Element(name="GBFeature_key", required=false)
 	public String featureKey;
 	
-	@ElementList(name="GBFeature_quals")
+	@ElementList(name="GBFeature_quals", required=false)
 	public List<GBQualifier> qualifiers = new ArrayList<> ();
 
 	/* (non-Javadoc)

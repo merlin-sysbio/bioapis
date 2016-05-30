@@ -25,7 +25,7 @@ public class GBSeq {
 	@Element(name="GBSeq_accession-version", required=false)
 	public String accessionVersion;
 	
-	@ElementList(name="GBSeq_other-seqids")
+	@ElementList(name="GBSeq_other-seqids", required=false)
 	public List<String> xReferences = new ArrayList<> ();
 	
 	@Element(name="GBSeq_organism", required=false)

@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
@@ -34,6 +36,7 @@ import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
  */
 public class EntrezFetch {
 
+	final static Logger logger = LoggerFactory.getLogger(EntrezFetch.class);
 	private EntrezService entrezService;
 
 	/**
@@ -119,7 +122,7 @@ public class EntrezFetch {
 				counter +=query.split(",").length;
 
 				double progress = counter/size;
-				System.out.println("NCBIAPI.getLocusFromID query "+progress*100+"%");
+				logger.debug("NCBIAPI.getLocusFromID query {}%",progress*100);
 
 				query = new String(query.getBytes(),"UTF-8");
 				GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, query, "xml");
@@ -130,6 +133,8 @@ public class EntrezFetch {
 
 					GBSeq gbSeq = gbSeqs.get(i);
 					String primary_accession = gbSeq.accessionVersion;
+					
+					logger.trace("gbSeq {}",gbSeq);
 
 					Map<String, String> features = getFeatures(gbSeq, "CDS");
 
@@ -139,7 +144,7 @@ public class EntrezFetch {
 						result.put(primary_accession, features.get("locus_tag"));
 						temp.add(primary_accession);
 					}
-
+					
 					if(!temp.contains(primary_accession) && existsLocusTags) {
 
 						UniProtEntry uni = UniProtAPI.getUniProtEntryFromXRef(primary_accession,0);
@@ -150,7 +155,7 @@ public class EntrezFetch {
 							String locus = g.get(0);
 							result.put(primary_accession, locus);
 
-							System.out.println("locus.equalsIgnoreCase(primary_accession) "+locus.equalsIgnoreCase(primary_accession));
+							logger.debug("locus.equalsIgnoreCase(primary_accession) {}",locus.equalsIgnoreCase(primary_accession));
 
 							if(locus.equalsIgnoreCase(primary_accession))
 								existsLocusTags = false;
@@ -165,27 +170,23 @@ public class EntrezFetch {
 			return result;
 		}
 		catch (Exception e) {
-
-			e.printStackTrace();
-
+			
 			if(queryResponseConcatenationSize>0) {
 
 				int ind = (queryResponseConcatenationSize/2);
 
-				if(ind<2) {
-
+				if(ind<2)
 					queryResponseConcatenationSize = 0;
-				}
-				else {
-
+				else
 					queryResponseConcatenationSize=queryResponseConcatenationSize/2;
-				}
-				System.out.println("new initalNumberOfRequests = "+queryResponseConcatenationSize);
+
+				logger.debug("getLocusFromID new initalNumberOfRequests = {}",queryResponseConcatenationSize);
 				return getLocusFromID(genes, queryResponseConcatenationSize);
 			}
 			else {
 
-				System.err.println("Get locus error!");
+				logger.error("Get locus error!");
+				logger.trace("Stack trace {}",e);
 				return null;
 			}
 		}
@@ -350,11 +351,12 @@ public class EntrezFetch {
 
 			if(queryResponseConcatenationSize>5) {
 
-				//System.out.println("Trial EFetchResult "+trialCounter);
-				//trialCounter++;
+				logger.debug("createSequencesMap new initalNumberOfRequests = {}",queryResponseConcatenationSize);
 				queryResponseConcatenationSize=queryResponseConcatenationSize/2;
 				return this.createSequencesMap(ids_list, queryResponseConcatenationSize);
 			}
+			
+			logger.trace("Stack trace {}",e);
 		}
 		return null;
 	}
@@ -365,8 +367,9 @@ public class EntrezFetch {
 	 * @return
 	 */
 	public Pair<Map<String, String>,Map<String, ProteinSequence>> getLocusAndSequencePairFromID(List<List<String>> ids_list, int queryResponseConcatenationSize, String sourceDB){
-		try
-		{	
+
+		try {
+
 			List<List<String>> queryList = new ArrayList<List<String>>();
 			List<String> links= new ArrayList<String>();
 			int index=0;
@@ -424,11 +427,12 @@ public class EntrezFetch {
 
 			if(queryResponseConcatenationSize>5) {
 
-				System.out.println("Reducing concatenation size to:\t"+queryResponseConcatenationSize);
-				//trialCounter++;
+				logger.debug("GetLocusAndSequencePairFromID Reducing query size to {} ids.",queryResponseConcatenationSize);
 				queryResponseConcatenationSize=queryResponseConcatenationSize/2;
 				return this.getLocusAndSequencePairFromID(ids_list, queryResponseConcatenationSize,sourceDB);
 			}
+			
+			logger.trace("Stack trace {}",e);
 		}
 		return null;
 	}
@@ -492,7 +496,6 @@ public class EntrezFetch {
 
 	/**
 	 * @param ncbiData
-	 * @param isNCBIGenome
 	 * @param cancel
 	 * @param resultsPairs
 	 * @param taxonomyIDs
@@ -501,18 +504,19 @@ public class EntrezFetch {
 	 * @return
 	 * @throws Exception
 	 */
-	public HomologuesData getNcbiData(HomologuesData ncbiData, boolean isNCBIGenome, AtomicBoolean cancel, List<Pair<String, String>> resultsPairs, 
+	public HomologuesData getNcbiData(HomologuesData ncbiData, AtomicBoolean cancel, List<Pair<String, String>> resultsPairs, 
 			Map<String, String> taxonomyIDs, boolean uniprotStatus, String taxonomyID) throws Exception {
 
+		ncbiData.setOrganismID(ncbiData.getOrganismTaxa()[0]);
 		List<String> resultList = new ArrayList<>(), accessionNumbers = new ArrayList<>();
 
 		for(int i = 0; i< resultsPairs.size(); i++)
-			resultList.add(resultsPairs.get(i).getB());
+			resultList.add(resultsPairs.get(i).getA());
 
 		List<List<String>> resultsListsList = ListUtilities.split(resultList, 99);
 
 		List<GBSeq> gbSeqs = new ArrayList<>();
-		
+
 		for(List<String> result : resultsListsList) {
 
 			if(!result.isEmpty()) {
@@ -522,9 +526,20 @@ public class EntrezFetch {
 			}
 		}
 
+		List<String> dummyList = new ArrayList<>();
+		for(int dummy = 0; dummy<gbSeqs.size(); dummy++) 
+			dummyList.add("");
+
+		ncbiData.setLocusIDs(dummyList);
+
 		for (int i = 0; i < gbSeqs.size(); i++) {
 
 			GBSeq gbSeq = gbSeqs.get(i);
+
+			boolean locusSet = false;
+
+			if(ncbiData.getLocusTag()!=null && !ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()))
+				locusSet = true;
 
 			if(cancel.get()) {
 
@@ -532,84 +547,50 @@ public class EntrezFetch {
 			}
 			else {
 
-				String primary_accession = gbSeq.accessionVersion;
-				boolean goTaxonomyID = false;
-				ncbiData.addDefinition(primary_accession, gbSeq.definition);
+				String primary_accession;
 
-				if(i==0 && isNCBIGenome) {
+				if (gbSeq.accessionVersion!=null) {		
 
-					//	ncbiData.addEValue(primary_accession,0.0);
-					//	ncbiData.addBits(primary_accession,-1);
-					ncbiData.addLocusID(primary_accession, i);
-				}
-				else {
+					primary_accession = gbSeq.accessionVersion; 
+					ncbiData.addDefinition(primary_accession, gbSeq.definition);
 
-					if(ncbiData.getBits(primary_accession)>=0) {
+					Map<String, String> features = EntrezFetch.getFeatures(gbSeq, "source");
 
+					if(primary_accession!=null && !accessionNumbers.contains(primary_accession))
+						accessionNumbers.add(primary_accession);
+
+					if(i==0 || ncbiData.getBits(primary_accession)>=0) {
+						
 						ncbiData.addEValue(primary_accession,ncbiData.getEvalue(primary_accession));
 						ncbiData.addBits(primary_accession,ncbiData.getBits(primary_accession));
 						ncbiData.addLocusID(primary_accession, i);
-					}
 
-				}
+						boolean goTaxonomyID = false;
+						boolean firstHit = false;
 
-				if(i==0) {
-
-					if(isNCBIGenome)
-						ncbiData.setOrganismID(gbSeq.organism);
-					else
-						ncbiData.setOrganismID(ncbiData.getOrganismTaxa()[0]);
-				}
-
-				Map<String, String> features = getFeatures(gbSeq, "source");
-
-				if(primary_accession!=null && !accessionNumbers.contains(primary_accession))
-					accessionNumbers.add(primary_accession);
-
-				for(int j=0;j<features.size();j++) {
-					
-					if((isNCBIGenome && j==0) || ncbiData.getBits(primary_accession)>=0) {
-
-						LinkedList<String> ecn = new LinkedList<String>();
-						
 						if(features.containsKey("db_xref") && features.get("db_xref").startsWith("taxon"))	{
-							
+
 							String taxID = features.get("db_xref").replace("taxon:", "");
 							taxonomyIDs.put(primary_accession, features.get("db_xref").replace("taxon:", ""));
-							
+
 							if(taxonomyID.equalsIgnoreCase(taxID))
 								goTaxonomyID = true;
 						}
-						
-						if(features.containsKey("chromosome")) {
 
-							if(isNCBIGenome) {
+						if(!goTaxonomyID && i==0 && ncbiData.getBits(primary_accession)<0) {
 
-								if(i==0)
-									ncbiData.setChromosome(features.get("chromosome"));								
-
-								if(i==1 && ncbiData.getChromosome()==null)
-									ncbiData.setChromosome(features.get("chromosome"));
-							}
+							goTaxonomyID = true;
+							firstHit = true;
 						}
 
-						if(features.containsKey("organelle")) {
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
 
-							if(i==0) {
-
-								if(isNCBIGenome)
-									ncbiData.setOrganelle(features.get("organelle"));
-							}
-							else {
-
-								ncbiData.addOganelles(primary_accession, features.get("organelle"));
-							}
-						}
+						LinkedList<String> ecn = new LinkedList<String>();
 
 						if(features.containsKey("EC_number"))
 							ecn.add(features.get("EC_number"));
 
-						///////////////////////////////////////////////////////////////////////
 						features = getFeatures(gbSeq, "Protein");
 
 						if(features.containsKey("product"))
@@ -624,59 +605,87 @@ public class EntrezFetch {
 						if(features.containsKey("note"))
 							ncbiData.setLocus_protein_note(features.get("note"));
 
-						/////////////////////////////////////////////////////////////////////
-						features = getFeatures(gbSeq, "CDS");
-						
-						if(features.containsKey("locus_tag")) {
-							
-							if(i==0) {
+						if(!ecn.isEmpty()) {
 
-								if(isNCBIGenome)
-									ncbiData.setLocusTag(features.get("locus_tag"));
-							}
-							else {
-
-								ncbiData.addBlastLocusTags(primary_accession, features.get("locus_tag"));
-								
-								if(goTaxonomyID &&
-										ncbiData.getEvalue(primary_accession)<1e-30 &&
-										ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()))
-									ncbiData.setLocusTag(features.get("locus_tag"));
-							}
+							String[] ecnb = new String[ecn.size()];
+							for(int e=0;e<ecn.size();e++){ecnb[e]=ecn.get(e);}
+							ncbiData.addECnumbers(primary_accession, ecnb);
 						}
+
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
+
+						features = getFeatures(gbSeq, "CDS");
+
+						if(features.containsKey("locus_tag")) {
+
+							if(goTaxonomyID && (i==0 || !locusSet)) {
+
+								firstHit = true;
+								locusSet = true;
+								ncbiData.setLocusTag(features.get("locus_tag"));
+							}	
+							ncbiData.addBlastLocusTags(primary_accession, features.get("locus_tag"));
+						}
+
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
 
 						if(features.containsKey("coded_by")) {
 
-							if(i==0) {
+							if(goTaxonomyID) {
 
-								if(isNCBIGenome)
-									ncbiData.setSequence_code(features.get("coded_by").split(":")[1]);
-							}
-							else {
+								if(!locusSet && ncbiData.getSequence_code().equalsIgnoreCase(features.get("coded_by").split(":")[1])) {
 
-								if(goTaxonomyID &&
-										ncbiData.getEvalue(primary_accession)<1e-30 &&
-										ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()) && 
-										ncbiData.getSequence_code().equalsIgnoreCase(features.get("coded_by").split(":")[1]))
+									firstHit = true;
+									locusSet = true;
 									ncbiData.setLocusTag(ncbiData.getBlast_locus_tag().get(primary_accession));
+								}
 							}
+
+							////////////////////////////////////////////////////////////////////////////////////
+							////////////////////////////////////////////////////////////////////////////////////
+
+							if(features.containsKey("note") && goTaxonomyID && !features.get("note").contains(""))
+								ncbiData.setLocus_gene_note(features.get("note") );
+
+						}
+						
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
+
+						if(i==0 && ncbiData.getLocusTag() == null && ncbiData.getUniprotLocusTag()!=null) {
+							
+							ncbiData.setLocusTag(ncbiData.getUniprotLocusTag());
+							locusSet=true;
+							firstHit = true;
 						}
 
-						
-						if(features.containsKey("note") && i==0 && !features.get("note").contains(""))
-							ncbiData.setLocus_gene_note(features.get("note") );
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
 
-						
-						if(goTaxonomyID &&
-								ncbiData.getEvalue(primary_accession)<1e-30 &&
-								ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()) && 
-								isNCBIGenome) //&& locus_gene_note==null && locus_protein_note==null) {
-							ncbiData.setLocusTag(ncbiData.getBlast_locus_tag().get(primary_accession));
+						if(features.containsKey("organelle")) {
 
-						
+							if(goTaxonomyID && firstHit && locusSet)
+								ncbiData.setOrganelle(features.get("organelle"));
+							else
+								ncbiData.addOganelles(primary_accession, features.get("organelle"));
+						}
+
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
+
+						if(features.containsKey("chromosome")) {
+
+							if(goTaxonomyID && firstHit && locusSet) 
+								ncbiData.setChromosome(features.get("chromosome"));
+						}
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
+
 						if(features.containsKey("gene")) {
 
-							if(i==0 && isNCBIGenome) {
+							if(goTaxonomyID && firstHit && locusSet) {
 
 								String tempGene= features.get("gene") ;
 
@@ -691,7 +700,7 @@ public class EntrezFetch {
 							}
 						}
 
-						if(i==1 && (ncbiData.getGene()==null || ncbiData.getGene().isEmpty()) && isNCBIGenome) {
+						if(goTaxonomyID && firstHit && locusSet && (ncbiData.getGene()==null || ncbiData.getGene().isEmpty())) {
 
 							String tempGene=ncbiData.getGenes().get(primary_accession);
 
@@ -700,6 +709,9 @@ public class EntrezFetch {
 							else
 								ncbiData.setGene("");
 						}
+
+						////////////////////////////////////////////////////////////////////////////////////
+						////////////////////////////////////////////////////////////////////////////////////
 
 						if(features.containsKey("db_xref")) {
 
@@ -717,35 +729,11 @@ public class EntrezFetch {
 								accessionNumbers.remove(primary_accession);
 							}	
 						}
-						if(!ecn.isEmpty()) {
-
-							String[] ecnb = new String[ecn.size()];
-							for(int e=0;e<ecn.size();e++){ecnb[e]=ecn.get(e);}
-							ncbiData.addECnumbers(primary_accession, ecnb);
-						}
-					}
-					
-					//System.out.println("------------------------------------------");
-
-					if(i==0 && ncbiData.getLocusTag() == null) { 
-
-						//					if(uniProtReference == null) {
-						//
-						//						UniProtEntry uniProtEntry = UniProtAPI.getEntry(primary_accession, 0);
-						//
-						//						if(uniProtEntry!= null && uniProtEntry.getGenes().size()>0 && uniProtEntry.getGenes().get(0).getOrderedLocusNames().size()>0) {
-						//
-						//							ncbiData.setLocus_tag(uniProtEntry.getGenes().get(0).getOrderedLocusNames().get(0).getValue());
-						//							ncbiData.addUniprotStatus(primary_accession, Boolean.valueOf(UniProtAPI.isStarred(uniProtEntry)));
-						//						}					
-						//					}
-						if(ncbiData.getUniprotLocusTag()!=null)
-							ncbiData.setLocusTag(ncbiData.getUniprotLocusTag());
 					}
 				}
 			}
 		}
-		
+
 		if(uniprotStatus && accessionNumbers.size()>0 && !cancel.get()) {
 
 			Map<String, List<UniProtEntry>> uniProtEntries = UniProtAPI.getUniprotEntriesFromRefSeq(accessionNumbers, cancel,0);
@@ -761,10 +749,17 @@ public class EntrezFetch {
 						if(ncbiData.getUniprotStatus().containsKey(primary_accession) && ncbiData.getUniprotStatus().get(primary_accession)) {
 
 							//System.out.println("Exists entry for "+primary_accession+". UniProtEntries size "+uniProtEntries.size());
-						}
-						else
-							ncbiData.addUniprotStatus(primary_accession, UniProtAPI.isStarred(uniProtEntry));
-					} }
+						} else {
+
+							try {
+
+								ncbiData.addUniprotStatus(primary_accession, UniProtAPI.isStarred(uniProtEntry));
+							} catch (Exception e) {
+								//e.printStackTrace();
+							}
+						} 
+					}
+				}
 			}
 		}
 		return ncbiData;
@@ -780,10 +775,13 @@ public class EntrezFetch {
 
 		try {
 
-			GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, result.toString().substring(1, result.toString().length()-2), "xml");
+			String query = result.toString().substring(1, result.toString().length()-2);
+			GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, query, "xml");
 			return gbSet;
 		}
 		catch (Exception e)  {
+
+			logger.debug("getEntries error for: {}.", result);
 
 			if(errorCount<20) {
 
@@ -791,267 +789,11 @@ public class EntrezFetch {
 				errorCount+=1;
 				return this.getEntries(result, errorCount);
 			}
-			else
-				throw new Exception();
-		}
-	}
-
-
-	public HomologuesData getNcbiData(HomologuesData ncbiData, boolean isNCBIGenome, AtomicBoolean cancel, List<Pair<String, String>> resultsPairs, 
-			Map<String, String> taxonomyIDs, boolean uniprotStatus) throws Exception {
-
-		List<String> resultList = new ArrayList<>(), accessionNumbers = new ArrayList<>();
-
-		for(int i = 0; i< resultsPairs.size(); i++)
-			resultList.add(resultsPairs.get(i).getB());
-
-		List<List<String>> resultsListsList = ListUtilities.split(resultList, 99);
-
-		List<GBSeq> gbSeqs = new ArrayList<>();
-		
-		for(List<String> result : resultsListsList) {
-
-			if(!result.isEmpty()) {
-
-				GBSet gbSet = this.getEntries(result, 0);
-				gbSeqs.addAll(gbSeqs.size(), gbSet.gBSeq);
-			}
-		}
-
-		for (int i = 0; i < gbSeqs.size(); i++) {
-
-			GBSeq gbSeq = gbSeqs.get(i);
-
-			if(cancel.get()) {
-
-				i=gbSeqs.size();
-			}
 			else {
-
-				String primary_accession = gbSeq.accessionVersion;
-				ncbiData.addDefinition(primary_accession, gbSeq.definition);
-
-				if(i==0 && isNCBIGenome) {
-
-					//	ncbiData.addEValue(primary_accession,0.0);
-					//	ncbiData.addBits(primary_accession,-1);
-					ncbiData.addLocusID(primary_accession, i);
-				}
-				else {
-
-					if(ncbiData.getBits(primary_accession)>=0) {
-
-						ncbiData.addEValue(primary_accession,ncbiData.getEvalue(primary_accession));
-						ncbiData.addBits(primary_accession,ncbiData.getBits(primary_accession));
-						ncbiData.addLocusID(primary_accession, i);
-					}
-
-				}
-
-				if(i==0) {
-
-					if(isNCBIGenome)
-						ncbiData.setOrganismID(gbSeq.organism);
-					else
-						ncbiData.setOrganismID(ncbiData.getOrganismTaxa()[0]);
-				}
-
-				Map<String, String> features = getFeatures(gbSeq, "source");
-
-				if(primary_accession!=null && !accessionNumbers.contains(primary_accession))
-					accessionNumbers.add(primary_accession);
-
-				for(int j=0;j<features.size();j++) {
-
-					if((isNCBIGenome && j==0) || ncbiData.getBits(primary_accession)>=0) {
-
-						LinkedList<String> ecn = new LinkedList<String>();
-
-						if(features.containsKey("db_xref") && features.get("db_xref").startsWith("taxon"))	{
-							
-							taxonomyIDs.put(primary_accession, features.get("db_xref").replace("taxon:", ""));
-						}
-
-						if(features.containsKey("chromosome")) {
-
-							if(isNCBIGenome) {
-
-								if(i==0)
-									ncbiData.setChromosome(features.get("chromosome"));								
-
-								if(i==1 && ncbiData.getChromosome()==null)
-									ncbiData.setChromosome(features.get("chromosome"));
-							}
-						}
-
-						if(features.containsKey("organelle")) {
-
-							if(i==0) {
-
-								if(isNCBIGenome)
-									ncbiData.setOrganelle(features.get("organelle"));
-							}
-							else {
-
-								ncbiData.addOganelles(primary_accession, features.get("organelle"));
-							}
-						}
-
-						if(features.containsKey("EC_number"))
-							ecn.add(features.get("EC_number"));
-
-						///////////////////////////////////////////////////////////////////////
-						features = getFeatures(gbSeq, "Protein");
-
-						if(features.containsKey("product"))
-							ncbiData.addProduct(primary_accession, features.get("product"));
-
-						if(features.containsKey("calculated_mol_wt"))
-							ncbiData.addCalculated_mol_wt(primary_accession,features.get("calculated_mol_wt"));
-
-						if(features.containsKey("EC_number"))
-							ecn.add(features.get("EC_number"));
-
-						if(features.containsKey("note"))
-							ncbiData.setLocus_protein_note(features.get("note"));
-
-						/////////////////////////////////////////////////////////////////////
-						features = getFeatures(gbSeq, "CDS");
-
-						if(features.containsKey("locus_tag")) {
-
-							if(i==0) {
-
-								if(isNCBIGenome)
-									ncbiData.setLocusTag(features.get("locus_tag"));
-							}
-							else {
-
-								ncbiData.addBlastLocusTags(primary_accession, features.get("locus_tag"));
-							}
-						}
-
-						if(features.containsKey("coded_by")) {
-
-							if(i==0) {
-
-								if(isNCBIGenome)
-									ncbiData.setSequence_code(features.get("coded_by").split(":")[1]);
-							}
-							else {
-
-								if(i==1 && 
-										ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()) && 
-										ncbiData.getSequence_code().equalsIgnoreCase(features.get("coded_by").split(":")[1]))
-									ncbiData.setLocusTag(ncbiData.getBlast_locus_tag().get(primary_accession));
-							}
-						}
-
-						
-						if(features.containsKey("note") && i==0 && !features.get("note").contains(""))
-							ncbiData.setLocus_gene_note(features.get("note") );
-
-						
-						if(i==1 &&
-								ncbiData.getLocusTag().equalsIgnoreCase(ncbiData.getQuery()) && 
-								isNCBIGenome) //&& locus_gene_note==null && locus_protein_note==null) {
-							ncbiData.setLocusTag(ncbiData.getBlast_locus_tag().get(primary_accession));
-
-						
-						if(features.containsKey("gene")) {
-
-							if(i==0 && isNCBIGenome) {
-
-								String tempGene= features.get("gene") ;
-
-								if(tempGene!=null)
-									ncbiData.setGene(tempGene);
-								else
-									ncbiData.setGene("");
-							}
-							else {
-
-								ncbiData.addGenes(primary_accession, features.get("gene") );
-							}
-						}
-
-						if(i==1 && (ncbiData.getGene()==null || ncbiData.getGene().isEmpty()) && isNCBIGenome) {
-
-							String tempGene=ncbiData.getGenes().get(primary_accession);
-
-							if(tempGene!=null)
-								ncbiData.setGene(tempGene);
-							else
-								ncbiData.setGene("");
-						}
-
-						if(features.containsKey("db_xref")) {
-
-							if(features.get("db_xref").startsWith("UniProtKB/Swiss-Prot")) {
-
-								//uniProtReference = value.replace("UniProtKB/Swiss-Prot:", "");
-								ncbiData.addUniprotStatus(primary_accession,true);
-								accessionNumbers.remove(primary_accession);
-							}
-
-							if(features.get("db_xref").startsWith("UniProtKB/TrEMBL")) {
-
-								//uniProtReference = value.replace("UniProtKB/TrEMBL:", "");
-								ncbiData.addUniprotStatus(primary_accession,false);
-								accessionNumbers.remove(primary_accession);
-							}	
-						}
-						if(!ecn.isEmpty()) {
-
-							String[] ecnb = new String[ecn.size()];
-							for(int e=0;e<ecn.size();e++){ecnb[e]=ecn.get(e);}
-							ncbiData.addECnumbers(primary_accession, ecnb);
-						}
-					}
-					//System.out.println("------------------------------------------");
-
-					if(i==0 && ncbiData.getLocusTag() == null) { 
-
-						//					if(uniProtReference == null) {
-						//
-						//						UniProtEntry uniProtEntry = UniProtAPI.getEntry(primary_accession, 0);
-						//
-						//						if(uniProtEntry!= null && uniProtEntry.getGenes().size()>0 && uniProtEntry.getGenes().get(0).getOrderedLocusNames().size()>0) {
-						//
-						//							ncbiData.setLocus_tag(uniProtEntry.getGenes().get(0).getOrderedLocusNames().get(0).getValue());
-						//							ncbiData.addUniprotStatus(primary_accession, Boolean.valueOf(UniProtAPI.isStarred(uniProtEntry)));
-						//						}					
-						//					}
-						if(ncbiData.getUniprotLocusTag()!=null)
-							ncbiData.setLocusTag(ncbiData.getUniprotLocusTag());
-					}
-				}
+				
+				logger.trace("Stack trace {}",e);
+				throw new Exception();
 			}
 		}
-
-		if(uniprotStatus && accessionNumbers.size()>0 && !cancel.get()) {
-
-			Map<String, List<UniProtEntry>> uniProtEntries = UniProtAPI.getUniprotEntriesFromRefSeq(accessionNumbers, cancel,0);
-
-			for(String accessionsNumber:uniProtEntries.keySet()) {
-
-				if(!cancel.get()) {
-
-					for(UniProtEntry uniProtEntry : uniProtEntries.get(accessionsNumber)) {
-
-						String primary_accession = accessionsNumber;
-
-						if(ncbiData.getUniprotStatus().containsKey(primary_accession) && ncbiData.getUniprotStatus().get(primary_accession)) {
-
-							//System.out.println("Exists entry for "+primary_accession+". UniProtEntries size "+uniProtEntries.size());
-						}
-						else
-							ncbiData.addUniprotStatus(primary_accession, UniProtAPI.isStarred(uniProtEntry));
-					} }
-			}
-		}
-		return ncbiData;
 	}
-
-
 }

@@ -87,7 +87,7 @@ public class EntrezSearch {
 	public List<Pair<String, String>> getDatabaseIDs(NcbiDatabases database, List<String> ids, int queryResponseConcatenationSize) throws Exception {
 
 		try {
-
+			
 			List<Pair<String, String>> result = new ArrayList<>();
 
 			List<String> queryList = new ArrayList<String>();

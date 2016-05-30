@@ -30,8 +30,7 @@ import uk.ac.ebi.uniprot.dataservice.query.Query;
 
 public class TestBioapis{
 
-	
-	@Test
+	//@Test
 	public void testeEspecial() throws IOException {
 		
 		//System.out.println(UniProtAPI.getEntryFromUniProtID("P40886", 0).getUniProtId());
@@ -114,13 +113,15 @@ public class TestBioapis{
 	//@Test
 	public void getUniprotData() throws Exception{
 
+		String taxID = "";
+		
 		HomologuesData h = new HomologuesData();
 		h.setRefSeqGI("15645788");
 
 		List<Pair<String, String>> set = new ArrayList<>();
 		Pair<String,String> p = new Pair<String,String>("15645788", "15645788");
 		set.add(0, p);
-		NcbiAPI.getNcbiData(h, set, 1, true, new AtomicBoolean(false), true);
+		NcbiAPI.getNcbiData(h, set, 0, new AtomicBoolean(false), true, taxID);
 		
 		System.out.println(NcbiAPI.getNcbiGI("NP_207965.1"));
 	}
@@ -208,16 +209,17 @@ public class TestBioapis{
 		}
 	}
 
-	////@Test
+	@Test
 	public void  getEntryTest() {
 
-		String query = "AGI21890.1";
+		String query = "WP_002885585.1";
 
 		EntryData entryData = UniProtAPI.getEntryData(query);
-		System.out.println(entryData.getEcNumbers());
-		System.out.println(entryData.getUniprotReviewStatus());
-		System.out.println(entryData.getEntryID());
-		System.out.println(entryData.getLocusTag());
+		System.out.println(entryData);
+//		System.out.println(entryData.getEcNumbers());
+//		System.out.println(entryData.getUniprotReviewStatus());
+//		System.out.println(entryData.getEntryID());
+//		System.out.println(entryData.getLocusTag());
 	}
 
 
