@@ -412,24 +412,15 @@ public class NcbiAPI {
 
 				String unparsedText = st.nextToken();
 				
-				if(unparsedText.contains("Number of")) {
-					
-					String[] array = text.split(":");
-					
-					int number_of_helices = Integer.parseInt(array[array.length-1]);
+				if(unparsedText.equals("Number")) {
+
+					st = new StringTokenizer(text,":");
+					unparsedText = st.nextToken();
+					unparsedText = st.nextToken();
+					int number_of_helices = Integer.parseInt(unparsedText.trim());
 					if(number_of_helices>=minimum_number_of_helices)
 						tmhmmScore.put(id,number_of_helices);
 				}
-				
-				
-//				if(st.nextToken().equals("Number")) {
-//
-//					st = new StringTokenizer(text,":");
-//					st.nextToken();
-//					int number_of_helices = Integer.parseInt(st.nextToken().trim());
-//					if(number_of_helices>=minimum_number_of_helices)
-//						tmhmmScore.put(id,number_of_helices);
-//				}
 			}
 		}
 		reader.close();
