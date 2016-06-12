@@ -402,6 +402,8 @@ public class NcbiAPI {
 		reader = new BufferedReader(new FileReader(file));
 		String text = null;
 
+		System.out.println(file.getAbsolutePath());
+		
 		while ((text = reader.readLine()) != null) {
 
 			if(text.startsWith("#")) {
@@ -412,11 +414,16 @@ public class NcbiAPI {
 
 				String unparsedText = st.nextToken();
 				
+				System.out.println(unparsedText);
+				
 				if(unparsedText.equals("Number")) {
 
 					st = new StringTokenizer(text,":");
 					unparsedText = st.nextToken();
 					unparsedText = st.nextToken();
+				
+					System.out.println(unparsedText);
+					
 					int number_of_helices = Integer.parseInt(unparsedText.trim());
 					if(number_of_helices>=minimum_number_of_helices)
 						tmhmmScore.put(id,number_of_helices);
