@@ -18,6 +18,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.axis2.AxisFault;
 import org.biojava.nbio.core.sequence.ProteinSequence;
@@ -402,32 +404,33 @@ public class NcbiAPI {
 		reader = new BufferedReader(new FileReader(file));
 		String text = null;
 
-		System.out.println(file.getAbsolutePath());
-		
 		while ((text = reader.readLine()) != null) {
 
-			if(text.startsWith("#")) {
-
-				text=text.replace("# ", "");
-				StringTokenizer st = new StringTokenizer(text," ");
-				String id = st.nextToken();
-
-				String unparsedText = st.nextToken();
+			if(text.contains("#")) {
+//				
+//
+//				text=text.replace("# ", "");
+//				StringTokenizer st = new StringTokenizer(text," ");
+//				String id = st.nextToken();
+//
+//				String unparsedText = st.nextToken();
+//				
+//				if(unparsedText.equals("Number")) {
+//
+//					st = new StringTokenizer(text,":");
+//					unparsedText = st.nextToken();
+//					unparsedText = st.nextToken();
+//				
+//					int number_of_helices = Integer.parseInt(unparsedText.trim());
+//					if(number_of_helices>=minimum_number_of_helices)
+//						tmhmmScore.put(id,number_of_helices);
+//				}
 				
-				System.out.println(unparsedText);
-				
-				if(unparsedText.equals("Number")) {
+				Pattern p = Pattern.compile(".*#\\s+(.+)(\\|.*)(\\s+Number of predicted TMHs.*\\s+)(\\d+)");
+				Matcher m = p.matcher(text);
 
-					st = new StringTokenizer(text,":");
-					unparsedText = st.nextToken();
-					unparsedText = st.nextToken();
-				
-					System.out.println(unparsedText);
-					
-					int number_of_helices = Integer.parseInt(unparsedText.trim());
-					if(number_of_helices>=minimum_number_of_helices)
-						tmhmmScore.put(id,number_of_helices);
-				}
+				if (m.find())					
+					tmhmmScore.put(m.group(1),Integer.valueOf(m.group(4)));
 			}
 		}
 		reader.close();

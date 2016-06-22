@@ -178,7 +178,7 @@ public class KeggAPI {
 		catch (Exception e) {
 
 			if(trial<=5) {
-				
+
 				try {
 
 					int xMilliseconds = trial*60000;
@@ -189,12 +189,12 @@ public class KeggAPI {
 
 					ie.printStackTrace();
 				}
-				
+
 				trial = trial + 1;
 				return KeggAPI.findGenes(query,trial);
 			}
 			else {
-				
+
 				throw e;
 			}
 		}
@@ -845,24 +845,24 @@ public class KeggAPI {
 	 */
 	static public Set<String> getECnumbersByOrthology(String ortholog) throws Exception {
 
-		Map<String, List<String>> map = parseFullEntry( KeggRestful.getDBEntry(KeggDB.ORTHOLOGY, ortholog));
-
-		String[] brite_list = map.get("BRITE").toArray(new String[0]);
-
 		Set<String> brite_set = new TreeSet<String>();
 
-		Pattern pattern = Pattern.compile("(\\d{1}(\\.[\\d+,-]){3})");
+		Map<String, List<String>> map = parseFullEntry( KeggRestful.getDBEntry(KeggDB.ORTHOLOGY, ortholog));
 
-		for (String brite : brite_list) {
+		if(map.containsKey("BRITE")) {
+			
+			String[] brite_list = map.get("BRITE").toArray(new String[0]);
 
-			Matcher matcher = pattern.matcher(brite);
+			Pattern pattern = Pattern.compile("(\\d{1}(\\.[\\d+,-]){3})");
 
-			if (matcher.find()) {
+			for (String brite : brite_list) {
 
-				brite_set.add(matcher.group());
+				Matcher matcher = pattern.matcher(brite);
+
+				if (matcher.find())
+					brite_set.add(matcher.group());
 			}
 		}
-
 		return brite_set;
 	}
 
