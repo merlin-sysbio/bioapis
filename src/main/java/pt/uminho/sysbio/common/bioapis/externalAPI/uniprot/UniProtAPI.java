@@ -1320,14 +1320,47 @@ public class UniProtAPI {
 	 * @param i
 	 * @return
 	 */
-	public static String[] newTaxID(String organismmName, int i) {
+//	public static String[] newTaxID(String organismmId, int i) {
+//
+//		UniProtAPI.getInstance();
+//
+//		try {
+//			String[] result = new String[2];
+//
+//			Query query = UniProtQueryBuilder.organismName(organismmId);
+//			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
+//
+//			while (entries.hasNext()) {
+//
+//				UniProtEntry entry = entries.next();
+//				result[0] = entry.getOrganism().getScientificName().getValue();
+//				result[1] = entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", "");
+//
+//				return result;
+//			}
+//
+//		} catch (ServiceException e) {
+//
+//			logger.debug("newTaxID ServiceException trial {}.", i);
+//			i++;
+//			if(i<10)
+//				return newTaxID(organismmId, i);
+//			
+//			logger.error("newTaxID ServiceException error {}.", organismmId);
+//			logger.trace("StackTrace {}",e);
+//		}
+//
+//		return null;
+//	} 
+	
+	public static String[] newTaxID(int organismmId, int i) {
 
 		UniProtAPI.getInstance();
 
 		try {
 			String[] result = new String[2];
 
-			Query query = UniProtQueryBuilder.organismName(organismmName);
+			Query query = UniProtQueryBuilder.taxonID(organismmId);
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			while (entries.hasNext()) {
@@ -1344,9 +1377,9 @@ public class UniProtAPI {
 			logger.debug("newTaxID ServiceException trial {}.", i);
 			i++;
 			if(i<10)
-				return newTaxID(organismmName, i);
+				return newTaxID(organismmId, i);
 			
-			logger.error("newTaxID ServiceException error {}.", organismmName);
+			logger.error("newTaxID ServiceException error {}.", organismmId);
 			logger.trace("StackTrace {}",e);
 		}
 

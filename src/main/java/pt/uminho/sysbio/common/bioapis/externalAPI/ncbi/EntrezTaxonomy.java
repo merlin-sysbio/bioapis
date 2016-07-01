@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.axis2.AxisFault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.Taxon;
 
@@ -14,7 +18,8 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.Taxon;
 public class EntrezTaxonomy {
 
 	private EntrezService entrezService;
-
+	private static final Logger logger = LoggerFactory.getLogger(EntrezTaxonomy.class);
+	
 	/**
 	 * @param numConnections
 	 * @throws AxisFault
@@ -174,6 +179,7 @@ public class EntrezTaxonomy {
 		catch(Exception e) {
 
 			//e.printStackTrace();
+			logger.error("taxonomy id {}",taxonomy_ids);
 			throw e; 
 		}
 	}

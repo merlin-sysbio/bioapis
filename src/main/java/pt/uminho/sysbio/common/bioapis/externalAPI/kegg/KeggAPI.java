@@ -17,6 +17,11 @@ import java.util.regex.Pattern;
 
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.collection.CollectionUtils;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
@@ -25,11 +30,9 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggOrtho
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggReactionInformation;
 import uk.ac.ebi.uniprot.dataservice.client.exception.ServiceException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-
 public class KeggAPI {
 
+	private static final Logger logger = LoggerFactory.getLogger(KeggAPI.class);
 	private static final String ALL_PATHWAYS = "allPathways";
 	static public Client client = Client.create();
 	private static JCS cache;
@@ -290,43 +293,50 @@ public class KeggAPI {
 	 */
 
 	public static Set<String> getReactionsByEnzymes(String ecNumber) throws Exception { 
-		KeggECNumberEntry entry = (KeggECNumberEntry) cache.get(ecNumber);
+		try {
+			KeggECNumberEntry entry = (KeggECNumberEntry) cache.get(ecNumber);
 
-		if(entry == null) {
+			if(entry == null) {
 
-			String raw = KeggRestful.getDBEntry("ec", ecNumber);
-			Map<String, List<String>> data = parseFullEntry(raw);
-			List<String> names = data.get("NAME");
-			List<String> klass = data.get("CLASS");
-			String sysname = null;
+				String raw = KeggRestful.getDBEntry("ec", ecNumber);
+				Map<String, List<String>> data = parseFullEntry(raw);
+				List<String> names = data.get("NAME");
+				List<String> klass = data.get("CLASS");
+				String sysname = null;
 
-			if(data.containsKey("SYSNAME")) {
+				if(data.containsKey("SYSNAME")) {
 
-				List<String> sysnames = data.get("SYSNAME");
-				sysname = sysnames.size() > 0 ? sysnames.get(0) : "";
+					List<String> sysnames = data.get("SYSNAME");
+					sysname = sysnames.size() > 0 ? sysnames.get(0) : "";
+				}
+				List<String> reactions = data.get("ALL_REAC");
+				String rawReactions = CollectionUtils.join(reactions, " ");
+				Set<String> reactionSet = new HashSet<String>();
+				Matcher m = Pattern.compile("R\\d{5}").matcher(rawReactions);
+				while (m.find())
+					reactionSet.add(m.group());
+
+				entry = new KeggECNumberEntry(ecNumber, names, klass, sysname, reactionSet);
+
+				try {
+					cache.put(ecNumber, entry);
+
+
+				}
+				catch (CacheException e) {
+					if(debug )
+						e.printStackTrace();
+				}
+
 			}
-			List<String> reactions = data.get("ALL_REAC");
-			String rawReactions = CollectionUtils.join(reactions, " ");
-			Set<String> reactionSet = new HashSet<String>();
-			Matcher m = Pattern.compile("R\\d{5}").matcher(rawReactions);
-			while (m.find())
-				reactionSet.add(m.group());
 
-			entry = new KeggECNumberEntry(ecNumber, names, klass, sysname, reactionSet);
-
-			try {
-				cache.put(ecNumber, entry);
-
-
-			}
-			catch (CacheException e) {
-				if(debug )
-					e.printStackTrace();
-			}
-
+			return entry.getReactionIds();
+			
+		} catch (Exception e) {
+			
+			logger.error("error {}",e);
+			throw e;
 		}
-
-		return entry.getReactionIds();
 	}
 
 
@@ -526,7 +536,7 @@ public class KeggAPI {
 
 		return toReturn;
 	}
-
+	
 	public static List<String> splitLinesGetOrthologues(List<String> data){
 		if(data == null)
 			return null;
@@ -631,7 +641,6 @@ public class KeggAPI {
 			try {
 				cache.put(query, result);
 			} catch (CacheException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
