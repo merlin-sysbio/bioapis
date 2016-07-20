@@ -426,9 +426,9 @@ public class NcbiAPI {
 //						tmhmmScore.put(id,number_of_helices);
 //				}
 				
-				Pattern p = Pattern.compile(".*#\\s+(.+)(\\|.*)(\\s+Number of predicted TMHs.*\\s+)(\\d+)");
+				Pattern p = Pattern.compile(".*#\\s+(.+)(\\|*.*)(\\s+Number of predicted TMHs.*\\s+)(\\d+)");
 				Matcher m = p.matcher(text);
-
+				
 				if (m.find())					
 					tmhmmScore.put(m.group(1),Integer.valueOf(m.group(4)));
 			}
