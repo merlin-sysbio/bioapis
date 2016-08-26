@@ -26,7 +26,7 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
-import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class CreateGenomeFile {

@@ -3,7 +3,7 @@ package pt.uminho.sysbio.common.bioapis.externalAPI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.chebi.ChebiAPIInterface;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.chebi.ChebiAPIInterface;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggReactionInformation;
 

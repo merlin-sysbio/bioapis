@@ -21,11 +21,11 @@ import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBFeature;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBQualifier;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSeq;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
-import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.UniProtAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 

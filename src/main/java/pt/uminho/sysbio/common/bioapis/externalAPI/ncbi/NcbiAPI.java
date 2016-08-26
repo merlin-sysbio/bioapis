@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
-import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.MyNcbiTaxon;
-import pt.uminho.sysbio.common.bioapis.externalAPI.uniprot.TaxonomyContainer;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.MyNcbiTaxon;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.TaxonomyContainer;
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 
 /**

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package pt.uminho.sysbio.common.bioapis.externalAPI.uniprot;
+package pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot;
 
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 

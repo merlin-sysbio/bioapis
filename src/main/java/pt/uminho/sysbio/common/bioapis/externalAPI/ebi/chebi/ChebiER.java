@@ -1,4 +1,4 @@
-package pt.uminho.sysbio.common.bioapis.externalAPI.chebi;
+package pt.uminho.sysbio.common.bioapis.externalAPI.ebi.chebi;
 
 import java.util.List;
 import java.util.Map;
