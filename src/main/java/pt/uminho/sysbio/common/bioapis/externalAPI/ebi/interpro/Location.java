@@ -1,14 +1,18 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro;
 
+/**
+ * @author João Sequeira
+ *
+ */
 public class Location {
 	
 	private int start;
 	private int end;
-	private Float score;
+	private float score;
 	private int hmmstart;
 	private int hmmend;
 	private int hmmlength;
-	private Float evalue;
+	private float evalue;
 	private int envstart;
 	private int envend;
 	/**
@@ -38,13 +42,13 @@ public class Location {
 	/**
 	 * @return the score
 	 */
-	public Float getScore() {
+	public float getScore() {
 		return score;
 	}
 	/**
 	 * @param score the score to set
 	 */
-	public void setScore(Float score) {
+	public void setScore(float score) {
 		this.score = score;
 	}
 	/**
@@ -86,13 +90,13 @@ public class Location {
 	/**
 	 * @return the evalue
 	 */
-	public Float getEvalue() {
+	public float getEvalue() {
 		return evalue;
 	}
 	/**
 	 * @param evalue the evalue to set
 	 */
-	public void setEvalue(Float evalue) {
+	public void setEvalue(float evalue) {
 		this.evalue = evalue;
 	}
 	/**

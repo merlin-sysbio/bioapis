@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.http.client.ClientProtocolException;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
@@ -29,7 +30,9 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.phobius.PhobiusParser;
 public class EbiTests {
 
 	final static Logger logger = LoggerFactory.getLogger(EbiTests.class);
-	final static String path = "C:/Users/Oscar Dias/Desktop/xde/genome.faa";
+	final static 
+	//String path = "C:/Users/Oscar Dias/Desktop/xde/genome.faa";
+	String path = "D:/Dropbox/Public/merlin_releases/griffon.faa";
 	
 	/**
 	 * 
@@ -66,7 +69,7 @@ public class EbiTests {
 		logger.warn("hours {} minutes {} seconds {}", hours, minutes, seconds);;
 	}
 	
-	@Test
+	//@Test
 	public void testPhobius() throws ClientProtocolException, IOException, InterruptedException, CompoundNotFoundException {
 
 		File file = new File(path);
@@ -105,8 +108,6 @@ public class EbiTests {
 
 		String email = "maildosequeira@gmail.com";
 
-		String path = "D:/Dropbox/Public/merlin_releases/griffon.faa";
-		
 		File file = new File(path);
 		Map<String,ProteinSequence> map = FastaReaderHelper.readFastaProteinSequence(file);
 		long waitingPeriod = 30000;
@@ -116,7 +117,7 @@ public class EbiTests {
 			ProteinSequence p = map.get(key);
 			
 			String phobius = EbiWebServices.runPhobius(email, key, p);
-			List<String> result = EbiRestful.getXml(phobius, "phobius", waitingPeriod);
+			List<String> result = EbiRestful.getXml(phobius, "phobius", waitingPeriod, new AtomicBoolean(false));
 			int h = PhobiusParser.getNumberOfHelices(result);
 			
 			System.out.println(key+" "+h);

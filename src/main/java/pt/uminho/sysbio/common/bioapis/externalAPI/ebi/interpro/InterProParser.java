@@ -30,7 +30,7 @@ public class InterProParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public static HashMap<String,String> getEc2Go() throws IOException {
+	public static Map<String,String> getEc2Go() throws IOException {
 
 		URL url = new URL("http://www.geneontology.org/external2go/ec2go");
 		Scanner s = new Scanner(url.openStream());
@@ -52,7 +52,7 @@ public class InterProParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public static HashMap<String,String> getSl2Go() throws IOException {
+	public static Map<String,String> getSl2Go() throws IOException {
 
 		URL url = new URL("ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/external2go/uniprotkb_sl2go");
 		Scanner s = new Scanner(url.openStream());
@@ -75,7 +75,7 @@ public class InterProParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public static HashMap<String,String> getInterPro2Go() throws IOException {
+	public static Map<String,String> getInterPro2Go() throws IOException {
 
 		URL url = new URL("http://www.geneontology.org/external2go/interpro2go");
 		Scanner s = new Scanner(url.openStream());
@@ -200,9 +200,9 @@ public class InterProParser {
 		for (String line:xmlList) 
 			logger.trace(line);
 
-		HashMap<String,String> ec2go = getEc2Go();
-		HashMap<String,String> sl2go = getSl2Go();
-		HashMap<String,String> interpro2go = getInterPro2Go();
+		Map<String,String> ec2go = getEc2Go();
+		Map<String,String> sl2go = getSl2Go();
+		Map<String,String> interpro2go = getInterPro2Go();
 
 		return InterProParser.getXmlInformation(xmlList, ec2go, sl2go, interpro2go);
 	}

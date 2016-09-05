@@ -22,16 +22,19 @@ public class InterProResultsList {
 
 		this.results = new ArrayList<>();
 	}
+	
 	/**
 	 * @return the md5
 	 */
 	public String getMd5() {
 		return md5;
 	}
+	
 	/**
 	 * @param md5 the md5 to set
 	 */
 	public void setMd5(String md5) {
+		
 		this.md5 = md5;
 	}
 
@@ -39,6 +42,7 @@ public class InterProResultsList {
 	 * @return length of results
 	 */
 	public int numberOfResults() {
+		
 		return results.size();
 	}
 
@@ -54,8 +58,10 @@ public class InterProResultsList {
 	 * @param results the results to set
 	 */
 	public void addResult(InterProResult result) {
+		
 		this.results.add(result);
 	}
+	
 	/**
 	 * @return the mostLikelyEC
 	 */
@@ -66,6 +72,7 @@ public class InterProResultsList {
 
 		return mostLikelyEC;
 	}
+	
 	/**
 	 * @param mostLikelyEC the mostLikelyEC to set
 	 */
@@ -95,6 +102,7 @@ public class InterProResultsList {
 		}
 		this.mostLikelyEC = maxEC;
 	}
+	
 	/**
 	 * @return the query
 	 */
@@ -102,24 +110,28 @@ public class InterProResultsList {
 
 		return query;
 	}
+	
 	/**
 	 * @param query the query to set
 	 */
 	public void setQuery(String query) {
 		this.query = query;
 	}
+	
 	/**
 	 * @return the querySequence
 	 */
 	public String getQuerySequence() {
 		return querySequence;
 	}
+	
 	/**
 	 * @param querySequence the querySequence to set
 	 */
 	public void setQuerySequence(String querySequence) {
 		this.querySequence = querySequence;
 	}
+	
 	/**
 	 * @return the mostLikelyLocalization
 	 */
@@ -130,6 +142,7 @@ public class InterProResultsList {
 
 		return mostLikelyLocalization;
 	}
+	
 	/**
 	 * 
 	 */
@@ -159,6 +172,7 @@ public class InterProResultsList {
 
 		this.mostLikelyLocalization = maxKey;
 	}
+	
 	/**
 	 * @return the name
 	 */
@@ -169,6 +183,7 @@ public class InterProResultsList {
 		
 		return name;
 	}
+	
 	/**
 	 * @param name the name to set
 	 */
@@ -198,6 +213,7 @@ public class InterProResultsList {
 
 		this.name = maxKey;
 	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

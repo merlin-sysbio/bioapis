@@ -73,7 +73,8 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param results
 	 * @param waitingPeriod 
 	 */
-	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, ProteinSequence> genome, ConcurrentHashMap<String, Object> results, long waitingPeriod) {
+	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, ProteinSequence> genome, 
+			ConcurrentHashMap<String, Object> results, long waitingPeriod) {
 
 		super();
 		this.requests = requests;
@@ -103,7 +104,7 @@ public class EbiRunnable extends Observable implements Runnable {
 				this.processPhobius(query, sequence, error, this.waitingPeriod);
 			else
 				this.processInterPro(query, sequence, error, this.waitingPeriod);
-			
+						
 			this.sequencesCounter.incrementAndGet();
 			
 			setChanged();
@@ -129,7 +130,7 @@ public class EbiRunnable extends Observable implements Runnable {
 		try {
 			
 			String ebi = EbiWebServices.runPhobius(email, query, sequence);
-			List<String>  result = EbiRestful.getXml(ebi, "phobius", waitingPeriod);
+			List<String>  result = EbiRestful.getXml(ebi, "phobius", waitingPeriod, this.cancel);
 			int h = PhobiusParser.getNumberOfHelices(result);
 			this.results.put(query, h);
 
@@ -161,8 +162,9 @@ public class EbiRunnable extends Observable implements Runnable {
 	private void processInterPro(String query, ProteinSequence sequence, int error, long waitingPeriod)  {
 
 		try {
+			
 			String ebi = EbiWebServices.runInterProScan(email, query, sequence, "true", "true", new ArrayList<String>());
-			List<String>  result = EbiRestful.getXml(ebi, "iprscan5", waitingPeriod);
+			List<String>  result = EbiRestful.getXml(ebi, "iprscan5", waitingPeriod, this.cancel);
 			
 			InterProResultsList interProResultsList = InterProParser.getXmlInformation(result, this.getEc2go(), this.getSl2go(), this.getInterpro2go());
 			interProResultsList.setQuerySequence(sequence.getSequenceAsString());

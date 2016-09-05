@@ -5,6 +5,10 @@ import java.util.List;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.Entry;
 
+/**
+ * @author João Sequeira
+ *
+ */
 public class InterProResult {
 
 

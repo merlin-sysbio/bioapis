@@ -13,14 +13,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.EbiEnumerators.EbiTool;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro.InterProParser;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro.InterProResultsList;
 
+/**
+ * @author Oscar Dias
+ *
+ */
 public class EbiAPI extends Observable implements Observer {
 
-
+	final static Logger logger = LoggerFactory.getLogger(EbiAPI.class);
+	
 	/**
 	 * Get number of helices on phobius for every gene in a genome.
 	 * 
@@ -125,12 +132,17 @@ public class EbiAPI extends Observable implements Observer {
 	 * @param sequencesCounter
 	 * @return
 	 * @throws InterruptedException
+	 * @throws IOException 
 	 */
 	public Map<String, InterProResultsList> getInterProAnnotations(Map<String, ProteinSequence> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
-			long waitingPeriod, AtomicInteger sequencesCounter) throws InterruptedException {
+			long waitingPeriod, AtomicInteger sequencesCounter) throws InterruptedException, IOException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
+		
+		Map<String,String> ec2go = InterProParser.getEc2Go();
+		Map<String,String> sl2go = InterProParser.getSl2Go();
+		Map<String,String> interpro2go = InterProParser.getInterPro2Go();
 
 		int threadsNumber=50;
 
@@ -144,7 +156,11 @@ public class EbiAPI extends Observable implements Observer {
 			for(int i=0; i<threadsNumber; i++) {
 
 				Runnable lc	= new EbiRunnable(EbiTool.INTERPRO, requests, genome, results, errorCounter, sequencesCounter, cancel, waitingPeriod);
-
+				
+				((EbiRunnable) lc).setEc2go(ec2go);
+				((EbiRunnable) lc).setSl2go(sl2go);
+				((EbiRunnable) lc).setInterpro2go(interpro2go);
+				((EbiRunnable) lc).addObserver(this);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
 				System.out.println("Start "+i);

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -55,15 +56,16 @@ public class EbiRestful {
 	 * 
 	 * @param identifier
 	 * @param tool
-	 * @param waitingPeriod 
+	 * @param waitingPeriod
+	 * @param cancel
 	 * @return
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static List<String> getXml(String identifier, String tool, long waitingPeriod) throws ClientProtocolException, IOException, InterruptedException {
+	public static List<String> getXml(String identifier, String tool, long waitingPeriod, AtomicBoolean cancel) throws ClientProtocolException, IOException, InterruptedException {
 
-		return EbiRestful.getXml(identifier, tool, "out", waitingPeriod);
+		return EbiRestful.getXml(identifier, tool, "out", waitingPeriod, cancel);
 	}
 
 	/**
@@ -73,12 +75,13 @@ public class EbiRestful {
 	 * @param tool
 	 * @param outputformat
 	 * @param waitingPeriod 
+	 * @param cancel 
 	 * @return
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static List<String> getXml(String identifier, String tool, String outputformat, long waitingPeriod) throws ClientProtocolException, IOException, InterruptedException {
+	public static List<String> getXml(String identifier, String tool, String outputformat, long waitingPeriod, AtomicBoolean cancel) throws ClientProtocolException, IOException, InterruptedException {
 
 		String status = InterProClientRest.getHttpUrl("http://www.ebi.ac.uk/Tools/services/rest/"+tool.toString().toLowerCase()+"/status/"+identifier);
 
@@ -88,7 +91,7 @@ public class EbiRestful {
 		if (status.equalsIgnoreCase("ERROR") || status.equalsIgnoreCase("NOT_FOUND") || status.equalsIgnoreCase("FAILURE"))
 			throw new IOException("Job ID not found.");
 
-		while(go && wait<waitingPeriod) {
+		while(go && wait<waitingPeriod && !cancel.get()) {
 
 			status = InterProClientRest.getHttpUrl("http://www.ebi.ac.uk/Tools/services/rest/"+tool.toString().toLowerCase()+"/status/"+identifier);
 			go = status.equals("RUNNING");
