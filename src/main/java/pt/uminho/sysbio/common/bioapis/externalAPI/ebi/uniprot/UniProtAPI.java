@@ -1039,7 +1039,9 @@ public class UniProtAPI {
 
 				try {
 
-					name = entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue();
+					for(int j = 0; j < entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size(); j++)
+						if(name == null && entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(j) != null)
+							name = entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(j).getValue();
 				}
 				catch (Exception e) {name = null;}
 
@@ -1047,7 +1049,10 @@ public class UniProtAPI {
 
 					try {
 
-						name = entry.getProteinDescription().getSubNames().get(0).getFieldsByType(FieldType.FULL).get(0).getValue();
+						for(int j = 0; j < entry.getProteinDescription().getSubNames().size(); j++)
+							for(int k = 0; k < entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size(); k++)
+								if(name == null && entry.getProteinDescription().getSubNames().get(j).getFieldsByType(FieldType.FULL).get(k) != null)
+									name = entry.getProteinDescription().getSubNames().get(j).getFieldsByType(FieldType.FULL).get(k).getValue();
 					} 
 					catch (Exception e) {name=null;}
 				}
@@ -1148,8 +1153,15 @@ public class UniProtAPI {
 		String out = null;
 
 		try {
-
-			out = entry.getGenes().get(0).getOrderedLocusNames().get(0).getValue();
+			
+			for(int i = 0; i<entry.getGenes().size(); i++)
+				if(out == null)
+					for(int j = 0; j<entry.getGenes().get(i).getOrderedLocusNames().size(); j++) {
+						
+						if(out == null && entry.getGenes().get(i).getOrderedLocusNames().get(j).getValue()!= null )
+							out = entry.getGenes().get(i).getOrderedLocusNames().get(j).getValue();
+						
+					}
 		}
 		catch(Exception e) {
 
@@ -1160,7 +1172,15 @@ public class UniProtAPI {
 
 			try {
 
-				out = entry.getGenes().get(0).getORFNames().get(0).getValue();
+				for(int i = 0; i<entry.getGenes().size(); i++)
+					if(out == null)
+						for(int j = 0; j<entry.getGenes().get(i).getORFNames().size(); j++) {
+						
+							if(out == null && entry.getGenes().get(i).getORFNames().get(j).getValue()!= null )
+								out = entry.getGenes().get(i).getORFNames().get(j).getValue();
+						}
+				if(out==null) 
+					out = entry.getPrimaryUniProtAccession().getValue();
 			}
 			catch(Exception e) {
 
