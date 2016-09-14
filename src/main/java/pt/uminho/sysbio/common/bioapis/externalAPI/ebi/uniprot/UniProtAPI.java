@@ -1050,13 +1050,13 @@ public class UniProtAPI {
 					try {
 
 						for(int j = 0; j < entry.getProteinDescription().getSubNames().size(); j++)
-							for(int k = 0; k < entry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size(); k++)
+							for(int k = 0; k < entry.getProteinDescription().getSubNames().get(j).getFieldsByType(FieldType.FULL).size(); k++)
 								if(name == null && entry.getProteinDescription().getSubNames().get(j).getFieldsByType(FieldType.FULL).get(k) != null)
 									name = entry.getProteinDescription().getSubNames().get(j).getFieldsByType(FieldType.FULL).get(k).getValue();
 					} 
 					catch (Exception e) {name=null;}
 				}
-
+				
 				homologuesData.addDefinition(primary_accession, name);
 				homologuesData.addProduct(primary_accession, name);		
 				homologuesData.addOrganism(primary_accession, entry.getOrganism().getScientificName().getValue());
