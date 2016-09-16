@@ -509,16 +509,16 @@ public class EntrezFetch {
 
 		ncbiData.setOrganismID(ncbiData.getOrganismTaxa()[0]);
 		List<String> resultList = new ArrayList<>(), accessionNumbers = new ArrayList<>();
-
+		
 		for(int i = 0; i< resultsPairs.size(); i++)
 			resultList.add(resultsPairs.get(i).getA());
-
+		
 		List<List<String>> resultsListsList = ListUtilities.split(resultList, 99);
 
 		List<GBSeq> gbSeqs = new ArrayList<>();
 
 		for(List<String> result : resultsListsList) {
-
+			
 			if(!result.isEmpty()) {
 
 				GBSet gbSet = this.getEntries(result, 0);
@@ -531,6 +531,8 @@ public class EntrezFetch {
 			dummyList.add("");
 
 		ncbiData.setLocusIDs(dummyList);
+		
+		System.out.println(gbSeqs.size());
 
 		for (int i = 0; i < gbSeqs.size(); i++) {
 
@@ -553,6 +555,8 @@ public class EntrezFetch {
 
 					primary_accession = gbSeq.accessionVersion; 
 					ncbiData.addDefinition(primary_accession, gbSeq.definition);
+					
+					System.out.println("primary_accession "+primary_accession);
 
 					Map<String, String> features = EntrezFetch.getFeatures(gbSeq, "source");
 
@@ -639,7 +643,7 @@ public class EntrezFetch {
 
 									firstHit = true;
 									locusSet = true;
-									ncbiData.setLocusTag(ncbiData.getBlast_locus_tag().get(primary_accession));
+									ncbiData.setLocusTag(ncbiData.getBlastLocusTag().get(primary_accession));
 								}
 							}
 
@@ -775,7 +779,7 @@ public class EntrezFetch {
 
 		try {
 
-			String query = result.toString().substring(1, result.toString().length()-2);
+			String query = result.toString().replaceAll("\\[", "").replaceAll("\\]", "");
 			GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, query, "xml");
 			return gbSet;
 		}

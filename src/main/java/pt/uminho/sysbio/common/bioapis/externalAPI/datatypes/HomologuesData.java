@@ -18,7 +18,7 @@ public class HomologuesData {
 
 	private ConcurrentHashMap<String, String> locusTags;
 	private ConcurrentHashMap<String, ProteinSequence> sequences;
-	private Map<String, String> organism, taxonomy, product, calculated_mol_wt, definition, blast_locus_tag, organelles, genes;
+	private Map<String, String> organism, taxonomy, product, calculated_mol_wt, definition, blastLocusTag, organelles, genes;
 	private Map<String, Double> eValue, bits;
 	private TreeMap<String, String[]> ecnumber;
 	private List<String> locusIDs = new LinkedList<String>();
@@ -49,7 +49,7 @@ public class HomologuesData {
 		this.product= new TreeMap<String, String>();
 		this.calculated_mol_wt= new TreeMap<String, String>();
 		this.definition= new TreeMap<String, String>();
-		this.blast_locus_tag = new TreeMap<String, String>();
+		this.blastLocusTag = new TreeMap<String, String>();
 		this.organelles = new TreeMap<String, String>();
 		this.genes = new TreeMap<String, String>();
 		this.uniprotStatus = new ConcurrentHashMap<>();
@@ -159,7 +159,7 @@ public class HomologuesData {
 	 */
 	public void addBlastLocusTags(String name, String value) {
 
-		this.blast_locus_tag.put(name,value);
+		this.blastLocusTag.put(name,value);
 	}
 
 	/**
@@ -266,12 +266,12 @@ public class HomologuesData {
 		this.definition = definition;
 	}
 
-	public Map<String, String> getBlast_locus_tag() {
-		return blast_locus_tag;
+	public Map<String, String> getBlastLocusTag() {
+		return blastLocusTag;
 	}
 
-	public void setBlast_locus_tag(Map<String, String> blast_locus_tag) {
-		this.blast_locus_tag = blast_locus_tag;
+	public void setBlastLocusTag(Map<String, String> blastLocusTag) {
+		this.blastLocusTag = blastLocusTag;
 	}
 
 	public Map<String, String> getOrganelles() {
@@ -607,7 +607,7 @@ public class HomologuesData {
 				+ sequences.size() + ", organism=" + organism + ", taxonomy="
 				+ taxonomy + ", product=" + product + ", calculated_mol_wt="
 				+ calculated_mol_wt + ", definition=" + definition
-				+ ", blast_locus_tag=" + blast_locus_tag + ", organelles="
+				+ ", blastLocusTag=" + blastLocusTag + ", organelles="
 				+ organelles + ", genes=" + genes.size() + ", eValue=" + eValue.size()
 				+ ", bits=" + bits + ", ecnumber=" + ecnumber + ", locusID="
 				+ locusIDs + ", organismID=" + organismID + ", fastaSequence="

@@ -587,7 +587,7 @@ public class NcbiAPI {
 				}
 				
 				logger.trace("getNcbiData error trial {}",newTrial);
-				NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, cancel, uniprotStatus, taxonomyID);
+				return NcbiAPI.getNcbiData(homologuesData, resultsList, newTrial, cancel, uniprotStatus, taxonomyID);
 			}
 			else {
 					homologuesData.setDataRetrieved(false);
