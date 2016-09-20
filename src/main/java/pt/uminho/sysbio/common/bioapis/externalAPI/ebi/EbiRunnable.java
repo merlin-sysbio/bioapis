@@ -112,7 +112,7 @@ public class EbiRunnable extends Observable implements Runnable {
 			
 			if(!this.cancel.get()) {
 				//this.progress.setTime((GregorianCalendar.getInstance().getTimeInMillis()-this.startTime), this.sequencesCounter.get(), this.size, this.message);
-				logger.warn("Counter {} for thread {} {}", this.sequencesCounter,Thread.currentThread().getName(), Thread.currentThread().getId());
+				logger.debug("Counter {} for thread {} {}", this.sequencesCounter,Thread.currentThread().getName(), Thread.currentThread().getId());
 			}
 		} 
 	}
@@ -170,7 +170,7 @@ public class EbiRunnable extends Observable implements Runnable {
 			interProResultsList.setQuerySequence(sequence.getSequenceAsString());
 			interProResultsList.setQuery(query);
 			this.results.put(query, interProResultsList);
-
+			logger.trace("query {} result {} ", query, interProResultsList);
 		}
 		catch (IOException | InterruptedException e) {
 			
