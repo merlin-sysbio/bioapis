@@ -1012,9 +1012,6 @@ public class UniProtAPI {
 				String primary_accession = entry.getPrimaryUniProtAccession().getValue();
 				String locus = UniProtAPI.getLocusTag(entry);
 
-				if(locus.equalsIgnoreCase(primary_accession))
-					locus = homologuesData.getQuery();
-
 				if(primary_accession.equalsIgnoreCase(homologuesData.getUniProtEntryID())) {
 
 					homologuesData.addEValue(primary_accession,0.0);
@@ -1032,8 +1029,12 @@ public class UniProtAPI {
 					if(ncbiTaxonomyID.getValue().equalsIgnoreCase(taxonomyID))
 						goTaxonomyID=true;
 
+				String taxLocus = locus;
+				if(taxLocus.equalsIgnoreCase(primary_accession))
+					taxLocus = homologuesData.getQuery();
+				
 				if(goTaxonomyID && (homologuesData.getLocusTag()==null || homologuesData.getLocusTag().equalsIgnoreCase(homologuesData.getQuery())))
-					UniProtAPI.setHomologuesData(homologuesData, primary_accession, locus, entry);
+					UniProtAPI.setHomologuesData(homologuesData, primary_accession, taxLocus, entry);
 
 				String name = null;
 
