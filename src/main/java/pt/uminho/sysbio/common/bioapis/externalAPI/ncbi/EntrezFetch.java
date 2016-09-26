@@ -45,7 +45,7 @@ public class EntrezFetch {
 	 */
 	public EntrezFetch() throws Exception {
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		this.entrezService = entrezServiceFactory.build();
 	}
 
@@ -532,8 +532,6 @@ public class EntrezFetch {
 
 		ncbiData.setLocusIDs(dummyList);
 		
-		System.out.println(gbSeqs.size());
-
 		for (int i = 0; i < gbSeqs.size(); i++) {
 
 			GBSeq gbSeq = gbSeqs.get(i);
@@ -556,8 +554,6 @@ public class EntrezFetch {
 					primary_accession = gbSeq.accessionVersion; 
 					ncbiData.addDefinition(primary_accession, gbSeq.definition);
 					
-					System.out.println("primary_accession "+primary_accession);
-
 					Map<String, String> features = EntrezFetch.getFeatures(gbSeq, "source");
 
 					if(primary_accession!=null && !accessionNumbers.contains(primary_accession))

@@ -3,11 +3,13 @@ package pt.uminho.sysbio.common.bioapis.externalAPI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
@@ -19,6 +21,7 @@ public class NCBI_API {
 
 	final static Logger logger = LoggerFactory.getLogger(NCBI_API.class);
 
+	//@Test
 	public void getEntriesTest() {
 
 		List<String> result = new ArrayList<>();
@@ -26,7 +29,7 @@ public class NCBI_API {
 		result.add("654142262");
 		result.add("311216979");
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
 		String query = result.toString().substring(1, result.toString().length()-2);
 		System.out.println(query);
@@ -44,7 +47,7 @@ public class NCBI_API {
 	//@Test
 	public void test() {
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
 
 		//		GBSet gbSet = entrezService.eFetch(NcbiDatabases.nucleotide, "5,10", "xml");
@@ -64,7 +67,7 @@ public class NCBI_API {
 
 	public void testAPI() throws Exception {
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
 
 		GBSet gbSet = entrezService.eFetch(NcbiDatabases.protein, "CDZ96150.1", "xml");
@@ -76,6 +79,13 @@ public class NCBI_API {
 		//		s.add("LmxM.19.1240");
 		//		s.add("LmxM.07.0770");
 		//		System.out.println(NcbiAPI.getNCBILocusTags(s));
+	}
+	
+	@Test
+	public void getTaxTest() {
+
+		EntrezTaxonomy t = new EntrezTaxonomy();
+		System.out.println(t.getTaxonList("5421"));
 	}
 
 }

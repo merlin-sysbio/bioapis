@@ -19,7 +19,7 @@ public class EntrezServiceFactory {
 	 */
 	public EntrezServiceFactory(){
 		
-		this.baseURL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils";
+		this.baseURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
 		this.verbose = false;
 	}
 

@@ -304,6 +304,7 @@ public class UniProtAPI {
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			if(entries.getNumberOfHits()<1) {
+				
 				query = UniProtQueryBuilder.xref(crossReference.split("\\.")[0]);
 				entries = uniProtService.getEntries(query);
 			}
@@ -1015,7 +1016,7 @@ public class UniProtAPI {
 				if(primary_accession.equalsIgnoreCase(homologuesData.getUniProtEntryID())) {
 
 					homologuesData.addEValue(primary_accession,0.0);
-					homologuesData.addBits(primary_accession,-1);
+					homologuesData.addBits(primary_accession,999999);
 
 					UniProtAPI.setHomologuesData(homologuesData, primary_accession, locus, entry);
 				}
@@ -1252,27 +1253,30 @@ public class UniProtAPI {
 
 				MySleep.myWait(1000);
 				logger.trace("getEntryData trial {}.", errorCount);
-				return UniProtAPI.getEntryData(query, taxonomyID, errorCount);
+				entry = UniProtAPI.getEntryData(query, taxonomyID, errorCount);
 			}
 			else {
 
 				if(errorCount<5) {
 
 					MySleep.myWait(1000);
-					if(query.contains("."))
-						query = query.split("\\.")[0];
+					String newQuery = query;
+					if(newQuery.contains("."))
+						newQuery = query.split("\\.")[0];
 
-					logger.trace("getEntryData trial {}.", errorCount);
-					return UniProtAPI.getEntryData(query+".*", taxonomyID, errorCount);
+					logger.trace("Get EntryData trial {}.", errorCount);
+					entry = UniProtAPI.getEntryData(newQuery+".*", taxonomyID, errorCount);
+					entry.setEntryID(query);
+					entry.setLocusTag(query);
 				}
-
 				else {
 
-					entry = new EntryData(query.replace(".*", ""));
+					entry = new EntryData(query);
 					entry.setUniprotReviewStatus(null);
 					entry.setEcNumbers(null);
-					entry.setLocusTag(query.replace(".*", ""));
-					logger.debug("getEntryData error {}.", query);
+					entry.setLocusTag(query);
+					logger.debug("Get EntryData error {}.", query);
+					
 				}
 			}
 		}

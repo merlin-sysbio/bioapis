@@ -25,7 +25,7 @@ public class EntrezSearch {
 	 */
 	public EntrezSearch() throws Exception {
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		this.entrezService = entrezServiceFactory.build();
 	}
 

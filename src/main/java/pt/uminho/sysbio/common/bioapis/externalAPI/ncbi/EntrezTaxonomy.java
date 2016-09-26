@@ -24,9 +24,9 @@ public class EntrezTaxonomy {
 	 * @param numConnections
 	 * @throws AxisFault
 	 */
-	public EntrezTaxonomy() throws Exception {
+	public EntrezTaxonomy() {
 
-		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("http://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		this.entrezService = entrezServiceFactory.build();
 	}
 
@@ -108,7 +108,7 @@ public class EntrezTaxonomy {
 	 * @param trialCounter
 	 * @throws Exception 
 	 */
-	public Map<String,String[]> getTaxonList(String taxonomy_ids) throws Exception {
+	public Map<String,String[]> getTaxonList(String taxonomy_ids) throws IllegalArgumentException {
 
 		Map<String,String[]> result = null;
 		try {
@@ -120,7 +120,7 @@ public class EntrezTaxonomy {
 
 			throw e;
 		}
-		catch(Exception e) {
+		catch(IllegalArgumentException e) {
 
 			throw e;
 		}
@@ -132,13 +132,12 @@ public class EntrezTaxonomy {
 	 * @param trialCounter
 	 * @throws Exception 
 	 */
-	private Map<String,String[]> getTaxonListMethod(String taxonomy_ids) throws Exception {
+	private Map<String,String[]> getTaxonListMethod(String taxonomy_ids) throws IllegalArgumentException {
 
 		Map<String,String[]> result = new HashMap<String, String[]>();
+		String[] array = new String[2];
 
 		try {
-
-			String[] array = new String[2];
 
 			String query = new String(taxonomy_ids.toString().replace("[", "").replace("]", "").replace(" ", "").getBytes(),"UTF-8");
 			TaxaSet taxaSet = this.entrezService.eFetchTaxonomy("taxonomy", query, "xml");
@@ -180,7 +179,13 @@ public class EntrezTaxonomy {
 
 			//e.printStackTrace();
 			logger.error("taxonomy id {}",taxonomy_ids);
-			throw e; 
+			throw new IllegalArgumentException("Error retrieving taxonomy information.\n"+e.getMessage()); 
 		}
+//		array = new String[2];
+//		array[0] = "";
+//		array[1] = "";
+//		result.put(taxonomy_ids, array);
+//		return result;
 	}
+	
 }

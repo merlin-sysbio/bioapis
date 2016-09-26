@@ -824,7 +824,7 @@ public class NcbiAPI {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String[] newTaxID(String orgID, int trialNumber) throws Exception {
+	public static String[] newTaxID(String orgID, int trialNumber) throws IllegalArgumentException {
 
 
 		try {
@@ -837,7 +837,7 @@ public class NcbiAPI {
 
 			throw new Error("Service unavailable");
 		}
-		catch (Exception e) {
+		catch (IllegalArgumentException e) {
 
 			if(trialNumber<10) {
 
@@ -859,7 +859,7 @@ public class NcbiAPI {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String[] ncbiNewTaxID(long orgID) throws Exception {
+	public static String[] ncbiNewTaxID(long orgID) throws IllegalArgumentException {
 
 		try {
 
@@ -870,7 +870,7 @@ public class NcbiAPI {
 			logger.trace("StackTrace {}",e);
 			throw new Error("Service unavailable");
 		}
-		catch (Exception e) {
+		catch (IllegalArgumentException e) {
 
 			logger.trace("StackTrace {}",e);
 			throw e;
