@@ -14,6 +14,7 @@ public class EntryData {
 	private String locusTag;
 	private String entryID;
 	private String function;
+	private String codedBy;
 	
 	/**
 	 * @param entryID
@@ -71,6 +72,20 @@ public class EntryData {
 	 */
 	public void setFunction(String function) {
 		this.function = function;
+	}
+
+	/**
+	 * @return the codedBy
+	 */
+	public String getCodedBy() {
+		return codedBy;
+	}
+
+	/**
+	 * @param codedBy the codedBy to set
+	 */
+	public void setCodedBy(String codedBy) {
+		this.codedBy = codedBy;
 	}
 
 	/* (non-Javadoc)

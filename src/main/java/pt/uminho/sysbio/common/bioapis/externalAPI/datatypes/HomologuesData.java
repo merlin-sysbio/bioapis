@@ -148,7 +148,7 @@ public class HomologuesData {
 	 * @param name
 	 * @param value
 	 */
-	public void addOganelles(String name, String value) {
+	public void addOrganelles(String name, String value) {
 
 		this.organelles.put(name, value);
 	}

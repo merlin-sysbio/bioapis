@@ -210,14 +210,17 @@ public class EntrezFetch {
 
 			GBSeq gbSeq = gbSeqs.get(i);
 			String primary_accession = gbSeq.accessionVersion;
-
+			
 			entryData.setEntryID(primary_accession);
 
 			Map<String, String> features = getFeatures(gbSeq, "CDS");
-
+			
 			if(features.containsKey("locus_tag"))
 				entryData.setLocusTag(features.get("locus_tag"));
-
+			
+			if(features.containsKey("coded_by"))
+				entryData.setCodedBy(features.get("coded_by"));
+			
 			features = getFeatures(gbSeq, "source");
 
 			if(features.containsKey("EC_number"))
@@ -241,7 +244,7 @@ public class EntrezFetch {
 				if(features.get("db_xref").startsWith("UniProtKB/TrEMBL"))
 					entryData.setUniprotReviewStatus("false");
 			}
-
+			
 		}
 
 		return entryData;
@@ -669,7 +672,7 @@ public class EntrezFetch {
 							if(goTaxonomyID && firstHit && locusSet)
 								ncbiData.setOrganelle(features.get("organelle"));
 							else
-								ncbiData.addOganelles(primary_accession, features.get("organelle"));
+								ncbiData.addOrganelles(primary_accession, features.get("organelle"));
 						}
 
 						////////////////////////////////////////////////////////////////////////////////////

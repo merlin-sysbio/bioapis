@@ -602,6 +602,26 @@ public class NcbiAPI {
 	}
 
 	/**
+	 * Get product data for given accession.
+	 * 
+	 * @param accession
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getProduct(String accession) throws Exception {
+
+		EntrezFetch entrezFetch = new EntrezFetch();
+		EntryData entryData = entrezFetch.getEntryDataFromAccession(accession, 0);
+		
+		String function = entryData.getFunction();
+		
+		if(entryData.getEcNumbers().size()>0)
+			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
+			
+		return function;
+	}
+	
+	/**
 	 * @param ncbiData
 	 * @param taxonomyID
 	 * @param queryResponseConcatenationSize
@@ -1015,4 +1035,5 @@ public class NcbiAPI {
 		EntrezTaxonomy entrezTaxonomy = new EntrezTaxonomy();
 		return entrezTaxonomy.getTaxonList(tax_ids);
 	}
+
 }

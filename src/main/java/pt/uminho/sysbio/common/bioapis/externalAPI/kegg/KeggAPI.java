@@ -1232,28 +1232,17 @@ public class KeggAPI {
 		return ret;
 	}
 
-	public static void main(String[] args) throws Exception {
-		//		System.out.println(getCompoundByKeggId("C15025"));
-		//		System.out.println(getCompoundByKeggId("C15025"));
-		//		System.out.println(getCompoundByKeggId("C00226"));
-		//		System.out.println(getCompoundByKeggId("C00226"));
-
-		cache.clear();
-		//System.out.println(getReactionsByEnzymes("3.1.14.1"));
-
-		System.out.println(getReactionsByOrthology("K13357"));
-
-
-		//System.out.println("persist");
-		//persistCache();
-
-		//		System.out.println(getCompoundByKeggId("C15025"));
-		//		System.out.println(getCompoundByKeggId("C15025"));
-		//		System.out.println(getCompoundByKeggId("C00226"));
-		//		System.out.println(getCompoundByKeggId("C00226"));
-		//		
-		//		System.out.println("persist2");
-		//		persistCache();
+	
+	public static String getProduct(String query) {
+		
+//		String function = entryData.getFunction();
+//		
+//		if(entryData.getEcNumbers().size()>0)
+//			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
+			
+//		return function;
+		
+		return null;
 	}
 
 

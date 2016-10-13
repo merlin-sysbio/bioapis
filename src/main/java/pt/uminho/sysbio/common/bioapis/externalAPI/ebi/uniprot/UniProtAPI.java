@@ -1081,7 +1081,7 @@ public class UniProtAPI {
 				try {
 					List<Organelle> organelles = entry.getOrganelles();
 					if(organelles.size()>0)
-						homologuesData.addOganelles(primary_accession, organelles.toString());
+						homologuesData.addOrganelles(primary_accession, organelles.toString());
 
 				} catch (Exception e) {
 
@@ -1192,6 +1192,23 @@ public class UniProtAPI {
 			}
 		}
 		return out;
+	}
+	
+	/**
+	 * Get entry data from query.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static String getProduct(String query) {
+
+		EntryData entryData = UniProtAPI.getEntryData(query);
+		String function = entryData.getFunction();
+		
+		if(entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
+			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
+			
+		return function;
 	}
 
 	/**
@@ -1478,4 +1495,5 @@ public class UniProtAPI {
 
 		return UniProtAPI.getEntryData(query, -1, 0);
 	}
+
 }
