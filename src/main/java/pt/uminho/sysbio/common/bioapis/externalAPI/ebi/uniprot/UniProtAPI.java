@@ -32,6 +32,7 @@ import uk.ac.ebi.kraken.interfaces.uniprot.Organelle;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntryType;
 import uk.ac.ebi.kraken.interfaces.uniprot.description.FieldType;
+import uk.ac.ebi.kraken.interfaces.uniprot.evidences.EvidenceId;
 import uk.ac.ebi.kraken.interfaces.uniprot.genename.GeneNameSynonym;
 import uk.ac.ebi.kraken.interfaces.uniprot.genename.ORFName;
 import uk.ac.ebi.kraken.interfaces.uniprot.genename.OrderedLocusName;
@@ -312,7 +313,7 @@ public class UniProtAPI {
 			while(entries.hasNext()) {
 
 				UniProtEntry uniProtEntry = entries.next();
-
+				
 				Iterator<DatabaseCrossReference> it = uniProtEntry.getDatabaseCrossReferences().iterator();
 				while(it.hasNext()) {
 
@@ -320,8 +321,9 @@ public class UniProtAPI {
 
 					//DatabaseType database = dbcr.getDatabase();
 					//if(database.equals(DatabaseType.REFSEQ)) {	
-
+					
 					String x_ref = dbcr.getPrimaryId().getValue();
+					
 
 					for(String id:x_ref.split(":")) {
 
@@ -334,6 +336,19 @@ public class UniProtAPI {
 						if(id.equalsIgnoreCase(cross))
 							return uniProtEntry;
 					}
+					
+					for(EvidenceId e : dbcr.getEvidenceIds())
+						if(e.getValue().trim().equalsIgnoreCase(crossReference.trim()))
+							return uniProtEntry;
+						
+					if(dbcr.getThird().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+						return uniProtEntry;
+					
+					if(dbcr.getFourth().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+						return uniProtEntry;
+					
+					if(dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+						return uniProtEntry;
 
 				}
 			}
@@ -1224,7 +1239,7 @@ public class UniProtAPI {
 		UniProtEntry uniProtEntry;
 
 		uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(query,0);
-
+		
 		try {
 
 			if(uniProtEntry==null)

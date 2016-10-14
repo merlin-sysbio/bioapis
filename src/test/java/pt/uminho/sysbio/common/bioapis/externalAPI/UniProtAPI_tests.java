@@ -11,14 +11,15 @@ public class UniProtAPI_tests {
 
 
 
-	//@Test
+	@Test
 	public void uniTest(){
 	
-		System.out.println(UniProtAPI.getEntryDataFromAccession("P07658"));
+		System.out.println(UniProtAPI.getEntryData("EEC51334.1"));
+		//System.out.println(UniProtAPI.getEntryDataFromAccession("P07658"));
 		
 	}
 	
-	@Test
+	//@Test
 	public void listTest(){
 	
 		List<String> l = new ArrayList<>();
