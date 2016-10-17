@@ -122,7 +122,7 @@ public class EntrezFetch {
 				counter +=query.split(",").length;
 
 				double progress = counter/size;
-				logger.debug("NCBIAPI.getLocusFromID query {}%",progress*100);
+				logger.trace("NCBIAPI.getLocusFromID query {}%",progress*100);
 
 				query = new String(query.getBytes(),"UTF-8");
 				GBSet gbSet = this.entrezService.eFetch(NcbiDatabases.protein, query, "xml");
@@ -155,7 +155,7 @@ public class EntrezFetch {
 							String locus = g.get(0);
 							result.put(primary_accession, locus);
 
-							logger.debug("locus.equalsIgnoreCase(primary_accession) {}",locus.equalsIgnoreCase(primary_accession));
+							logger.trace("locus.equalsIgnoreCase(primary_accession) {}",locus.equalsIgnoreCase(primary_accession));
 
 							if(locus.equalsIgnoreCase(primary_accession))
 								existsLocusTags = false;
@@ -185,7 +185,7 @@ public class EntrezFetch {
 			}
 			else {
 
-				logger.error("Get locus error!");
+				logger.error("Get locus error for {}", genes);
 				logger.trace("Stack trace {}",e);
 				return null;
 			}

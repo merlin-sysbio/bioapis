@@ -366,7 +366,7 @@ public class UniProtAPI {
 			else {
 
 				logger.error("Could not retrieve single entry from xRef. Returning null. {}",crossReference);
-				logger.trace("StackTrace {}",e);
+				logger.error("StackTrace {}",e);
 				return null;
 			}
 		}
