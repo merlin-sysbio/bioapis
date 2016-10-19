@@ -28,5 +28,6 @@ public interface KeggDB {
 	public static final String PATHWAY  = "path";
 	public static final String BRITE    = "br";
 	public static final String ORTHOLOGY = "ko";
+	public static final String GENES = "genes";
 
 }

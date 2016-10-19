@@ -15,6 +15,7 @@ public class EntryData {
 	private String entryID;
 	private String function;
 	private String codedBy;
+	private long taxonomyID;
 	
 	/**
 	 * @param entryID
@@ -88,14 +89,29 @@ public class EntryData {
 		this.codedBy = codedBy;
 	}
 
+	/**
+	 * @return the taxonomyID
+	 */
+	public long getTaxonomyID() {
+		return taxonomyID;
+	}
+
+	/**
+	 * @param taxonomyID the taxonomyID to set
+	 */
+	public void setTaxonomyID(long taxonomyID) {
+		this.taxonomyID = taxonomyID;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "EntryData [ecNumbers=" + ecNumbers + ", uniprotReviewStatus=" + uniprotReviewStatus + ", locusTag="
-				+ locusTag + ", entryID=" + entryID + ", function=" + function + "]";
+				+ locusTag + ", entryID=" + entryID + ", function=" + function + ", codedBy=" + codedBy
+				+ ", taxonomyID=" + taxonomyID + "]";
 	}
-	
+
 	
 }

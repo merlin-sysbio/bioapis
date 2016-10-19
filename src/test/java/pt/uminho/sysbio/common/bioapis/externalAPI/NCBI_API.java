@@ -1,15 +1,19 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezFetch;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
@@ -82,6 +86,24 @@ public class NCBI_API {
 	}
 	
 	@Test
+	public void getLocusTest() throws Exception {
+		
+		Set<String> s = new HashSet<>();
+		s.add("CAL18190.1");
+//		s.add("EHI46949.1");
+//		s.add("JH377153.1");
+//		s.add("EHI45296.1");
+//		s.add("EHI43578.1");
+ 		EntrezFetch e = new EntrezFetch();
+		System.out.println(e.getLocusFromID(s,100));
+		
+		System.out.println(NcbiAPI.getLocusTag("CAL18190.1"));
+		
+		System.out.println(NcbiAPI.getProductAndTaxonomy("CAL18190.1").getValue());
+		System.out.println(NcbiAPI.getProductAndTaxonomy("CAL18190.1").getPairValue());
+	}
+	
+	
 	public void getTaxTest() {
 
 		EntrezTaxonomy t = new EntrezTaxonomy();

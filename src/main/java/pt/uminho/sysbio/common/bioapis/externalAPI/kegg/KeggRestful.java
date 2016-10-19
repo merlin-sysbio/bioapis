@@ -22,7 +22,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * @author Oscar Dias and fxe
+ *
+ */
 public class KeggRestful {
 
 	private static final String NEW_LINE = "\n";
@@ -31,8 +37,9 @@ public class KeggRestful {
 	private static final String BASE_URL = "http://rest.kegg.jp/";
 
 	private static final boolean __DEBUG_API__ = false;
+	final static Logger logger = LoggerFactory.getLogger(KeggRestful.class);
 
-	private static final int READ_TIMEOUT = 3000; //miliseconds
+	private static final int READ_TIMEOUT = 15000; //miliseconds
 
 	private static final HttpClientParams params = new HttpClientParams();
 	private static final int MAX_TRIES = 3;
@@ -48,10 +55,9 @@ public class KeggRestful {
 	 * @return
 	 */
 	public static String getURL(String url) {
-		//StringBuilder ret = new StringBuilder();
 
 		if ( __DEBUG_API__) 
-			System.out.println( "KeggRestful::get - " + url.toString());
+			logger.debug( "KeggRestful::get - " + url.toString());
 		String body = null;
 
 		HttpClient client = new HttpClient();
@@ -69,7 +75,6 @@ public class KeggRestful {
 				System.err.println("get URL: " + url);
 			}
 
-
 			// Read the response body.
 			byte[] responseBody = method.getResponseBody();
 
@@ -77,13 +82,16 @@ public class KeggRestful {
 			// Use caution: ensure correct character encoding and is not binary data
 			body = new String(responseBody);
 
-		} catch (HttpException e) {
+		} 
+		catch (HttpException e) {
 			System.err.println("Fatal protocol violation: " + e.getMessage());
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			System.err.println("Fatal transport error: " + e.getMessage());
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 			// Release the connection.
 			method.releaseConnection();
 		}  
@@ -130,7 +138,7 @@ public class KeggRestful {
 		}
 
 		if ( __DEBUG_API__) 
-			System.out.println( "KeggRestful::fetch - " + url.toString());
+			logger.debug( "KeggRestful::fetch - {}", url.toString());
 
 		String body = null;
 
@@ -139,11 +147,13 @@ public class KeggRestful {
 		GetMethod method = new GetMethod(URIUtil.encodeQuery(url.toString()));
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 				new DefaultHttpMethodRetryHandler(3, false));
-
+		
 		method.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, READ_TIMEOUT);
+		
 		try {
-
+			
 			int statusCode = client.executeMethod(method);
+			
 			if (statusCode != HttpStatus.SC_OK) {
 				if ( __DEBUG_API__) {
 
@@ -176,7 +186,11 @@ public class KeggRestful {
 			//System.out.println(sb);
 
 			br.close();
-		} catch(SocketTimeoutException e){
+		} 
+		catch(SocketTimeoutException e){
+			
+			e.printStackTrace();
+			
 			if(num<MAX_TRIES){
 				num++;
 				if(__DEBUG_API__) System.out.println("Time out number " + num);
@@ -418,7 +432,7 @@ public class KeggRestful {
 	public static String[] listGenesOrganism(String organismID) throws Exception {
 
 		String keggListResult = fetch(KeggOperation.list, organismID);
-		String[] ret = retriveColumn(keggListResult, 0);
+		String[] ret = retrieveColumn(keggListResult, 0);
 		if ( __DEBUG_API__) System.out.println( Arrays.toString(ret));
 		return ret;
 	}
@@ -433,7 +447,7 @@ public class KeggRestful {
 
 		String keggFindResult = fetch(KeggOperation.find, "compound", query);
 
-		String[] ret = retriveColumn(keggFindResult, 0);
+		String[] ret = retrieveColumn(keggFindResult, 0);
 
 		if ( __DEBUG_API__)
 			System.out.println( Arrays.toString(ret));
@@ -468,15 +482,33 @@ public class KeggRestful {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static String[] findGenesQuery(String query) throws Exception  {
+	public static String[] findGenesFromKO(String query) throws Exception  {
 
 		String keggFindResult = fetch(KeggOperation.link, "genes", query);
 
-		String[] ret = retriveColumn(keggFindResult, 1);
+		String[] ret = retrieveColumn(keggFindResult, 1);
 
 		if ( __DEBUG_API__)
-			System.out.println( Arrays.toString(ret));
+			logger.debug(Arrays.toString(ret));
 		return ret;
+	}
+	
+	/**
+	 * @param query
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public static String findFirstGeneQuery(String query) throws Exception  {
+
+		String keggFindResult = fetch(KeggOperation.find, "genes", query);
+		
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 0)));
+
+		if ( __DEBUG_API__)
+			logger.debug("ret {}",ret);
+		
+		return ret.get(0);
 	}
 
 
@@ -490,7 +522,7 @@ public class KeggRestful {
 
 		String keggFindResult = fetch(KeggOperation.find, "genome", query);
 
-		String[] ret = retriveColumn(keggFindResult, 1);
+		String[] ret = retrieveColumn(keggFindResult, 1);
 
 		if ( __DEBUG_API__)
 			System.out.println( Arrays.toString(ret));
@@ -514,7 +546,7 @@ public class KeggRestful {
 	 * @param index
 	 * @return
 	 */
-	private static String[] retriveColumn(String flatFile, int index) {
+	private static String[] retrieveColumn(String flatFile, int index) {
 
 		String[] ret = null;
 		String[] lines = flatFile.split(NEW_LINE);
@@ -542,7 +574,7 @@ public class KeggRestful {
 	public static List<String> findOrthologsByECnumber(String query) throws Exception {
 
 		String keggFindResult = fetch(KeggOperation.find, "ko", query);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retriveColumn(keggFindResult, 0)));
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 0)));
 
 		if ( __DEBUG_API__)
 			System.out.println( ret);
@@ -553,7 +585,7 @@ public class KeggRestful {
 	public static List<String> findOrthologsByReaction(String query) throws Exception {
 
 		String keggFindResult = fetch(KeggOperation.link, "ko", query);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retriveColumn(keggFindResult, 1)));
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 1)));
 
 		if ( __DEBUG_API__)
 			System.out.println( ret);
@@ -569,7 +601,7 @@ public class KeggRestful {
 	public static List<String> findModulesByQuery(String query) throws Exception {
 
 		String keggFindResult = findModulesStringByQuery(query);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retriveColumn(keggFindResult, 1)));
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 1)));
 
 		if ( __DEBUG_API__)
 			System.out.println( ret);
@@ -585,7 +617,7 @@ public class KeggRestful {
 	public static List<String> findECNumbersByOrtholog(String ortholog) throws Exception {
 
 		String keggFindResult = fetch(KeggOperation.link, "ec", ortholog);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retriveColumn(keggFindResult, 1)));
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 1)));
 
 		if ( __DEBUG_API__)
 			System.out.println(ret);
@@ -601,14 +633,8 @@ public class KeggRestful {
 	public static List<String> findPathwaysByModule(String module) throws Exception {
 
 		String keggFindResult = fetch(KeggOperation.link, "pathway", module);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retriveColumn(keggFindResult, 1)));
+		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 1)));
 		return ret;
 	}
 
-	public static void main(String[] args) throws Exception {
-		fetch(KeggOperation.get, "cpd:C15025");
-		fetch(KeggOperation.get, "cpd:C15025");
-
-
-	}
 }

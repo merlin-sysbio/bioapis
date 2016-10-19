@@ -97,8 +97,7 @@ public class NcbiAPI {
 	 */
 	public static Map<String, String> getNCBILocusTags(Set<String> keys) throws Exception {
 
-		EntrezFetch entrezFetch = new EntrezFetch();
-		Map<String, String> idLocus = entrezFetch.getLocusFromID(keys,500);
+		Map<String, String> idLocus = NcbiAPI.getNCBILocusTags(keys, 500);
 
 		return idLocus;
 	}
@@ -109,7 +108,7 @@ public class NcbiAPI {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, String> getNCBILocusTags(Set<String> keys, int size) throws Exception {
+	private static Map<String, String> getNCBILocusTags(Set<String> keys, int size) throws Exception {
 
 		EntrezFetch entrezFetch = new EntrezFetch();
 
@@ -605,10 +604,10 @@ public class NcbiAPI {
 	 * Get product data for given accession.
 	 * 
 	 * @param accession
-	 * @return
+	 * @return String [] | index 0 product / index 1 tax id
 	 * @throws Exception
 	 */
-	public static String getProduct(String accession) throws Exception {
+	public static Pair<String, Long> getProductAndTaxonomy(String accession) throws Exception {
 
 		EntrezFetch entrezFetch = new EntrezFetch();
 		EntryData entryData = entrezFetch.getEntryDataFromAccession(accession, 0);
@@ -616,9 +615,10 @@ public class NcbiAPI {
 		String function = entryData.getFunction();
 		
 		if(entryData.getEcNumbers().size()>0)
-			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
-			
-		return function;
+			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
+		
+		Pair<String, Long> ret = new Pair<String, Long>(function, entryData.getTaxonomyID());
+		return ret;
 	}
 	
 	/**

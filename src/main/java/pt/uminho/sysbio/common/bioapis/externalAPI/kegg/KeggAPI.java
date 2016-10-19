@@ -5,6 +5,7 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.kegg;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.collection.CollectionUtils;
+import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggECNumberEntry;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggOrthologyEntry;
@@ -152,11 +154,11 @@ public class KeggAPI {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String[] findGenes(String query) throws Exception {
+	public static String[] findGenesFromKO(String query) throws Exception {
 
 		try {
 
-			String [] res = KeggAPI.findGenes(query,0);
+			String [] res = KeggAPI.findGenesFromKO(query,0);
 			return res;
 		} 
 		catch (Exception e) {
@@ -171,11 +173,11 @@ public class KeggAPI {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String[] findGenes(String query, int trial) throws Exception {
+	public static String[] findGenesFromKO(String query, int trial) throws Exception {
 
 		try {
 
-			String [] res = KeggRestful.findGenesQuery(query);
+			String [] res = KeggRestful.findGenesFromKO(query);
 			return res;
 		} 
 		catch (Exception e) {
@@ -194,7 +196,7 @@ public class KeggAPI {
 				}
 
 				trial = trial + 1;
-				return KeggAPI.findGenes(query,trial);
+				return KeggAPI.findGenesFromKO(query,trial);
 			}
 			else {
 
@@ -1233,16 +1235,58 @@ public class KeggAPI {
 	}
 
 	
+	/**
+	 * Get the gene function from query.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws Exception
+	 */
 	public static String getProduct(String query) {
 		
-//		String function = entryData.getFunction();
-//		
-//		if(entryData.getEcNumbers().size()>0)
-//			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
+		try {
 			
-//		return function;
+			EntryData entryData = KeggAPI.getEntryData(query);
+			
+			String function = entryData.getFunction();
+			
+			if(entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
+				function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
+			
+			return function;
+		} 
+		catch (Exception e) {
+			
+			return null;
+		}
+	}
+	
+	/**
+	 * @param gene
+	 * @return
+	 * @throws Exception 
+	 */
+	public static EntryData getEntryData(String query) throws Exception {
 		
-		return null;
+		EntryData entryData = new EntryData(query);
+		
+		String gene = KeggRestful.findFirstGeneQuery(query);
+		
+		Map<String, List<String>> map = KeggAPI.getGenesByID(gene);
+		
+		entryData.setFunction(map.get("DEFINITION").get(0));
+		
+		String orthology = map.get("ORTHOLOGY").get(0);
+		
+		if(orthology.contains("EC:")) {
+			
+			Set<String> ecs = new HashSet<>(new ArrayList<>(Arrays.asList(map.get("ORTHOLOGY").get(0).split("EC:")[1].split(","))));
+			entryData.setEcNumbers(ecs);
+		}
+		
+		entryData.setLocusTag(map.get("ENTRY").get(0).split("\t")[0]);
+		
+		return entryData;
 	}
 
 

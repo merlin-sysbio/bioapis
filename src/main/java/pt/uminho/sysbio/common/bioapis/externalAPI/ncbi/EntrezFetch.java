@@ -222,6 +222,9 @@ public class EntrezFetch {
 				entryData.setCodedBy(features.get("coded_by"));
 			
 			features = getFeatures(gbSeq, "source");
+			
+			if(features.containsKey("db_xref") && features.get("db_xref").contains("taxon"))
+				entryData.setTaxonomyID(Long.parseLong(features.get("db_xref").replaceAll("taxon\\:", "")));
 
 			if(features.containsKey("EC_number"))
 				entryData.addEcNumber(features.get("EC_number"));

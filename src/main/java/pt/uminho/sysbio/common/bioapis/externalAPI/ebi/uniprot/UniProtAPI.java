@@ -307,6 +307,7 @@ public class UniProtAPI {
 			if(entries.getNumberOfHits()<1) {
 				
 				query = UniProtQueryBuilder.xref(crossReference.split("\\.")[0]);
+				
 				entries = uniProtService.getEntries(query);
 			}
 
@@ -349,27 +350,25 @@ public class UniProtAPI {
 					
 					if(dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 						return uniProtEntry;
-
 				}
 			}
-			return null;
 		}
 		catch(Exception e) {
 
-			if(errorCount<20) {
-
+			if(errorCount<5) {
+				
 				MySleep.myWait(1000);
 				errorCount+=1;
-				logger.debug("xRef trial {}",errorCount);
+				logger.trace("xRef trial {}",errorCount);
 				return getUniProtEntryFromXRef(crossReference, errorCount);
 			}
 			else {
 
-				logger.error("Could not retrieve single entry from xRef. Returning null. {}",crossReference);
-				logger.error("StackTrace {}",e);
-				return null;
+				logger.error("Could not retrieve single entry from xRef. Returning null. Crossreference {}.",crossReference);
+				logger.error("StackTrace {}",e.getCause().getMessage());
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -584,7 +583,6 @@ public class UniProtAPI {
 		}
 
 		return entry;
-
 	}
 
 
@@ -1213,15 +1211,16 @@ public class UniProtAPI {
 	 * Get entry data from query.
 	 * 
 	 * @param query
+	 * @param taxonomyID 
 	 * @return
 	 */
-	public static String getProduct(String query) {
+	public static String getProduct(String query, long taxonomyID) {
 
-		EntryData entryData = UniProtAPI.getEntryData(query);
+		EntryData entryData = UniProtAPI.getEntryData(query, taxonomyID);
 		String function = entryData.getFunction();
 		
-		if(entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
-			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("[", "").replaceAll("]", "")).concat(")");
+		if(function != null && entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
+			function = function.concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
 			
 		return function;
 	}
@@ -1293,9 +1292,9 @@ public class UniProtAPI {
 
 					MySleep.myWait(1000);
 					String newQuery = query;
-					if(newQuery.contains("."))
+					if(query.contains("."))
 						newQuery = query.split("\\.")[0];
-
+					
 					logger.trace("Get EntryData trial {}.", errorCount);
 					entry = UniProtAPI.getEntryData(newQuery+".*", taxonomyID, errorCount);
 					entry.setEntryID(query);
@@ -1307,8 +1306,7 @@ public class UniProtAPI {
 					entry.setUniprotReviewStatus(null);
 					entry.setEcNumbers(null);
 					entry.setLocusTag(query);
-					logger.debug("Get EntryData error {}.", query);
-					
+					logger.trace("Get EntryData error {}.", query);
 				}
 			}
 		}

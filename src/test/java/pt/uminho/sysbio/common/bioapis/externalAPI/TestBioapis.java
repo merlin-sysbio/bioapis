@@ -76,7 +76,7 @@ public class TestBioapis{
 		test.add("NP_359123.1");
 		test.add("NP_358783.1");
 		
-		System.out.println(NcbiAPI.getNCBILocusTags(test, 5000));
+		System.out.println(NcbiAPI.getNCBILocusTags(test));
 	}
 	
 	//@Test
