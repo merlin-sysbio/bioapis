@@ -296,26 +296,47 @@ public class UniProtAPI {
 	 * @return
 	 */
 	public static UniProtEntry getUniProtEntryFromXRef(String crossReference, int errorCount) {
-
+		
+		return UniProtAPI.getUniProtEntryFromXRef(crossReference, errorCount, -1);
+	}
+	/**
+	 * @param crossReference
+	 * @param taxonomyID
+	 * @param errorCount
+	 * @return
+	 */
+	public static UniProtEntry getUniProtEntryFromXRef(String crossReference, long taxonomyID, int errorCount) {
+		
 		UniProtAPI.getInstance();
 
 		try {
 
 			Query query = UniProtQueryBuilder.xref(crossReference);
-			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
+			
+			Query finalQuery = query; 
+			if(taxonomyID>0)
+				finalQuery = UniProtQueryBuilder.and(query, UniProtQueryBuilder.taxonID(Integer.parseInt(taxonomyID+""))); 
+			
+			QueryResult<UniProtEntry> entries = uniProtService.getEntries(finalQuery);
 
 			if(entries.getNumberOfHits()<1) {
 				
-				query = UniProtQueryBuilder.xref(crossReference.split("\\.")[0]);
-				
-				entries = uniProtService.getEntries(query);
+				finalQuery = UniProtQueryBuilder.xref(crossReference.split("\\.")[0]);
+				entries = uniProtService.getEntries(finalQuery);
 			}
 
 			while(entries.hasNext()) {
-
+				
 				UniProtEntry uniProtEntry = entries.next();
+				boolean go = false;
+				for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())
+					if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
+						go=true;
+				
+				if(go) {
 				
 				Iterator<DatabaseCrossReference> it = uniProtEntry.getDatabaseCrossReferences().iterator();
+				
 				while(it.hasNext()) {
 
 					DatabaseCrossReference dbcr = it.next();
@@ -325,7 +346,6 @@ public class UniProtAPI {
 					
 					String x_ref = dbcr.getPrimaryId().getValue();
 					
-
 					for(String id:x_ref.split(":")) {
 
 						if(id.trim().equalsIgnoreCase(crossReference.trim()))
@@ -342,21 +362,22 @@ public class UniProtAPI {
 						if(e.getValue().trim().equalsIgnoreCase(crossReference.trim()))
 							return uniProtEntry;
 						
-					if(dbcr.getThird().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+					if(dbcr.getThird()!= null && dbcr.getThird().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 						return uniProtEntry;
 					
-					if(dbcr.getFourth().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+					if(dbcr.getFourth()!= null && dbcr.getFourth().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 						return uniProtEntry;
 					
-					if(dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+					if(dbcr.getDescription()!= null && dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 						return uniProtEntry;
 				}
+			}
 			}
 		}
 		catch(Exception e) {
 
 			if(errorCount<5) {
-				
+
 				MySleep.myWait(1000);
 				errorCount+=1;
 				logger.trace("xRef trial {}",errorCount);
@@ -1237,7 +1258,7 @@ public class UniProtAPI {
 
 		UniProtEntry uniProtEntry;
 
-		uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(query,0);
+		uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(query, taxonomyID, 0);
 		
 		try {
 
@@ -1245,7 +1266,7 @@ public class UniProtAPI {
 				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
 
 			boolean go = false;
-			for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())			
+			for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())	
 				if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
 					go=true;
 

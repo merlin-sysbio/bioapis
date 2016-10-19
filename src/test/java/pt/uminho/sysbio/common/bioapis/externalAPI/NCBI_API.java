@@ -99,8 +99,8 @@ public class NCBI_API {
 		
 		System.out.println(NcbiAPI.getLocusTag("CAL18190.1"));
 		
-		System.out.println(NcbiAPI.getProductAndTaxonomy("CAL18190.1").getValue());
-		System.out.println(NcbiAPI.getProductAndTaxonomy("CAL18190.1").getPairValue());
+		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getValue());
+		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getPairValue());
 	}
 	
 	

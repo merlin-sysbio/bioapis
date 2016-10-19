@@ -15,6 +15,7 @@ public class EntryData {
 	private String entryID;
 	private String function;
 	private String codedBy;
+	private String organism;
 	private long taxonomyID;
 	
 	/**
@@ -90,6 +91,20 @@ public class EntryData {
 	}
 
 	/**
+	 * @return the organism
+	 */
+	public String getOrganism() {
+		return organism;
+	}
+
+	/**
+	 * @param organism the organism to set
+	 */
+	public void setOrganism(String organism) {
+		this.organism = organism;
+	}
+
+	/**
 	 * @return the taxonomyID
 	 */
 	public long getTaxonomyID() {
@@ -109,8 +124,8 @@ public class EntryData {
 	@Override
 	public String toString() {
 		return "EntryData [ecNumbers=" + ecNumbers + ", uniprotReviewStatus=" + uniprotReviewStatus + ", locusTag="
-				+ locusTag + ", entryID=" + entryID + ", function=" + function + ", codedBy=" + codedBy
-				+ ", taxonomyID=" + taxonomyID + "]";
+				+ locusTag + ", entryID=" + entryID + ", function=" + function + ", codedBy=" + codedBy + ", organism="
+				+ organism + ", taxonomyID=" + taxonomyID + "]";
 	}
 
 	

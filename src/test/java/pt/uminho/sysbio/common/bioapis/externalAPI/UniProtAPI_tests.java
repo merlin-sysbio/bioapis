@@ -14,7 +14,7 @@ public class UniProtAPI_tests {
 	@Test
 	public void uniTest(){
 	
-		System.out.println(UniProtAPI.getEntryData("EEC51334.1"));
+		System.out.println(UniProtAPI.getEntryData("WP_003407734.1", 77643));
 		//System.out.println(UniProtAPI.getEntryDataFromAccession("P07658"));
 		
 	}

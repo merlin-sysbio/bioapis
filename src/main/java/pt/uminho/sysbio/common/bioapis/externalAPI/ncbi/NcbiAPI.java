@@ -607,17 +607,16 @@ public class NcbiAPI {
 	 * @return String [] | index 0 product / index 1 tax id
 	 * @throws Exception
 	 */
-	public static Pair<String, Long> getProductAndTaxonomy(String accession) throws Exception {
+	public static Pair<String, Pair<Long, String>> getProductAndTaxonomy(String accession) throws Exception {
 
 		EntrezFetch entrezFetch = new EntrezFetch();
 		EntryData entryData = entrezFetch.getEntryDataFromAccession(accession, 0);
-		
 		String function = entryData.getFunction();
 		
 		if(entryData.getEcNumbers().size()>0)
 			function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
 		
-		Pair<String, Long> ret = new Pair<String, Long>(function, entryData.getTaxonomyID());
+		Pair<String, Pair<Long, String>> ret = new Pair<String, Pair<Long, String>>(function, new Pair<Long, String> (entryData.getTaxonomyID(), entryData.getOrganism()));
 		return ret;
 	}
 	
