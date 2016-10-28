@@ -13,7 +13,6 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezFetch;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
@@ -21,9 +20,9 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
 import retrofit.RetrofitError;
 
-public class NCBI_API {
+public class NcbiAPITests {
 
-	final static Logger logger = LoggerFactory.getLogger(NCBI_API.class);
+	final static Logger logger = LoggerFactory.getLogger(NcbiAPITests.class);
 
 	//@Test
 	public void getEntriesTest() {
@@ -49,7 +48,7 @@ public class NCBI_API {
 	}
 
 	//@Test
-	public void test() {
+	public void taxonomy() {
 
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
@@ -57,7 +56,7 @@ public class NCBI_API {
 		//		GBSet gbSet = entrezService.eFetch(NcbiDatabases.nucleotide, "5,10", "xml");
 		//		System.out.println(gbSet.GBSeq);
 
-		TaxaSet taxaSet = entrezService.eFetchTaxonomy("taxonomy", "9685,522328", "xml");
+		TaxaSet taxaSet = entrezService.eFetchTaxonomy("taxonomy", "393595", "xml");
 		System.out.println(taxaSet.taxon.get(0).scientificName);
 
 		ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.protein, "70000:90000[molecular weight", "xml", "100");
@@ -69,6 +68,7 @@ public class NCBI_API {
 
 	}
 
+	//@Test
 	public void testAPI() throws Exception {
 
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
@@ -89,21 +89,22 @@ public class NCBI_API {
 	public void getLocusTest() throws Exception {
 		
 		Set<String> s = new HashSet<>();
+		s.add("Q9XGY7.1");
+		s.add("Q6F7B8");
+		s.add("Q6F7B8");
+		s.add("ABG93414.1");
 		s.add("CAL18190.1");
-//		s.add("EHI46949.1");
-//		s.add("JH377153.1");
-//		s.add("EHI45296.1");
-//		s.add("EHI43578.1");
+		s.add("CAL17252.1");
  		EntrezFetch e = new EntrezFetch();
 		System.out.println(e.getLocusFromID(s,100));
+//		
+//		System.out.println("Get Locus Tag "+NcbiAPI.getLocusTag("AFN51404.1"));
 		
-		System.out.println(NcbiAPI.getLocusTag("CAL18190.1"));
-		
-		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getValue());
-		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getPairValue());
+//		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getValue());
+//		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getPairValue());
 	}
 	
-	
+	//@Test
 	public void getTaxTest() {
 
 		EntrezTaxonomy t = new EntrezTaxonomy();

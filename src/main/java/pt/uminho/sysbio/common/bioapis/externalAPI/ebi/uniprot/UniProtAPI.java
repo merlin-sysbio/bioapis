@@ -1275,9 +1275,13 @@ public class UniProtAPI {
 				entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 				entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
 				entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
-
+				
 				if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
 					entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
+				
+				if(entry.getFunction()==null && uniProtEntry.getProteinDescription().getSubNames().size()>0 &&
+						uniProtEntry.getProteinDescription().getSubNames().get(0).getFieldsByType(FieldType.FULL).size()>0)
+					entry.setFunction(uniProtEntry.getProteinDescription().getSubNames().get(0).getFieldsByType(FieldType.FULL).get(0).getValue());
 
 				String locus = UniProtAPI.getLocusTag(uniProtEntry);
 

@@ -133,17 +133,52 @@ public class EntrezFetch {
 
 					GBSeq gbSeq = gbSeqs.get(i);
 					String primary_accession = gbSeq.accessionVersion;
-					
+
 					logger.trace("gbSeq {}",gbSeq);
 
 					Map<String, String> features = getFeatures(gbSeq, "CDS");
 
 					result.put(primary_accession, primary_accession);
+
 					if(features.containsKey("locus_tag")) {
 
 						result.put(primary_accession, features.get("locus_tag"));
 						temp.add(primary_accession);
 					}
+
+					if(result.get(primary_accession).equals(primary_accession)) {
+
+						features = getFeatures(gbSeq, "Protein");
+
+						if(features.containsKey("locus_tag")) {
+
+							result.put(primary_accession, features.get("locus_tag"));
+							temp.add(primary_accession);
+						}
+					}
+
+					if(result.get(primary_accession).equals(primary_accession)) {
+
+						features = getFeatures(gbSeq, "gene");
+
+						if(features.containsKey("locus_tag")) {
+
+							result.put(primary_accession, features.get("locus_tag"));
+							temp.add(primary_accession);
+						}
+					}
+					
+					if(result.get(primary_accession).equals(primary_accession)) {
+
+						features = getFeatures(gbSeq, "Region");
+
+						if(features.containsKey("locus_tag")) {
+
+							result.put(primary_accession, features.get("locus_tag"));
+							temp.add(primary_accession);
+						}
+					}
+
 					
 					if(!temp.contains(primary_accession) && existsLocusTags) {
 
@@ -170,8 +205,10 @@ public class EntrezFetch {
 			return result;
 		}
 		catch (Exception e) {
-			
+
 			if(queryResponseConcatenationSize>0) {
+
+				MySleep.myWait(3000);
 
 				int ind = (queryResponseConcatenationSize/2);
 
@@ -185,8 +222,8 @@ public class EntrezFetch {
 			}
 			else {
 
-				logger.error("Get locus error for {}", genes);
-				logger.trace("Stack trace {}",e);
+				logger.error("Get locus error for query {} ", genes);
+				logger.error("Stack trace {}",e);
 				return null;
 			}
 		}
@@ -210,22 +247,22 @@ public class EntrezFetch {
 
 			GBSeq gbSeq = gbSeqs.get(i);
 			String primary_accession = gbSeq.accessionVersion;
-			
+
 			entryData.setEntryID(primary_accession);
 
 			Map<String, String> features = getFeatures(gbSeq, "CDS");
-			
+
 			if(features.containsKey("locus_tag"))
 				entryData.setLocusTag(features.get("locus_tag"));
-			
+
 			if(features.containsKey("coded_by"))
 				entryData.setCodedBy(features.get("coded_by"));
-			
+
 			features = getFeatures(gbSeq, "source");
-			
+
 			if(features.containsKey("db_xref") && features.get("db_xref").contains("taxon"))
 				entryData.setTaxonomyID(Long.parseLong(features.get("db_xref").replaceAll("taxon\\:", "")));
-			
+
 			if(features.containsKey("organism"))
 				entryData.setOrganism(features.get("organism"));
 
@@ -250,7 +287,7 @@ public class EntrezFetch {
 				if(features.get("db_xref").startsWith("UniProtKB/TrEMBL"))
 					entryData.setUniprotReviewStatus("false");
 			}
-			
+
 		}
 
 		return entryData;
@@ -360,11 +397,13 @@ public class EntrezFetch {
 
 			if(queryResponseConcatenationSize>5) {
 
+				MySleep.myWait(3000);
+
 				logger.debug("createSequencesMap new initalNumberOfRequests = {}",queryResponseConcatenationSize);
 				queryResponseConcatenationSize=queryResponseConcatenationSize/2;
 				return this.createSequencesMap(ids_list, queryResponseConcatenationSize);
 			}
-			
+
 			logger.trace("Stack trace {}",e);
 		}
 		return null;
@@ -436,11 +475,13 @@ public class EntrezFetch {
 
 			if(queryResponseConcatenationSize>5) {
 
+				MySleep.myWait(3000);
+
 				logger.debug("GetLocusAndSequencePairFromID Reducing query size to {} ids.",queryResponseConcatenationSize);
 				queryResponseConcatenationSize=queryResponseConcatenationSize/2;
 				return this.getLocusAndSequencePairFromID(ids_list, queryResponseConcatenationSize,sourceDB);
 			}
-			
+
 			logger.trace("Stack trace {}",e);
 		}
 		return null;
@@ -518,16 +559,16 @@ public class EntrezFetch {
 
 		ncbiData.setOrganismID(ncbiData.getOrganismTaxa()[0]);
 		List<String> resultList = new ArrayList<>(), accessionNumbers = new ArrayList<>();
-		
+
 		for(int i = 0; i< resultsPairs.size(); i++)
 			resultList.add(resultsPairs.get(i).getA());
-		
+
 		List<List<String>> resultsListsList = ListUtilities.split(resultList, 99);
 
 		List<GBSeq> gbSeqs = new ArrayList<>();
 
 		for(List<String> result : resultsListsList) {
-			
+
 			if(!result.isEmpty()) {
 
 				GBSet gbSet = this.getEntries(result, 0);
@@ -540,7 +581,7 @@ public class EntrezFetch {
 			dummyList.add("");
 
 		ncbiData.setLocusIDs(dummyList);
-		
+
 		for (int i = 0; i < gbSeqs.size(); i++) {
 
 			GBSeq gbSeq = gbSeqs.get(i);
@@ -562,14 +603,14 @@ public class EntrezFetch {
 
 					primary_accession = gbSeq.accessionVersion; 
 					ncbiData.addDefinition(primary_accession, gbSeq.definition);
-					
+
 					Map<String, String> features = EntrezFetch.getFeatures(gbSeq, "source");
 
 					if(primary_accession!=null && !accessionNumbers.contains(primary_accession))
 						accessionNumbers.add(primary_accession);
 
 					if(i==0 || ncbiData.getBits(primary_accession)>=0) {
-						
+
 						ncbiData.addEValue(primary_accession,ncbiData.getEvalue(primary_accession));
 						ncbiData.addBits(primary_accession,ncbiData.getBits(primary_accession));
 						ncbiData.addLocusID(primary_accession, i);
@@ -659,12 +700,12 @@ public class EntrezFetch {
 								ncbiData.setLocus_gene_note(features.get("note") );
 
 						}
-						
+
 						////////////////////////////////////////////////////////////////////////////////////
 						////////////////////////////////////////////////////////////////////////////////////
 
 						if(i==0 && ncbiData.getLocusTag() == null && ncbiData.getUniprotLocusTag()!=null) {
-							
+
 							ncbiData.setLocusTag(ncbiData.getUniprotLocusTag());
 							locusSet=true;
 							firstHit = true;
@@ -794,12 +835,12 @@ public class EntrezFetch {
 
 			if(errorCount<20) {
 
-				MySleep.myWait(1000);
+				MySleep.myWait(3000);
 				errorCount+=1;
 				return this.getEntries(result, errorCount);
 			}
 			else {
-				
+
 				logger.trace("Stack trace {}",e);
 				throw new Exception();
 			}

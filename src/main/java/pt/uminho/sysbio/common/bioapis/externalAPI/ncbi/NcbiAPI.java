@@ -772,16 +772,31 @@ public class NcbiAPI {
 	}
 
 	/**
+	 * Get locus tag for gene
+	 * 
 	 * @param query
 	 * @return
 	 * @throws Exception 
 	 */
 	public static String getLocusTag(String query) throws Exception {
 
-		EntrezFetch entrezFetch = new EntrezFetch();
 		Set<String> querySet = new HashSet<String>();
 		querySet.add(query);
-		return entrezFetch.getLocusFromID(querySet,10).get(query);
+		
+		return NcbiAPI.getLocusTag(querySet).get(query);
+	}
+	
+	/**
+	 * Get locus tag for gene set
+	 * 
+	 * @param querySet
+	 * @return
+	 * @throws Exception 
+	 */
+	public static Map<String,String> getLocusTag(Set<String> querySet) throws Exception {
+		
+		EntrezFetch entrezFetch = new EntrezFetch();
+		return entrezFetch.getLocusFromID(querySet,10);
 	}
 
 	/**
