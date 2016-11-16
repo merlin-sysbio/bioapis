@@ -968,7 +968,8 @@ public class UniProtAPI {
 					UniProtQueryBuilder.id(refSeqID),
 					UniProtQueryBuilder.keyword(refSeqID),
 					UniProtQueryBuilder.proteinName(refSeqID),
-					UniProtQueryBuilder.accession(refSeqID));
+					UniProtQueryBuilder.accession(refSeqID)
+					);
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			try {
@@ -997,7 +998,7 @@ public class UniProtAPI {
 				logger.error("processXRefsData error {}.", refSeqID);
 				logger.trace("StackTrace {}",e);
 			}
-			uniprotEntries.put(refSeqID,temp);
+			uniprotEntries.put(refSeqID, temp);
 		}		
 
 		return ret;

@@ -787,24 +787,27 @@ public class EntrezFetch {
 		if(uniprotStatus && accessionNumbers.size()>0 && !cancel.get()) {
 
 			Map<String, List<UniProtEntry>> uniProtEntries = UniProtAPI.getUniprotEntriesFromRefSeq(accessionNumbers, cancel,0);
-
+			
 			for(String accessionsNumber:uniProtEntries.keySet()) {
-
+				
 				if(!cancel.get()) {
-
+					
 					for(UniProtEntry uniProtEntry : uniProtEntries.get(accessionsNumber)) {
 
 						String primary_accession = accessionsNumber;
-
+						
 						if(ncbiData.getUniprotStatus().containsKey(primary_accession) && ncbiData.getUniprotStatus().get(primary_accession)) {
 
 							//System.out.println("Exists entry for "+primary_accession+". UniProtEntries size "+uniProtEntries.size());
-						} else {
-
+							//System.out.println("Entry "+ncbiData.getUniprotStatus().containsKey(primary_accession));
+						} 
+						else {
+							
 							try {
 
 								ncbiData.addUniprotStatus(primary_accession, UniProtAPI.isStarred(uniProtEntry));
-							} catch (Exception e) {
+							} 
+							catch (Exception e) {
 								//e.printStackTrace();
 							}
 						} 

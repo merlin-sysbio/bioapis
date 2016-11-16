@@ -94,7 +94,7 @@ public class NcbiAPITests {
 		s.add("Q6F7B8");
 		s.add("ABG93414.1");
 		s.add("CAL18190.1");
-		s.add("CAL17252.1");
+		s.add("YP_002782672.1");
  		EntrezFetch e = new EntrezFetch();
 		System.out.println(e.getLocusFromID(s,100));
 //		
