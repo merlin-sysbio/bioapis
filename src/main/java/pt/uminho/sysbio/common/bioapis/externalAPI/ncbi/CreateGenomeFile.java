@@ -112,7 +112,7 @@ public class CreateGenomeFile {
 	 * @param extension
 	 * @throws Exception
 	 */
-	public CreateGenomeFile(String genomeID, List<File> fastaFiles, String extension) throws Exception {
+	public CreateGenomeFile(String genomeID, File fastaFiles, String extension) throws Exception {
 		
 		this.today = CreateGenomeFile.setToday();
 		String path = FileUtils.getCurrentTempDirectory();
@@ -126,14 +126,14 @@ public class CreateGenomeFile {
 	 * @param fastaFiles
 	 * @throws Exception 
 	 */
-	private void createGenomeFileFromFasta(List<File> fastaFiles, String extension) throws Exception {
+	private void createGenomeFileFromFasta(File fastaFile, String extension) throws Exception {
 		
 		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,this.tempPath,this.genomeID,this.today,extension)) {
 			
 			Map<String, ProteinSequence> sequences= new HashMap<String, ProteinSequence>();
 			
-			for(File fastFile : fastaFiles)				
-				sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastFile));
+			//for(File fastFile : fastaFiles)				
+			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
 
 			this.buildFastFile(null, sequences, extension);
 			this.createLogFile(extension);
