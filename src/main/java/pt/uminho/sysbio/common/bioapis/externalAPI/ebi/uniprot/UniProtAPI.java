@@ -1108,7 +1108,8 @@ public class UniProtAPI {
 						String[] ec = new String[le.size()]; 
 						homologuesData.addECnumbers(primary_accession, le.toArray(ec));
 					}
-				} catch (Exception e) {
+				} 
+				catch (Exception e) {
 
 					logger.debug("getUniprotData getProteinDescription error {}.", primary_accession);
 				}

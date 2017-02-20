@@ -3,17 +3,18 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.datatypes;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 
 public class NcbiData {
 
 	private ConcurrentHashMap<String, String> locus_Tag;
-	private ConcurrentHashMap<String, ProteinSequence> sequences;
+	private ConcurrentHashMap<String, AbstractSequence<?>> sequences;
 
 	/**
 	 * @param locus_Tag
 	 * @param sequences
 	 */
-	public NcbiData(ConcurrentHashMap<String, String> locus_Tag, ConcurrentHashMap<String, ProteinSequence> sequences) {
+	public NcbiData(ConcurrentHashMap<String, String> locus_Tag, ConcurrentHashMap<String, AbstractSequence<?>> sequences) {
 
 		this.locus_Tag = locus_Tag;
 		this.sequences = sequences;

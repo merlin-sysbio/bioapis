@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,6 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,8 @@ public class EbiTests {
 
 		File file = new File(path);
 
-		Map<String,ProteinSequence> genome = FastaReaderHelper.readFastaProteinSequence(file);
+		Map<String, AbstractSequence<?>> genome = new HashMap<>();
+		genome.putAll(FastaReaderHelper.readFastaProteinSequence(file));
 		
 		long startTime = GregorianCalendar.getInstance().getTimeInMillis();
 		long waitingPeriod = 180000;
@@ -74,7 +77,8 @@ public class EbiTests {
 
 		File file = new File(path);
 
-		Map<String,ProteinSequence> genome = FastaReaderHelper.readFastaProteinSequence(file);
+		Map<String, AbstractSequence<?>> genome = new HashMap<>(); 
+		genome.putAll(FastaReaderHelper.readFastaProteinSequence(file));
 		
 		long startTime = GregorianCalendar.getInstance().getTimeInMillis();
 		long waitingPeriod = 180000;

@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class EbiAPI extends Observable implements Observer {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public Map<String, Integer> getHelicesFromPhobius(Map<String, ProteinSequence> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
+	public Map<String, Integer> getHelicesFromPhobius(Map<String, AbstractSequence<?>> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
 			long waitingPeriod, AtomicInteger sequencesCounter) throws InterruptedException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
@@ -84,7 +84,7 @@ public class EbiAPI extends Observable implements Observer {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public static Map<String, Integer> getHelicesFromPhobius(Map<String, ProteinSequence> genome, long waitingPeriod) throws InterruptedException {
+	public static Map<String, Integer> getHelicesFromPhobius(Map<String, AbstractSequence<?>> genome, long waitingPeriod) throws InterruptedException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
@@ -134,7 +134,7 @@ public class EbiAPI extends Observable implements Observer {
 	 * @throws InterruptedException
 	 * @throws IOException 
 	 */
-	public Map<String, InterProResultsList> getInterProAnnotations(Map<String, ProteinSequence> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
+	public Map<String, InterProResultsList> getInterProAnnotations(Map<String, AbstractSequence<?>> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
 			long waitingPeriod, AtomicInteger sequencesCounter) throws InterruptedException, IOException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
@@ -190,7 +190,7 @@ public class EbiAPI extends Observable implements Observer {
 	 * @throws InterruptedException
 	 * @throws IOException 
 	 */
-	public static Map<String, InterProResultsList> getInterProAnnotations(Map<String, ProteinSequence> genome, long waitingPeriod) throws InterruptedException, IOException {
+	public static Map<String, InterProResultsList> getInterProAnnotations(Map<String, AbstractSequence<?>> genome, long waitingPeriod) throws InterruptedException, IOException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
@@ -199,7 +199,7 @@ public class EbiAPI extends Observable implements Observer {
 		Map<String,String> sl2go = InterProParser.getSl2Go();
 		Map<String,String> interpro2go = InterProParser.getInterPro2Go();
 
-		int threadsNumber=50;
+		int threadsNumber=30;
 
 		List<Thread> threads = new ArrayList<Thread>();
 
@@ -223,7 +223,6 @@ public class EbiAPI extends Observable implements Observer {
 
 			for(Thread thread :threads)
 				thread.join();
-
 		}
 		
 		Map<String, InterProResultsList> ret = new HashMap<>();

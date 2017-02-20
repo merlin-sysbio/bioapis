@@ -99,8 +99,9 @@ public class EbiRestful {
 			if (status.equalsIgnoreCase("ERROR") || status.equalsIgnoreCase("NOT_FOUND") || status.equalsIgnoreCase("FAILURE"))
 				throw new IOException("Job ID not found.");	
 
-			Thread.sleep(5000);
-			wait += 5000;
+			int lag = 5000;
+			Thread.sleep(lag);
+			wait += lag;
 		}
 
 		if(!go) {

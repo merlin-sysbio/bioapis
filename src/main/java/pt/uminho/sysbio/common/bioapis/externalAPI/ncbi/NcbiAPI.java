@@ -36,6 +36,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.MyNcbiTaxon;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.TaxonomyContainer;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 
 /**
@@ -569,8 +570,19 @@ public class NcbiAPI {
 			EntrezFetch entrezFetch = new EntrezFetch();
 			homologuesData = entrezFetch.getNcbiData(homologuesData, cancel, resultsList,  taxonomyIDs, uniprotStatus, taxonomyID);
 			homologuesData = NcbiAPI.processOrganismsTaxonomy(homologuesData, taxonomyIDs, taxonomyIDs.size(), 0, cancel);
+			
+			if(homologuesData.getEntryUniProtStarred() != null || (homologuesData.getUniprotStatus().containsKey(homologuesData.getQuery()) && homologuesData.getUniprotStatus().get(homologuesData.getQuery())!= null)) {
+				
+				EntryData entryData = UniProtAPI.getEntryData(homologuesData.getQuery());
+				homologuesData.setEntryUniProtStarred(entryData.getUniprotReviewStatus());
+				homologuesData.setUniprotLocusTag(entryData.getLocusTag());
+				homologuesData.setUniProtEntryID(entryData.getEntryID());
+				homologuesData.setEntryUniprotECnumbers(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+			}
 		}
 		catch (Exception e) {
+			
+			e.printStackTrace();
 
 			int newTrial = trialNumber+1;
 			if(newTrial<20 && !cancel.get()) {

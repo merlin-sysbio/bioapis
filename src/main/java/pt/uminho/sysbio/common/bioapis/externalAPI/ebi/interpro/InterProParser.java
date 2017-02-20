@@ -392,20 +392,34 @@ public class InterProParser {
 
 						if (!(data.equals("NONE"))&&!(data.equals("STRONG")))
 							t.add(data);
-
 					}
 
 					if (t.size() == 2) {
 
-						location.setStart(Integer.parseInt((String) t.get(0)));
-						location.setEnd(Integer.parseInt((String) t.get(1)));
+						try {
 
+							location.setStart(Integer.parseInt((String) t.get(0)));
+							location.setEnd(Integer.parseInt((String) t.get(1)));
+						} 
+						catch (NumberFormatException e) {
+							
+							System.out.println("Wrong number: two arguments");
+						}
 					} 
 					else if (t.size() == 3) {
 
-						location.setScore(Float.parseFloat((String) t.get(0)));
-						location.setStart(Integer.parseInt((String) t.get(1)));
-						location.setEnd(Integer.parseInt((String) t.get(2)));
+						
+						try {
+
+							location.setScore(Float.parseFloat((String) t.get(0)));
+							location.setStart(Integer.parseInt((String) t.get(1)));
+							location.setEnd(Integer.parseInt((String) t.get(2)));
+						} 
+						catch (NumberFormatException e) {
+							
+							System.out.println("Wrong number: three arguments ");
+							//System.out.println(xmlList);
+						}
 
 					} 
 					else if(t.size() == 7) {

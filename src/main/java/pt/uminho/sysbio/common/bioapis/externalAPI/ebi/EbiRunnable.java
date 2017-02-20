@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.phobius.PhobiusParser;
 public class EbiRunnable extends Observable implements Runnable {
 
 	private ConcurrentLinkedQueue<String> requests;
-	private Map<String, ProteinSequence> genome;
+	private Map<String, AbstractSequence<?>> genome;
 	private ConcurrentHashMap<String, Object> results;
 	private AtomicBoolean cancel;
 	private EbiTool tool;
@@ -50,7 +50,7 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param cancel
 	 * @param waitingPeriod
 	 */
-	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, ProteinSequence> genome, ConcurrentHashMap<String, Object> results, 
+	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, AbstractSequence<?>> genome, ConcurrentHashMap<String, Object> results, 
 			 AtomicInteger errorCounter, AtomicInteger sequencesCounter, AtomicBoolean cancel, long waitingPeriod) {
 
 		super();
@@ -73,7 +73,7 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param results
 	 * @param waitingPeriod 
 	 */
-	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, ProteinSequence> genome, 
+	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, AbstractSequence<?>> genome, 
 			ConcurrentHashMap<String, Object> results, long waitingPeriod) {
 
 		super();
@@ -97,7 +97,7 @@ public class EbiRunnable extends Observable implements Runnable {
 		while(this.requests.size()>0 && !this.cancel.get()) {
 
 			String query = this.requests.poll();
-			ProteinSequence sequence = this.genome.get(query);
+			AbstractSequence<?> sequence = this.genome.get(query);
 			int error = 0;
 			
 			if(this.tool.equals(EbiTool.PHOBIUS))
@@ -125,7 +125,7 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param error
 	 * @param waitingPeriod 
 	 */
-	private void processPhobius(String query, ProteinSequence sequence, int error, long waitingPeriod)  {
+	private void processPhobius(String query, AbstractSequence<?> sequence, int error, long waitingPeriod)  {
 
 		try {
 			
@@ -159,7 +159,7 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param error
 	 * @param waitingPeriod
 	 */
-	private void processInterPro(String query, ProteinSequence sequence, int error, long waitingPeriod)  {
+	private void processInterPro(String query, AbstractSequence<?> sequence, int error, long waitingPeriod)  {
 
 		try {
 			

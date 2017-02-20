@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -414,7 +415,7 @@ public class EntrezFetch {
 	 * @param queryResponseConcatenationSize
 	 * @return
 	 */
-	public Pair<Map<String, String>,Map<String, ProteinSequence>> getLocusAndSequencePairFromID(List<List<String>> ids_list, int queryResponseConcatenationSize, String sourceDB){
+	public Pair<Map<String, String>,Map<String, AbstractSequence<?>>> getLocusAndSequencePairFromID(List<List<String>> ids_list, int queryResponseConcatenationSize, String sourceDB){
 
 		try {
 
@@ -450,12 +451,12 @@ public class EntrezFetch {
 			if(queryArray.size()<numberOfCores){numberOfCores=queryArray.size();}
 			System.out.println("number Of threads: "+numberOfCores);
 
-			ConcurrentHashMap<String,ProteinSequence> sequences = new ConcurrentHashMap<String,ProteinSequence>();
+			ConcurrentHashMap<String, AbstractSequence<?>> sequences = new ConcurrentHashMap<String, AbstractSequence<?>>();
 			ConcurrentHashMap<String,String> locus_Tag = new ConcurrentHashMap<String,String>();
 
 			for(int i=0; i<numberOfCores; i++) {
 
-				Runnable lc	= new Runnable_Sequences_retriever(queryArray,locus_Tag,sequences,sourceDB);
+				Runnable lc	= new RunnableSequencesRetriever(queryArray,locus_Tag,sequences,sourceDB);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
 				System.out.println("Start "+i);
@@ -466,10 +467,10 @@ public class EntrezFetch {
 				thread.join();
 
 
-			Map<String,ProteinSequence> sequences_Pair = new HashMap<String,ProteinSequence>(sequences);
+			Map<String, AbstractSequence<?>> sequences_Pair = new HashMap<String, AbstractSequence<?>>(sequences);
 			Map<String,String> locus_Tag_Pair = new HashMap<String,String>(locus_Tag);
 
-			return new Pair<Map<String, String>,Map<String, ProteinSequence>>(locus_Tag_Pair,sequences_Pair);
+			return new Pair<Map<String, String>,Map<String, AbstractSequence<?>>>(locus_Tag_Pair,sequences_Pair);
 		}
 		catch (Exception e) {
 

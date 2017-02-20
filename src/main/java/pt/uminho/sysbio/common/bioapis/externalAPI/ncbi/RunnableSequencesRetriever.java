@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
 
@@ -14,13 +14,13 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.NcbiData;
  * @author ODias
  *
  */
-public class Runnable_Sequences_retriever implements Runnable {
+public class RunnableSequencesRetriever implements Runnable {
 
 
 	private ConcurrentLinkedQueue<List<String>> queryArray;
 	private String sourceDB;
 	private ConcurrentHashMap<String,String> locus_Tag;
-	private ConcurrentHashMap<String,ProteinSequence> sequences;
+	private ConcurrentHashMap<String, AbstractSequence<?>> sequences;
 
 	/**
 	 * @param queryArray
@@ -28,7 +28,7 @@ public class Runnable_Sequences_retriever implements Runnable {
 	 * @param sequences
 	 * @param sourceDB
 	 */
-	public Runnable_Sequences_retriever(ConcurrentLinkedQueue<List<String>> queryArray, ConcurrentHashMap<String,String> locus_Tag, ConcurrentHashMap<String,ProteinSequence> sequences, String sourceDB) {
+	public RunnableSequencesRetriever(ConcurrentLinkedQueue<List<String>> queryArray, ConcurrentHashMap<String,String> locus_Tag, ConcurrentHashMap<String, AbstractSequence<?>> sequences, String sourceDB) {
 		
 		this.queryArray = queryArray;
 		this.sourceDB = sourceDB;

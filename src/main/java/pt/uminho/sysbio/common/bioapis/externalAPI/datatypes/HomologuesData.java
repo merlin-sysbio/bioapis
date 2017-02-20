@@ -439,7 +439,7 @@ public class HomologuesData {
 	/**
 	 * @param sequence_code the sequence_code to set
 	 */
-	public void setSequence_code(String sequence_code) {
+	public void setSequenceCode(String sequence_code) {
 		this.sequence_code = sequence_code;
 	}
 

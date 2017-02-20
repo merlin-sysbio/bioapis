@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
-import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.EbiRestful;
 
@@ -29,7 +29,7 @@ public class EbiWebServices {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static String runInterProScan(String email, String title, ProteinSequence sequence, String goterms, String pathways, List<String> appls) throws IOException {
+	public static String runInterProScan(String email, String title, AbstractSequence<?> sequence, String goterms, String pathways, List<String> appls) throws IOException {
        
         List<NameValuePair> nameValuePairs = new ArrayList<> ();
 
@@ -60,7 +60,7 @@ public class EbiWebServices {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static String runPhobius(String email, String title, ProteinSequence sequence) throws ClientProtocolException, IOException {
+	public static String runPhobius(String email, String title, AbstractSequence<?> sequence) throws ClientProtocolException, IOException {
 	    
         return  EbiWebServices.runPhobius(email, title, sequence, "protein", "short");
 	}
@@ -79,7 +79,7 @@ public class EbiWebServices {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static String runPhobius(String email, String title, ProteinSequence sequence, String stype, String format) throws ClientProtocolException, IOException {
+	public static String runPhobius(String email, String title, AbstractSequence<?> sequence, String stype, String format) throws ClientProtocolException, IOException {
 	    
 		List<NameValuePair> nameValuePairs = new ArrayList<> ();
 	
