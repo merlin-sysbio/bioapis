@@ -34,7 +34,8 @@ public class EbiRunnable extends Observable implements Runnable {
 	private AtomicInteger errorCounter;
 	private AtomicInteger sequencesCounter;
 	private long waitingPeriod;
-	private static final String email = "odias@deb.uminho.pt";
+//	private static final String email = "odias@deb.uminho.pt";
+	private String email;
 	final static Logger logger = LoggerFactory.getLogger(EbiRunnable.class);
 	private Map<String,String> ec2go, sl2go, interpro2go;
 
@@ -51,7 +52,7 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param waitingPeriod
 	 */
 	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, AbstractSequence<?>> genome, ConcurrentHashMap<String, Object> results, 
-			 AtomicInteger errorCounter, AtomicInteger sequencesCounter, AtomicBoolean cancel, long waitingPeriod) {
+			 AtomicInteger errorCounter, AtomicInteger sequencesCounter, AtomicBoolean cancel, long waitingPeriod, String email) {
 
 		super();
 		this.requests = requests;
@@ -62,6 +63,7 @@ public class EbiRunnable extends Observable implements Runnable {
 		this.errorCounter = errorCounter;
 		this.waitingPeriod = waitingPeriod;
 		this.sequencesCounter = sequencesCounter;
+		this.email = email;
 	}
 
 	/**
