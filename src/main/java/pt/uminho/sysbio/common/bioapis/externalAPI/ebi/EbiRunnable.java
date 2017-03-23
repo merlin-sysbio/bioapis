@@ -73,10 +73,11 @@ public class EbiRunnable extends Observable implements Runnable {
 	 * @param requests
 	 * @param genome
 	 * @param results
-	 * @param waitingPeriod 
+	 * @param waitingPeriod
+	 * @param email
 	 */
 	public EbiRunnable(EbiTool tool, ConcurrentLinkedQueue<String> requests, Map<String, AbstractSequence<?>> genome, 
-			ConcurrentHashMap<String, Object> results, long waitingPeriod) {
+			ConcurrentHashMap<String, Object> results, long waitingPeriod, String email) {
 
 		super();
 		this.requests = requests;
@@ -87,6 +88,7 @@ public class EbiRunnable extends Observable implements Runnable {
 		this.errorCounter = new AtomicInteger(0);
 		this.sequencesCounter = new AtomicInteger(0);
 		this.waitingPeriod = waitingPeriod;
+		this.email = email;
 	}
 
 

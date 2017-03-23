@@ -27,7 +27,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro.InterProResultsL
 public class EbiAPI extends Observable implements Observer {
 
 	final static Logger logger = LoggerFactory.getLogger(EbiAPI.class);
-	private String email = "odias@deb.uminho.pt";
+	//private String email = "odias@deb.uminho.pt";
 	
 	/**
 	 * Get number of helices on phobius for every gene in a genome.
@@ -38,11 +38,12 @@ public class EbiAPI extends Observable implements Observer {
 	 * @param cancel
 	 * @param waitingPeriod
 	 * @param sequencesCounter 
+	 * @param email 
 	 * @return
 	 * @throws InterruptedException 
 	 */
 	public Map<String, Integer> getHelicesFromPhobius(Map<String, AbstractSequence<?>> genome, AtomicInteger errorCounter, AtomicBoolean cancel,
-			long waitingPeriod, AtomicInteger sequencesCounter) throws InterruptedException {
+			long waitingPeriod, AtomicInteger sequencesCounter, String email) throws InterruptedException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
@@ -82,10 +83,11 @@ public class EbiAPI extends Observable implements Observer {
 	 * 
 	 * @param genome
 	 * @param waitingPeriod 
+	 * @param email 
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public static Map<String, Integer> getHelicesFromPhobius(Map<String, AbstractSequence<?>> genome, long waitingPeriod) throws InterruptedException {
+	public static Map<String, Integer> getHelicesFromPhobius(Map<String, AbstractSequence<?>> genome, long waitingPeriod, String email) throws InterruptedException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
@@ -102,7 +104,7 @@ public class EbiAPI extends Observable implements Observer {
 
 			for(int i=0; i<threadsNumber; i++) {
 
-				Runnable lc	= new EbiRunnable(EbiTool.PHOBIUS, requests, genome, results, waitingPeriod);
+				Runnable lc	= new EbiRunnable(EbiTool.PHOBIUS, requests, genome, results, waitingPeriod, email);
 
 				Thread thread = new Thread(lc);
 				threads.add(thread);
@@ -187,11 +189,12 @@ public class EbiAPI extends Observable implements Observer {
 	 * 
 	 * @param genome
 	 * @param waitingPeriod
+	 * @param email
 	 * @return
 	 * @throws InterruptedException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static Map<String, InterProResultsList> getInterProAnnotations(Map<String, AbstractSequence<?>> genome, long waitingPeriod) throws InterruptedException, IOException {
+	public static Map<String, InterProResultsList> getInterProAnnotations(Map<String, AbstractSequence<?>> genome, long waitingPeriod, String email) throws InterruptedException, IOException {
 
 		ConcurrentHashMap<String, Object> results = new ConcurrentHashMap<>();
 		ConcurrentLinkedQueue<String> requests = new ConcurrentLinkedQueue<>(genome.keySet());
@@ -211,7 +214,7 @@ public class EbiAPI extends Observable implements Observer {
 
 			for(int i=0; i<threadsNumber; i++) {
 
-				Runnable lc	= new EbiRunnable(EbiTool.INTERPRO, requests, genome, results, waitingPeriod);
+				Runnable lc	= new EbiRunnable(EbiTool.INTERPRO, requests, genome, results, waitingPeriod, email);
 				
 				((EbiRunnable) lc).setEc2go(ec2go);
 				((EbiRunnable) lc).setSl2go(sl2go);

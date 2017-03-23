@@ -32,7 +32,6 @@ public class EbiWebServices {
 	public static String runInterProScan(String email, String title, AbstractSequence<?> sequence, String goterms, String pathways, List<String> appls) throws IOException {
        
         List<NameValuePair> nameValuePairs = new ArrayList<> ();
-
         nameValuePairs.add(new BasicNameValuePair("email", email));
         nameValuePairs.add(new BasicNameValuePair("title", title));
         nameValuePairs.add(new BasicNameValuePair("goterms", goterms));
@@ -40,7 +39,6 @@ public class EbiWebServices {
         nameValuePairs.add(new BasicNameValuePair("sequence", sequence.getSequenceAsString()));
         for (String appl : appls)
         	nameValuePairs.add(new BasicNameValuePair("appl", appl));
-        
         
 		return EbiRestful.makeRequest("iprscan5",nameValuePairs);
 	}
@@ -82,7 +80,6 @@ public class EbiWebServices {
 	public static String runPhobius(String email, String title, AbstractSequence<?> sequence, String stype, String format) throws ClientProtocolException, IOException {
 	    
 		List<NameValuePair> nameValuePairs = new ArrayList<> ();
-	
 	    nameValuePairs.add(new BasicNameValuePair("email", email));
 	    nameValuePairs.add(new BasicNameValuePair("title", title));
 	    nameValuePairs.add(new BasicNameValuePair("stype", stype));

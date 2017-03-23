@@ -49,8 +49,9 @@ public class EbiTests {
 		
 		long startTime = GregorianCalendar.getInstance().getTimeInMillis();
 		long waitingPeriod = 180000;
+		String email = "test@ceb.uminho.pt";
 
-		Map<String, InterProResultsList> interPro = EbiAPI.getInterProAnnotations(genome, waitingPeriod);
+		Map<String, InterProResultsList> interPro = EbiAPI.getInterProAnnotations(genome, waitingPeriod, email);
 		
 		for(String key: interPro.keySet()) {
 			
@@ -82,8 +83,9 @@ public class EbiTests {
 		
 		long startTime = GregorianCalendar.getInstance().getTimeInMillis();
 		long waitingPeriod = 180000;
+		String email = "test@ceb.uminho.pt";
 
-		Map<String, Integer> phobius = EbiAPI.getHelicesFromPhobius(genome, waitingPeriod);
+		Map<String, Integer> phobius = EbiAPI.getHelicesFromPhobius(genome, waitingPeriod, email);
 		
 		for(String key: phobius.keySet())			
 			logger.info("{} has {} helices.",key,phobius.get(key));
