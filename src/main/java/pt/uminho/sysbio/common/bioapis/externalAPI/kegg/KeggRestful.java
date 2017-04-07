@@ -559,6 +559,38 @@ public class KeggRestful {
 
 		return ret;
 	}
+	
+	/**
+	 * @param flatFile
+	 * @param ec
+	 * @return
+	 */
+	private static List<String> retrieveKoSpecificEC(String flatFile, String ec) {
+
+		List<String> ret = new ArrayList<>();
+		String[] lines = flatFile.split(NEW_LINE);
+		for ( int i = 0; i < lines.length; i++) {
+
+			Pattern pattern = Pattern.compile("\\[(.+)\\]");
+			Matcher matcher = pattern.matcher(lines[i]);
+
+			boolean addKO = false;
+			
+			if (matcher.find()) {
+				
+				String ecNumbers = matcher.group(1).replaceAll("EC:", "");
+				
+				for(String ecNumber : ecNumbers.split(" "))
+					if(ecNumber.equalsIgnoreCase(ec))
+						addKO = true;
+			}
+			
+			if(addKO)
+				ret.add(lines[i].split(TAB)[0].trim()); //prolly not needed !
+		}
+
+		return ret;
+	}
 
 	public static List<String[]> link(String database, String query) throws Exception {
 		String response = fetch(KeggOperation.link, database, query);
@@ -574,7 +606,8 @@ public class KeggRestful {
 	public static List<String> findOrthologsByECnumber(String query) throws Exception {
 
 		String keggFindResult = fetch(KeggOperation.find, "ko", query);
-		List<String> ret = new ArrayList<String>(Arrays.asList(retrieveColumn(keggFindResult, 0)));
+		
+		List<String> ret = retrieveKoSpecificEC(keggFindResult, query);
 
 		if ( __DEBUG_API__)
 			System.out.println( ret);

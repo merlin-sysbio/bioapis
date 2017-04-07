@@ -20,4 +20,10 @@ public class KeggTests {
 		System.out.println(KeggRestful.fetch(KeggOperation.get, "cpd:C15025"));
 		KeggRestful.fetch(KeggOperation.get, "cpd:C15025");
 	}
+	
+	@Test
+	public void koTest() throws Exception {
+		
+		System.out.println(KeggRestful.findOrthologsByECnumber("2.1.1.5"));
+	}
 }

@@ -577,7 +577,8 @@ public class NcbiAPI {
 				homologuesData.setEntryUniProtStarred(entryData.getUniprotReviewStatus());
 				homologuesData.setUniprotLocusTag(entryData.getLocusTag());
 				homologuesData.setUniProtEntryID(entryData.getEntryID());
-				homologuesData.setEntryUniprotECnumbers(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+				if(entryData.getEcNumbers()!=null)
+					homologuesData.setEntryUniprotECnumbers(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", ""));
 			}
 		}
 		catch (Exception e) {
