@@ -187,9 +187,10 @@ public class KeggRestful {
 
 			br.close();
 		} 
-		catch(SocketTimeoutException e){
+		catch(SocketTimeoutException e) {
 			
 			e.printStackTrace();
+			System.out.println(url);
 			
 			if(num<MAX_TRIES){
 				num++;
