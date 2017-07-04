@@ -34,35 +34,9 @@ public class EntrezTaxonomy {
 	/**
 	 * @param taxonomy_ids_list
 	 * @param trialCounter
-	 */
-	public Map<String,String[]> getTaxID_and_Superkingdom(List<List<String>> taxonomy_ids_list, int trialCounter) {
-
-		Map<String,String[]> result = null;
-		try {
-
-
-			result = this.getTaxID_and_Superkingdom(taxonomy_ids_list);
-		} 
-		catch(Exception e) {
-
-			int newTrial = trialCounter+1;
-
-			if(newTrial<10) {
-
-				result = null;
-				System.out.println("Trial getTaxonList "+newTrial);
-				result = this.getTaxID_and_Superkingdom(taxonomy_ids_list, newTrial);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * @param taxonomy_ids_list
-	 * @param trialCounter
 	 * @throws Exception 
 	 */
-	private Map<String,String[]> getTaxID_and_Superkingdom(List<List<String>> taxonomy_ids_list) throws Exception {
+	public Map<String,String[]> getTaxID_and_Superkingdom(List<List<String>> taxonomy_ids_list) throws Exception {
 
 		Map<String,String[]> result = new HashMap<String, String[]>();
 
@@ -111,10 +85,10 @@ public class EntrezTaxonomy {
 	public Map<String,String[]> getTaxonList(String taxonomy_ids) throws IllegalArgumentException {
 
 		Map<String,String[]> result = null;
+		
 		try {
 
 			result = this.getTaxonListMethod(taxonomy_ids);
-
 		}
 		catch (Error e) {
 
@@ -122,14 +96,13 @@ public class EntrezTaxonomy {
 		}
 		catch(IllegalArgumentException e) {
 
-			throw e;
+				throw e;
 		}
 		return result;
 	}
 
 	/**
 	 * @param taxonomy_ids
-	 * @param trialCounter
 	 * @throws Exception 
 	 */
 	private Map<String,String[]> getTaxonListMethod(String taxonomy_ids) throws IllegalArgumentException {

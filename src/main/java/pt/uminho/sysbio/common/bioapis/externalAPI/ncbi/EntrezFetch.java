@@ -288,7 +288,6 @@ public class EntrezFetch {
 				if(features.get("db_xref").startsWith("UniProtKB/TrEMBL"))
 					entryData.setUniprotReviewStatus("false");
 			}
-
 		}
 
 		return entryData;

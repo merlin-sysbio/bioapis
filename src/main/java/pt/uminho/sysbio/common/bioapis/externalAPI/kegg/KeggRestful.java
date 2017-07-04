@@ -509,7 +509,10 @@ public class KeggRestful {
 		if ( __DEBUG_API__)
 			logger.debug("ret {}",ret);
 		
-		return ret.get(0);
+		if(ret.size()>0)
+			return ret.get(0);
+		else
+			return null;
 	}
 
 

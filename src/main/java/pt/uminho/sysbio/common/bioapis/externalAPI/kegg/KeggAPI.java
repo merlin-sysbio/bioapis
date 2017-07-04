@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.slf4j.Logger;
@@ -333,9 +334,9 @@ public class KeggAPI {
 			}
 
 			return entry.getReactionIds();
-			
+
 		} catch (Exception e) {
-			
+
 			logger.error("error {}",e);
 			throw e;
 		}
@@ -538,7 +539,7 @@ public class KeggAPI {
 
 		return toReturn;
 	}
-	
+
 	public static List<String> splitLinesGetOrthologues(List<String> data){
 		if(data == null)
 			return null;
@@ -861,7 +862,7 @@ public class KeggAPI {
 		Map<String, List<String>> map = parseFullEntry( KeggRestful.getDBEntry(KeggDB.ORTHOLOGY, ortholog));
 
 		if(map.containsKey("BRITE")) {
-			
+
 			String[] brite_list = map.get("BRITE").toArray(new String[0]);
 
 			Pattern pattern = Pattern.compile("(\\d{1}(\\.[\\d+,-]){3})");
@@ -1234,7 +1235,7 @@ public class KeggAPI {
 		return ret;
 	}
 
-	
+
 	/**
 	 * Get the gene function from query.
 	 * 
@@ -1243,49 +1244,84 @@ public class KeggAPI {
 	 * @throws Exception
 	 */
 	public static String getProduct(String query) {
-		
+
 		try {
-			
+
 			EntryData entryData = KeggAPI.getEntryData(query);
-			
-			String function = entryData.getFunction();
-			
-			if(entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
-				function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
-			
-			return function;
+
+			return getProduct(entryData);
 		} 
 		catch (Exception e) {
-			
+
 			return null;
 		}
 	}
-	
+
+
+	/**
+	 * Get the gene function from entryData.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getProduct(EntryData entryData) {
+
+		try {
+
+			String function = entryData.getFunction();
+
+			if(entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
+				function = function .concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
+
+			return function;
+		} 
+		catch (Exception e) {
+
+			return null;
+		}
+	}
+
+
 	/**
 	 * @param gene
 	 * @return
 	 * @throws Exception 
 	 */
 	public static EntryData getEntryData(String query) throws Exception {
-		
+
 		EntryData entryData = new EntryData(query);
-		
+
 		String gene = KeggRestful.findFirstGeneQuery(query);
-		
-		Map<String, List<String>> map = KeggAPI.getGenesByID(gene);
-		
-		entryData.setFunction(map.get("DEFINITION").get(0));
-		
-		String orthology = map.get("ORTHOLOGY").get(0);
-		
-		if(orthology.contains("EC:")) {
+
+		if(gene!=null) {
 			
-			Set<String> ecs = new HashSet<>(new ArrayList<>(Arrays.asList(map.get("ORTHOLOGY").get(0).split("EC:")[1].split(","))));
-			entryData.setEcNumbers(ecs);
+			Map<String, List<String>> map = KeggAPI.getGenesByID(gene);
+
+			entryData.setFunction(map.get("DEFINITION").get(0));
+
+			String orthology = "";
+
+			if(map.get("ORTHOLOGY")!=null)
+				orthology = map.get("ORTHOLOGY").get(0);
+
+			if(orthology.contains("EC:")) {
+
+				Set<String> ecs = new HashSet<>(new ArrayList<>(Arrays.asList(map.get("ORTHOLOGY").get(0).split("EC:")[1].split(","))));
+				entryData.setEcNumbers(ecs);
+			}
+
+			String locus = map.get("ENTRY").get(0).split("\\s")[0].trim();
+			if(StringUtils.isNumeric(locus)) {
+
+				if(map.containsKey("NAME") && map.get("NAME") != null && !map.get("NAME").isEmpty() && map.get("NAME").get(0)!=null)
+					locus = map.get("NAME").get(0).split(",")[0].trim();
+			}
+
+			entryData.setLocusTag(locus);		
+
+			entryData.setOrganism(map.get("ORGANISM").get(0).split("\\s\\s")[1].trim());
 		}
-		
-		entryData.setLocusTag(map.get("ENTRY").get(0).split("\t")[0]);
-		
 		return entryData;
 	}
 
