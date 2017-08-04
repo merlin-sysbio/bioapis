@@ -973,12 +973,11 @@ public class KeggAPI {
 
 
 		KeggCompoundER result = null;
-		if(cache != null) result = (KeggCompoundER) cache.get(query);
+		if(cache != null) 
+			result = (KeggCompoundER) cache.get(query);
 
 		if(result == null) {
 			String results = KeggRestful.fetch( KeggOperation.get, query); //serv.bget(query);
-
-			//System.out.println("teste "+results);
 
 			if(results!=null) {
 
