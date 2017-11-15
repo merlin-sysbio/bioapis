@@ -9,5 +9,6 @@ public enum NcbiDatabases {
 	gene,
 	biosystems, 
 	genome, 
-	taxonomy
+	taxonomy,
+	assembly
 }

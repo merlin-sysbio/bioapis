@@ -20,6 +20,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.LinkSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
 import retrofit.RetrofitError;
 
@@ -51,8 +52,19 @@ public class NcbiAPITests {
 		}
 
 	}
-
+	
 	@Test
+	public void testLink() {
+		
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+		EntrezService entrezService = entrezServiceFactory.build();
+		
+		ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, "243276[Taxonomy ID]", "xml", "100");
+		System.out.println(eSearchResult.count);
+		System.out.println(eSearchResult.idList);
+	}
+
+	//@Test
 	public void taxonomyList() {
 	
 		String s = "861557, 930089, 665912, 665912, 930090, 336722, 383855, 717646, 1287680, 1287680, 656061, "
@@ -87,6 +99,9 @@ public class NcbiAPITests {
 
 		ELinkResult eLinkResult = entrezService.eLink(NcbiDatabases.protein, NcbiDatabases.gene, "15718680,157427902", "xml");
 		System.out.println(eLinkResult.linkSet);
+		
+		GBSet gbSet = entrezService.eFetch(NcbiDatabases.protein, "CDZ96150.1", "xml");
+		System.out.println(gbSet.gBSeq);
 
 	}
 
