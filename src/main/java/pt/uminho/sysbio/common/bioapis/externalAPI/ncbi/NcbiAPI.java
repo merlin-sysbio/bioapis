@@ -674,7 +674,7 @@ public class NcbiAPI {
 
 		List<String> query = new ArrayList<String>();
 		List<String> queryList = new ArrayList<String>();
-
+		
 		for(String taxID : taxonomyID.values()) {
 
 			if(!ncbiData.getTaxonomyMap().containsKey(taxID)) {
@@ -688,7 +688,7 @@ public class NcbiAPI {
 				}
 			}
 		}
-
+		System.out.println(query);
 		if(query.size() > 0) {
 
 			queryList.add(query.toString());

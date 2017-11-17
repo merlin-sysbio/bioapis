@@ -53,21 +53,36 @@ public class NcbiAPITests {
 	}
 
 	@Test
-	public void taxonomyList() {
+    public void testLink() {
+        
+        EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+        EntrezService entrezService = entrezServiceFactory.build();
+        
+        ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, "243276[Taxonomy ID]", "xml", "100");
+        System.out.println(eSearchResult.count);
+        System.out.println(eSearchResult.idList);
+
+    }
 	
-		String s = "861557, 930089, 665912, 665912, 930090, 336722, 383855, 717646, 1287680, 1287680, 656061, "
-				+ "214684, 283643, 367775, 578456, 561896, 717944, 732165, 650164, 721885, 747525, 741275, "
-				+ "717982, 717982, 694068, 694068, 670483, 486041, 554373, 1381753, 240176, 578458, 597362, "
-				+ "936046, 741705, 578457, 237631, 1277687, 418459, 747676, 431895, 946362, 352472, 352472, "
-				+ "5786, 261658, 261658, 312017, 412030, 412030, 1280413, 556484, 296543, 403677, 67593, "
-				+ "695850, 905079, 185431, 353153, 347515, 435258, 5661, 929439, 420245";
-		
-		EntrezTaxonomy e = new EntrezTaxonomy();
-		Map<String,String[]> m = e.getTaxonList(s);
-		
-		for(String key : m.keySet())
-			System.out.println(key+"\t"+m.get(key)[0]);
-	}
+	
+	
+//	@Test
+//	public void taxonomyList() {
+//	
+//		String s = "861557, 930089, 665912, 665912, 930090, 336722, 383855, 717646, 1287680, 1287680, 656061, "
+//				+ "214684, 283643, 367775, 578456, 561896, 717944, 732165, 650164, 721885, 747525, 741275, "
+//				+ "717982, 717982, 694068, 694068, 670483, 486041, 554373, 1381753, 240176, 578458, 597362, "
+//				+ "936046, 741705, 578457, 237631, 1277687, 418459, 747676, 431895, 946362, 352472, 352472, "
+//				+ "5786, 261658, 261658, 312017, 412030, 412030, 1280413, 556484, 296543, 403677, 67593, "
+//				+ "695850, 905079, 185431, 353153, 347515, 435258, 5661, 929439, 420245";
+//		
+//		EntrezTaxonomy e = new EntrezTaxonomy();
+//		Map<String,String[]> m = e.getTaxonList(s);
+//		
+//		
+//		for(String key : m.keySet())
+//			System.out.println(key+"\t"+m.get(key)[0]);
+//	}
 	
 	//@Test
 	public void taxonomy() {
