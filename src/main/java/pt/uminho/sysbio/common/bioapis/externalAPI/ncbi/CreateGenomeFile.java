@@ -18,9 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.axis2.AxisFault;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
@@ -32,41 +30,23 @@ import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class CreateGenomeFile {
 
-	private String tempPath;
-	private String genomeID;
-	private String today;
+	public static String tempPath = FileUtils.getCurrentTempDirectory();
+	private static String today = CreateGenomeFile.setToday();
+	public static String fastaName = "codingSequences";
+	
 
-	/**
-	 * @param genomeID
-	 * @param numberOfDaysOld
-	 * @param sourceDB
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public CreateGenomeFile(String genomeID, int numberOfDaysOld, String sourceDB, String extension) throws Exception {
-
-		this.today = CreateGenomeFile.setToday();
-		String path = FileUtils.getCurrentTempDirectory();
-		this.genomeID = genomeID;
-		this.tempPath = path;
-		this.createTempFile(numberOfDaysOld, sourceDB, extension);
-	}
-
-	/**
-	 * @param genomeID
-	 * @param path
-	 * @param numberOfDaysOld
-	 * @param sourceDB
-	 * @param extension
-	 * @throws Exception
-	 */
-	public CreateGenomeFile(String genomeID, String path, int numberOfDaysOld, String sourceDB, String extension) throws Exception {
-
-		this.today = CreateGenomeFile.setToday();
-		this.genomeID = genomeID;
-		this.tempPath = path;
-		this.createTempFile(numberOfDaysOld, sourceDB, extension);
-	}
+//	/**
+//	 * @param genomeID
+//	 * @param numberOfDaysOld
+//	 * @param sourceDB
+//	 * @throws IOException
+//	 * @throws ParseException
+//	 */
+//	public static CreateGenomeFile(String databaseName, int numberOfDaysOld, String sourceDB, String extension) throws Exception {
+//		//databaseName
+//		this.createTempFile(numberOfDaysOld, sourceDB, extension);
+//	}
+//
 
 	/**
 	 * @param genomeID
@@ -74,16 +54,16 @@ public class CreateGenomeFile {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, AbstractSequence<?>> getGenomeFromID(String genomeID, String extension) throws Exception {
-
+	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, String extension) throws Exception {
+		
 		try {
 
-			String tempPath = FileUtils.getCurrentTempDirectory();
-
-			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, genomeID, CreateGenomeFile.setToday(), extension)) {
+//			String nameFastaFile = "coding_sequences";
+			
+			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, CreateGenomeFile.setToday(), extension)) {
 
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
-				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+genomeID+extension));
+				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName+fastaName+extension));
 				ret.putAll(aas);
 				
 				return ret;
@@ -97,53 +77,55 @@ public class CreateGenomeFile {
 		return null;
 	}
 
+//	/**
+//	 * @param genomeID
+//	 * @param path
+//	 * @param extension
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	public static Map<String, ProteinSequence> getGenomeFromID(String genomeID, String path, String extension) throws Exception {
+//
+//		if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,path, genomeID, CreateGenomeFile.setToday(), extension)) {
+//
+//			return FastaReaderHelper.readFastaProteinSequence(new File(path+genomeID+extension));
+//		}
+//		return null;
+//	}
+	
 	/**
-	 * @param genomeID
-	 * @param path
-	 * @param extension
+	 * verify if a database directory exists, if not creats it
+	 * @param databaseName
 	 * @return
-	 * @throws Exception
 	 */
-	public static Map<String, ProteinSequence> getGenomeFromID(String genomeID, String path, String extension) throws Exception {
-
-		if(!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,path, genomeID, CreateGenomeFile.setToday(), extension)) {
-
-			return FastaReaderHelper.readFastaProteinSequence(new File(path+genomeID+extension));
-		}
-		return null;
+	public static boolean createFolder(String databaseName) {
+		File newPath = new File(tempPath+databaseName+"/");
+		
+		if (newPath.exists())
+			return false;
+		else 
+			newPath.mkdirs();
+		
+		return true;
 	}
-
-	/**
-	 * @param genomeID
-	 * @param fastaFiles
-	 * @param extension
-	 * @throws Exception
-	 */
-	public CreateGenomeFile(String genomeID, File fastaFiles, String extension) throws Exception {
-
-		this.today = CreateGenomeFile.setToday();
-		String path = FileUtils.getCurrentTempDirectory();
-		this.genomeID = genomeID;
-		this.tempPath = path;
-		this.createGenomeFileFromFasta(fastaFiles, extension);
-	}
-
-
+	
 	/**
 	 * @param fastaFiles
 	 * @throws Exception 
 	 */
-	private void createGenomeFileFromFasta(File fastaFile, String extension) throws Exception {
-
-		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,this.tempPath,this.genomeID,this.today,extension)) {
+	public static void createGenomeFileFromFasta(String databaseName, File fastaFile, String extension) throws Exception {
+		
+		CreateGenomeFile.createFolder(databaseName);
+		
+		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,tempPath,databaseName, today,extension)) {
 
 			Map<String, AbstractSequence<?>> sequences= new HashMap<String, AbstractSequence<?>>();
 
 			//for(File fastFile : fastaFiles)				
 			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
 
-			this.buildFastFile(null, sequences, extension);
-			this.createLogFile(extension);
+			CreateGenomeFile.buildFastFile(databaseName, null, sequences, extension);
+			CreateGenomeFile.createLogFile(databaseName, extension);
 		}
 	}
 
@@ -164,45 +146,45 @@ public class CreateGenomeFile {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, ProteinSequence> getGenome(String extension) throws Exception {
+	public Map<String, ProteinSequence> getGenome(String databaseName, String extension) throws Exception {
 
-		return FastaReaderHelper.readFastaProteinSequence(new File(this.tempPath+this.genomeID+extension));
+		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+fastaName+extension));
 	}
 
 
-	/**
-	 * @param numberOfDaysOld
-	 * @param sourceDB
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	private void createTempFile(int numberOfDaysOld,String sourceDB, String extension) throws Exception{
-
-		new File(this.tempPath).mkdir();
-		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(numberOfDaysOld,this.tempPath,this.genomeID,this.today, extension))
-		{
-			long startTime = System.currentTimeMillis();
-			Pair<Map<String,String>, Map<String,AbstractSequence<?>>> pair = this.getFastaAAGenomeFromEntrezProtein(sourceDB);
-			Map<String, AbstractSequence<?>> sequences = pair.getPairValue();
-			Map<String, String> locusTag = pair.getValue();
-			long endTime = System.currentTimeMillis();
-			System.out.println("Total elapsed time in execution of method is :"+ String.format("%d min, %d sec", 
-					TimeUnit.MILLISECONDS.toMinutes(endTime-startTime),TimeUnit.MILLISECONDS.toSeconds(endTime-startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-startTime))));
-
-			this.buildFastFile(locusTag, sequences, extension);
-			this.createLogFile(extension);
-			//return pair;
-		}
-	}
+//	/**
+//	 * @param numberOfDaysOld
+//	 * @param sourceDB
+//	 * @throws IOException
+//	 * @throws ParseException
+//	 */
+//	private static void createTempFile(String databaseName, int numberOfDaysOld,String sourceDB, String extension) throws Exception{
+//
+//		new File(tempPath).mkdir();
+//		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(numberOfDaysOld,tempPath, databaseName, today, extension))
+//		{
+//			long startTime = System.currentTimeMillis();
+//			Pair<Map<String,String>, Map<String,AbstractSequence<?>>> pair = CreateGenomeFile.getFastaAAGenomeFromEntrezProtein(sourceDB);
+//			Map<String, AbstractSequence<?>> sequences = pair.getPairValue();
+//			Map<String, String> locusTag = pair.getValue();
+//			long endTime = System.currentTimeMillis();
+//			System.out.println("Total elapsed time in execution of method is :"+ String.format("%d min, %d sec", 
+//					TimeUnit.MILLISECONDS.toMinutes(endTime-startTime),TimeUnit.MILLISECONDS.toSeconds(endTime-startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-startTime))));
+//
+//			CreateGenomeFile.buildFastFile(databaseName, locusTag, sequences, extension);
+//			CreateGenomeFile.createLogFile(databaseName, extension);
+//			//return pair;
+//		}
+//	}
 
 	/**
 	 * @param locusTag
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private void buildFastFile(Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
+	private static void buildFastFile(String databaseName, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
 
-		File myFile = new File(this.tempPath+this.genomeID+extension);
+		File myFile = new File(tempPath+"/"+databaseName+"/"+fastaName+extension);
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
@@ -227,12 +209,13 @@ public class CreateGenomeFile {
 	/**
 	 * @throws IOException
 	 */
-	private void createLogFile(String extension) throws IOException{
-
+	private static void createLogFile(String databaseName, String extension) throws IOException{
+		
+		String pathtemp = tempPath;
 		StringBuffer buffer = new StringBuffer();
-		if(new File(this.tempPath+"genomes.log").exists()) {
+		if(new File(pathtemp+"genomes.log").exists()) {
 
-			FileInputStream finstream = new FileInputStream(this.tempPath+"genomes.log");
+			FileInputStream finstream = new FileInputStream(tempPath+"genomes.log");
 			DataInputStream in = new DataInputStream(finstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
@@ -250,11 +233,11 @@ public class CreateGenomeFile {
 			buffer.append("organismID\tdate\n");
 		}
 
-		new File(this.tempPath+"genomes.log");
-		FileWriter fstream = new FileWriter(this.tempPath+"genomes.log");  
+		new File(tempPath+"genomes.log");
+		FileWriter fstream = new FileWriter(tempPath+"genomes.log");  
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.append(buffer);
-		out.write(this.genomeID+extension+"\t"+today);
+		out.write("genome_"+databaseName+extension+"\t"+today);
 		out.close();
 	}
 
@@ -267,7 +250,7 @@ public class CreateGenomeFile {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String genomeID, String today, String extension) throws ParseException, IOException{
+	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databasename, String today, String extension) throws ParseException, IOException{
 
 		if(numberOfDaysOld<0) {
 
@@ -287,7 +270,7 @@ public class CreateGenomeFile {
 
 				String[] data = strLine.split("\t"); 
 
-				if(data[0].equalsIgnoreCase(genomeID+extension)) {
+				if(data[0].equalsIgnoreCase(databasename+extension)) {
 
 					logFileDate = data[1];
 				}
@@ -336,7 +319,7 @@ public class CreateGenomeFile {
 				FileWriter fWriterStream = new FileWriter(tempPath+"genomes.log");  
 				BufferedWriter out = new BufferedWriter(fWriterStream);
 				out.append(buffer);
-				out.write(genomeID+extension+"\t"+logFileDate);
+				out.write(databasename+extension+"\t"+logFileDate);
 				out.close();
 			}
 		}
@@ -351,28 +334,28 @@ public class CreateGenomeFile {
 		return true;
 	}
 
-	/**
-	 * @param genomeID
-	 * @return 
-	 * @throws AxisFault 
-	 */
-	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> getFastaAAGenomeFromEntrezProtein(String sourceDB) throws Exception{
-
-		List<String> ids_list = new ArrayList<String>();
-		ids_list.add(this.genomeID);
-
-		EntrezLink entrezLink = new EntrezLink();
-		List<List<String>> links_list = entrezLink.getLinksList(ids_list, NcbiDatabases.taxonomy, NcbiDatabases.protein,1000);
-
-		EntrezFetch entrezFetch;
-		entrezFetch = new EntrezFetch();
-
-		Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair = entrezFetch.getLocusAndSequencePairFromID(links_list,500,sourceDB);
-
-		pair = this.checkForDuplicates(pair);
-
-		return pair;
-	}
+//	/**
+//	 * @param genomeID
+//	 * @return 
+//	 * @throws AxisFault 
+//	 */
+//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> getFastaAAGenomeFromEntrezProtein(String sourceDB) throws Exception{
+//
+//		List<String> ids_list = new ArrayList<String>();
+//		ids_list.add(this.genomeID);
+//
+//		EntrezLink entrezLink = new EntrezLink();
+//		List<List<String>> links_list = entrezLink.getLinksList(ids_list, NcbiDatabases.taxonomy, NcbiDatabases.protein,1000);
+//
+//		EntrezFetch entrezFetch;
+//		entrezFetch = new EntrezFetch();
+//
+//		Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair = entrezFetch.getLocusAndSequencePairFromID(links_list,500,sourceDB);
+//
+//		pair = this.checkForDuplicates(pair);
+//
+//		return pair;
+//	}
 
 	/**
 	 * @param pair
@@ -467,33 +450,20 @@ public class CreateGenomeFile {
 		return pair;
 	}
 
-	/**
-	 * @return the tempPath
-	 */
-	public String getTempPath() {
-		return tempPath;
-	}
 
-	/**
-	 * @param tempPath the tempPath to set
-	 */
-	public void setTempPath(String tempPath) {
-		this.tempPath = tempPath;
-	}
-
-	/**
-	 * @return the genomeID
-	 */
-	public String getGenomeID() {
-		return genomeID;
-	}
-
-	/**
-	 * @param genomeID the genomeID to set
-	 */
-	public void setGenomeID(String genomeID) {
-		this.genomeID = genomeID;
-	}
+//	/**
+//	 * @return the genomeID
+//	 */
+//	public String getGenomeID() {
+//		return genomeID;
+//	}
+//
+//	/**
+//	 * @param genomeID the genomeID to set
+//	 */
+//	public void setGenomeID(String genomeID) {
+//		this.genomeID = genomeID;
+//	}
 
 	//	public static void main(String [] args) throws Exception{
 	//		//new CreateGenomeFile("83333",5,"",".faa"); // ecoli k12

@@ -46,19 +46,19 @@ public class TestBioapis{
 		//UniProtAPI.stopUniProtService();
 	}
 	
-	public void testGenome() throws Exception{
-		
-		String p = FileUtils.getCurrentTempDirectory()+"../../../merlin-core/temp/";
-		System.out.println(p);
-		
-		Map<String, ProteinSequence> po = CreateGenomeFile.getGenomeFromID("genome_SPE_R6_1",p,".faa");
-		
-		System.out.println(po.keySet());	
-		
-		po = NcbiAPI.getNCBILocusTags(po, 500);
-		
-		System.out.println(po.keySet());		
-	}
+//	public void testGenome() throws Exception{
+//		
+//		String p = FileUtils.getCurrentTempDirectory()+"../../../merlin-core/temp/";
+//		System.out.println(p);
+//		
+//		Map<String, ProteinSequence> po = CreateGenomeFile.getGenomeFromID("genome_SPE_R6_1",p,".faa");
+//		
+//		System.out.println(po.keySet());	
+//		
+//		po = NcbiAPI.getNCBILocusTags(po, 500);
+//		
+//		System.out.println(po.keySet());		
+//	}
 	
 	////@Test
 	public void ncbiTest() throws Exception {

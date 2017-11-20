@@ -36,5 +36,9 @@ public interface EntrezService {
 	@GET("/elink.fcgi")
 	public ELinkResult eLink(@Query("db") NcbiDatabases database, @Query("dbfrom") NcbiDatabases databasefrom, @Query("id") String query, @Query("retmode") String retmode);
 	
+	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id=38841
+	//http://endpoint/cmd/{var}/path0/{var2}?q1=a&q2=b
+	//@GET("/esummary.fcgi")
+	//public ESummaryReport eSummary(@Query("db") NcbiDatabases database, @Query("id") String[] uids)
 	
 }

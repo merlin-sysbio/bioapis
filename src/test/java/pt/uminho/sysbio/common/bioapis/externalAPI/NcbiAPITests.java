@@ -54,19 +54,24 @@ public class NcbiAPITests {
 	}
 	
 	@Test
-    public void testLink() {
+    public void testGetFasta() throws Exception {
         
         EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
         EntrezService entrezService = entrezServiceFactory.build();
         
         ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, "243276[Taxonomy ID]", "xml", "100");
-        System.out.println(eSearchResult.count);
+//        System.out.println(eSearchResult.count);
         System.out.println(eSearchResult.idList);
+//        GBSet res = entrezService.eFetch(NcbiDatabases.assembly, "38841[UID]", "xml"); 
+//        System.out.println(res.gBSeq);
+//        ESummaryReport res = entrezService.eSummary(NcbiDatabases.assembly, [38841]);
+//        System.out.println(res);
+   
 
     }
 	
 	
-	@Test
+//	@Test
 	public void taxonomyList() {
 	
 		String s = "861557, 930089, 665912, 665912, 930090, 336722, 383855, 717646, 1287680, 1287680, 656061, "
@@ -85,7 +90,7 @@ public class NcbiAPITests {
 	}
 	
 	
-	@Test
+//	@Test
 	public void taxonomy() {
 
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
@@ -126,7 +131,7 @@ public class NcbiAPITests {
 		//		System.out.println(NcbiAPI.getNCBILocusTags(s));
 	}
 	
-	//@Test
+//	@Test
 	public void getLocusTest() throws Exception {
 		
 		Set<String> s = new HashSet<>();
@@ -145,11 +150,11 @@ public class NcbiAPITests {
 //		System.out.println(NcbiAPI.getProductAndTaxonomy("WP_003407734.1").getPairValue());
 	}
 	
-	//@Test
+//	@Test
 	public void getTaxTest() {
 
-		EntrezTaxonomy t = new EntrezTaxonomy();
-		System.out.println(t.getTaxonList("5421"));
+		System.out.println(NcbiAPI.getTaxonList("243276"));
+//		System.out.println(NcbiAPI.getTaxonomyFromNCBI(taxID, errorCount));
 	}
 
 }
