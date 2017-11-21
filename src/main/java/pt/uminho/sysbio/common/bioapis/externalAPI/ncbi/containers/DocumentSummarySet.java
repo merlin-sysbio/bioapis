@@ -5,21 +5,25 @@ import java.util.List;
 
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+		
+@Root(name="DocumentSummarySet", strict=false)
+public class DocumentSummarySet {
 	
-@Root(name="GBSet", strict=false)
-public class GBSet {
-	
-	@ElementList(name="GBSeq", inline=true, required=false)
-	public List<GBSeq> gBSeq = new ArrayList<> ();
+	@ElementList(name="DocumentSummary", inline=true, required=false)
+	public List<DocumentSummary> documentSummary = new ArrayList<> ();
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "GBSet [gBSeq=" + gBSeq + "]";
+		return "DocumentSummarySet [documentSummary=" + documentSummary + "]";
 		
 	}
-	
-	
+
 }
+
+
+		
+
+

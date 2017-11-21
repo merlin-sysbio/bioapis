@@ -5,9 +5,13 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +30,10 @@ import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummary;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class CreateGenomeFile {
@@ -33,6 +41,9 @@ public class CreateGenomeFile {
 	public static String tempPath = FileUtils.getCurrentTempDirectory();
 	private static String today = CreateGenomeFile.setToday();
 	public static String fastaName = "codingSequences";
+	private static String aaFastaExtension = "_protein.faa";
+	private static String naFastaExtension = "_genomica.fna";
+	
 	
 
 //	/**
@@ -93,12 +104,125 @@ public class CreateGenomeFile {
 //		return null;
 //	}
 	
+	
+	/** Retrieves assembly information for a given taxonomyID
+	 * @param taxonomyID
+	 * @return eSummaryReport (GenBank and RefSeq accessions, GenBank and RefSeq ftps url,...)
+	 */
+	public static DocumentSummarySet getESummaryFromNCBI(String taxonomyID) {
+		
+		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
+        EntrezService entrezService = entrezServiceFactory.build();
+        
+        ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, taxonomyID +"[Taxonomy ID]", "xml", "100");
+        
+        List<String> idList = eSearchResult.idList;
+        String uids = idList.get(0);
+        idList.remove(0);
+        for(String i:eSearchResult.idList)
+        	uids += ","+i;
+        
+        ESummaryResult eSummaryResult = entrezService.eSummary(NcbiDatabases.assembly, uids);
+        DocumentSummarySet docSummarySet = eSummaryResult.documentSummarySet.get(0);
+        
+        return docSummarySet;
+	}
+	
+	
+	
+	/** Given an assembly UID and a DocumentSummarySet, retrives the desired ftp url
+	 * @param uid
+	 * @param docSumSet
+	 * @param isGenBankFtp
+	 * @return (GenBank/RefSeq) ftp URL
+	 */
+	public static ArrayList<String> getFtpURLFromAssemblyUID(String uid, DocumentSummarySet docSumSet, boolean isGenBankFtp){
+		
+		DocumentSummary document = null;
+
+		for (int i=0; i<docSumSet.documentSummary.size(); i++) {
+			DocumentSummary doc = docSumSet.documentSummary.get(i);
+			if (doc.uid == uid)
+				document = doc;
+		}
+		ArrayList<String> ftpURLinfo = new ArrayList<>();
+		
+		if(isGenBankFtp) {
+			ftpURLinfo.add(document.ftpGenBank);
+			ftpURLinfo.add(document.accessionGenBank);
+			ftpURLinfo.add(document.assemblyName);
+		}
+		else {
+			ftpURLinfo.add(document.ftpRefSeq);
+			ftpURLinfo.add(document.accessionRefSeq);
+			ftpURLinfo.add(document.assemblyName);
+		}
+		
+		return ftpURLinfo;		
+	}
+	
+	
+	
+	/**
+	 * @param ftpURLinfo
+	 * @param isFaa
+	 * @param databaseName
+	 * @throws IOException
+	 */
+	public static void getFastaFromFtpURL(ArrayList<String> ftpURLinfo , boolean isFaa, String databaseName) throws IOException {
+		
+		// para que serve buffer_size?
+		int BUFFER_SIZE = 4096;  
+		
+		String ftpUrl = ftpURLinfo.get(0);
+		String filePath = null;
+		String extension = null;
+		
+		if(isFaa) {
+			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + aaFastaExtension + ".gz";
+			extension = ".faa";
+		}
+		else {
+			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + naFastaExtension + ".gz";
+			extension = ".fna";
+		}
+		
+		String savePath = tempPath + databaseName + "/" + fastaName + extension;		
+		String ftpUrlFile = String.format(ftpUrl, filePath);
+//        System.out.println("URL: " + ftpUrlFile);
+ 
+        try {
+            URL url = new URL(ftpUrlFile);
+            URLConnection conn = url.openConnection();
+            InputStream inputStream = conn.getInputStream();
+ 
+            FileOutputStream outputStream = new FileOutputStream(savePath);
+ 
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead = -1;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+ 
+            outputStream.close();
+            inputStream.close();
+//            System.out.println("File downloaded");
+        } 
+        
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+		
+	
+	
 	/**
 	 * verify if a database directory exists, if not creats it
 	 * @param databaseName
 	 * @return
 	 */
 	public static boolean createFolder(String databaseName) {
+		
 		File newPath = new File(tempPath+databaseName+"/");
 		
 		if (newPath.exists())

@@ -2,6 +2,7 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.ncbi;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
 import retrofit.http.GET;
@@ -38,7 +39,7 @@ public interface EntrezService {
 	
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id=38841
 	//http://endpoint/cmd/{var}/path0/{var2}?q1=a&q2=b
-	//@GET("/esummary.fcgi")
-	//public ESummaryReport eSummary(@Query("db") NcbiDatabases database, @Query("id") String[] uids)
+	@GET("/esummary.fcgi")
+	public ESummaryResult eSummary(@Query("db") NcbiDatabases database, @Query("id") String uid);
 	
 }
