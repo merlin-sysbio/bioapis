@@ -51,7 +51,7 @@ public class DocumentSummary {
 		 */
 		@Override
 		public String toString() {
-			return "DocumentSummary [uid=" + uid + "speciesName=" + speciesName + ", assemblyAccession=" + assemblyAccession + ", assemblyName=" + assemblyName + ", lastUpdateDate=" + lastupdateDate + ", accessionGeneBank="
+			return "DocumentSummary [uid=" + uid + ",speciesName=" + speciesName + ", assemblyAccession=" + assemblyAccession + ", assemblyName=" + assemblyName + ", lastUpdateDate=" + lastupdateDate + ", accessionGeneBank="
 					+ accessionGenBank + ", genbankStatus=" + propertyList.get(3) + ", accessionRefSeq=" + accessionRefSeq + ", refSeqStatus=" + propertyList.get(4) 
 					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + "]";
 		}

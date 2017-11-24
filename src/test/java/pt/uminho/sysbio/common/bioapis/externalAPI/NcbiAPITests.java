@@ -1,21 +1,32 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
+import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.CreateGenomeFile;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezFetch;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
@@ -29,6 +40,8 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResul
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.LinkSet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
+import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators;
+import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
 import retrofit.RetrofitError;
 
 public class NcbiAPITests {
@@ -60,7 +73,7 @@ public class NcbiAPITests {
 
 	}
 	
-//	@Test
+	@Test
     public void testGetFasta() throws Exception {
         
         EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
@@ -78,7 +91,7 @@ public class NcbiAPITests {
 //        GBSet res = entrezService.eFetch(NcbiDatabases.assembly, "38841[UID]", "xml"); 
 //        System.out.println(res.gBSeq);
         ESummaryResult res = entrezService.eSummary(NcbiDatabases.assembly, "706578,38841,30188");
-        System.out.println(res.documentSummarySet.get(0).documentSummary.get(1).assemblyName);
+        System.out.println(res.documentSummarySet.get(0).documentSummary.get(0).lastupdateDate.substring(0,10));
 //        System.out.println(res.assemblyAccession);
 //        System.out.println(res.accessionGenBank);
 //        System.out.println(res.accessionRefSeq);
@@ -88,8 +101,84 @@ public class NcbiAPITests {
 
     }
 	
+
+//    @Test
+    public void testeEnum(){    	
+    	
+//    	FileExtensions fe = FileExtensions.valueOf("assembly_report".toUpperCase());
+//    	System.out.println(fe.extension());
+//    	for(FileExtensions extension: FileExtensions.values())
+//    		System.out.println(extension.extension());
+    	
+    	System.out.println(FileExtensions.valueOf("assembly_report".toUpperCase()).extension());
+    }
+    
+    //@Test
+    public void unzipFiles() throws Exception{
+    	
+    	byte[] buffer = new byte[1024];
+
+		try {
+
+			FileInputStream fileIn = new FileInputStream("D:/projects/merlin/merlin-core/temp/tvol");
+
+			GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
+
+			FileOutputStream fileOutputStream = new FileOutputStream("D:/projects/merlin/merlin-core/temp/tvol/codingSequences.faa");
+
+			int bytes_read;
+
+			while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
+
+				fileOutputStream.write(buffer, 0, bytes_read);
+			}
+
+			gZIPInputStream.close();
+			fileOutputStream.close();
+
+			System.out.println("The file was decompressed successfully!");
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+    }	
+		
+//		@Test
+		public void buildFasta() throws IOException{
+			
+		
+			File fasta = new File("D:/projects/merlin/merlin-core/temp/tvol/codingSequences.faa");
+			
+			Map<String, AbstractSequence<?>> sequences= new HashMap<String, AbstractSequence<?>>();
 	
-	@Test
+			//for(File fastFile : fastaFiles)			
+			
+			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fasta));
+			
+			Map<String, String> locusTag = null;
+	
+			FileWriter fstream = new FileWriter(fasta);  
+			BufferedWriter out = new BufferedWriter(fstream); 
+	
+			for(String key:sequences.keySet()) {
+	
+				String fileKey = key;
+				//Temp solution for new NCBI FASTA Headers
+				fileKey = fileKey.split("\\s")[0];
+	
+				if(locusTag!=null && locusTag.containsKey(key) && locusTag.get(key)!=null)
+					out.write(">"+fileKey+"|"+locusTag.get(key)+"\n");
+				else
+					out.write(">"+fileKey+"\n");
+	
+				out.write(sequences.get(key).getSequenceAsString()+"\n");
+	
+			}
+			out.close();
+		
+		}
+	
+//	@Test
 	public void testDownloadFromFTP() {
 		
 		int BUFFER_SIZE = 4096;  
@@ -107,7 +196,7 @@ public class NcbiAPITests {
 //			extension = ".fna";
 //		}
 		
-		String savePath = "C:/Users/Amaro/Desktop/Teste/GCA_000410535.2_ASM41053v2_protein.faa";		
+		String savePath = "C:/Users/adias/Desktop/Teste/GCA_000410535.2_ASM41053v2_protein.faa.gz";		
 //		String ftpUrlFile = String.format(ftpUrl, filePath);
 //        System.out.println("URL: " + ftpUrlFile);
  

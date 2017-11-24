@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.spi.FileTypeDetector;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,7 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
+import org.antlr.v4.parse.ANTLRParser.labeledAlt_return;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
@@ -34,18 +37,16 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSumma
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
+import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class CreateGenomeFile {
 
 	public static String tempPath = FileUtils.getCurrentTempDirectory();
 	private static String today = CreateGenomeFile.setToday();
-	public static String fastaName = "codingSequences";
-	private static String aaFastaExtension = "_protein.faa";
-	private static String naFastaExtension = "_genomica.fna";
-	
-	
+//	public static String fastaName = "codingSequences";
 
+	
 //	/**
 //	 * @param genomeID
 //	 * @param numberOfDaysOld
@@ -65,16 +66,16 @@ public class CreateGenomeFile {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, String extension) throws Exception {
+	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, String fileExtension) throws Exception {
 		
 		try {
 
 //			String nameFastaFile = "coding_sequences";
 			
-			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, CreateGenomeFile.setToday(), extension)) {
+			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, CreateGenomeFile.setToday(), fileExtension)) {
 
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
-				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName+fastaName+extension));
+				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName+"/"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()));
 				ret.putAll(aas);
 				
 				return ret;
@@ -130,13 +131,13 @@ public class CreateGenomeFile {
 	
 	
 	
-	/** Given an assembly UID and a DocumentSummarySet, retrives the desired ftp url
+	/** Given an assembly UID and a DocumentSummarySet, retrives the desired ftp url info
 	 * @param uid
 	 * @param docSumSet
 	 * @param isGenBankFtp
-	 * @return (GenBank/RefSeq) ftp URL
+	 * @return (GenBank/RefSeq) ftp URL info
 	 */
-	public static ArrayList<String> getFtpURLFromAssemblyUID(String uid, DocumentSummarySet docSumSet, boolean isGenBankFtp){
+	public static List<String> getFtpURLFromAssemblyUID(String uid, DocumentSummarySet docSumSet, boolean isGenBankFtp){
 		
 		DocumentSummary document = null;
 
@@ -145,9 +146,10 @@ public class CreateGenomeFile {
 			if (doc.uid == uid)
 				document = doc;
 		}
-		ArrayList<String> ftpURLinfo = new ArrayList<>();
+		List<String> ftpURLinfo = new ArrayList<>();
 		
 		if(isGenBankFtp) {
+			
 			ftpURLinfo.add(document.ftpGenBank);
 			ftpURLinfo.add(document.accessionGenBank);
 			ftpURLinfo.add(document.assemblyName);
@@ -162,58 +164,88 @@ public class CreateGenomeFile {
 	}
 	
 	
-	
-	/**
+	/** Retrieves files from NCBI ftp
 	 * @param ftpURLinfo
-	 * @param isFaa
+	 * @param fileType
 	 * @param databaseName
 	 * @throws IOException
 	 */
-	public static void getFastaFromFtpURL(ArrayList<String> ftpURLinfo , boolean isFaa, String databaseName) throws IOException {
+	public static void getFilesFromFtpURL(ArrayList<String> ftpURLinfo , String databaseName) throws IOException {
 		
-		// para que serve buffer_size?
 		int BUFFER_SIZE = 4096;  
 		
 		String ftpUrl = ftpURLinfo.get(0);
 		String filePath = null;
-		String extension = null;
 		
-		if(isFaa) {
-			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + aaFastaExtension + ".gz";
-			extension = ".faa";
+		for(FileExtensions extension : FileExtensions.values()){
+	//		if(isFaa)
+				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension() + ".gz";	
+	//		else
+	//			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + naFastaExtension + ".gz";
+			
+			String savePath = tempPath + databaseName + "/" + filePath;		
+			String ftpUrlFile = String.format(ftpUrl, filePath);
+	//        System.out.println("URL: " + ftpUrlFile);
+	 
+	        try {
+	            URL url = new URL(ftpUrlFile);
+	            URLConnection conn = url.openConnection();
+	            InputStream inputStream = conn.getInputStream();
+	 
+	            FileOutputStream outputStream = new FileOutputStream(savePath);
+	 
+	            byte[] buffer = new byte[BUFFER_SIZE];
+	            int bytesRead = -1;
+	            while ((bytesRead = inputStream.read(buffer)) != -1) {
+	                outputStream.write(buffer, 0, bytesRead);
+	            }
+	 
+	            outputStream.close();
+	            inputStream.close();
+	            
+	            CreateGenomeFile.unGunzipFile(savePath, tempPath + databaseName + "/" + extension.extension());
+	            
+	        } 
+	        
+	        catch (IOException ex) {
+	            ex.printStackTrace();
+	        }
 		}
-		else {
-			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + naFastaExtension + ".gz";
-			extension = ".fna";
-		}
-		
-		String savePath = tempPath + databaseName + "/" + fastaName + extension;		
-		String ftpUrlFile = String.format(ftpUrl, filePath);
-//        System.out.println("URL: " + ftpUrlFile);
- 
-        try {
-            URL url = new URL(ftpUrlFile);
-            URLConnection conn = url.openConnection();
-            InputStream inputStream = conn.getInputStream();
- 
-            FileOutputStream outputStream = new FileOutputStream(savePath);
- 
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int bytesRead = -1;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
- 
-            outputStream.close();
-            inputStream.close();
-//            System.out.println("File downloaded");
-        } 
-        
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
-		
+	
+	
+	/**
+	 * @param compressedFile
+	 * @param decompressedFile
+	 */
+	public static void unGunzipFile(String compressedFile, String decompressedFile) {
+
+		byte[] buffer = new byte[1024];
+
+		try {
+
+			FileInputStream fileIn = new FileInputStream(compressedFile);
+
+			GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
+
+			FileOutputStream fileOutputStream = new FileOutputStream(decompressedFile);
+
+			int bytes_read;
+
+			while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
+
+				fileOutputStream.write(buffer, 0, bytes_read);
+			}
+
+			gZIPInputStream.close();
+			fileOutputStream.close();
+
+//			System.out.println("The file was decompressed successfully!");
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 	
 	
 	/**
@@ -272,7 +304,7 @@ public class CreateGenomeFile {
 	 */
 	public Map<String, ProteinSequence> getGenome(String databaseName, String extension) throws Exception {
 
-		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+fastaName+extension));
+		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension()));
 	}
 
 
@@ -308,7 +340,7 @@ public class CreateGenomeFile {
 	 */
 	private static void buildFastFile(String databaseName, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
 
-		File myFile = new File(tempPath+"/"+databaseName+"/"+fastaName+extension);
+		File myFile = new File(tempPath+"/"+databaseName+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
@@ -374,7 +406,7 @@ public class CreateGenomeFile {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databasename, String today, String extension) throws ParseException, IOException{
+	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databasename, String today, String fileExtension) throws ParseException, IOException{
 
 		if(numberOfDaysOld<0) {
 
@@ -394,7 +426,7 @@ public class CreateGenomeFile {
 
 				String[] data = strLine.split("\t"); 
 
-				if(data[0].equalsIgnoreCase(databasename+extension)) {
+				if(data[0].equalsIgnoreCase(databasename+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
 
 					logFileDate = data[1];
 				}
@@ -443,7 +475,7 @@ public class CreateGenomeFile {
 				FileWriter fWriterStream = new FileWriter(tempPath+"genomes.log");  
 				BufferedWriter out = new BufferedWriter(fWriterStream);
 				out.append(buffer);
-				out.write(databasename+extension+"\t"+logFileDate);
+				out.write(databasename+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+logFileDate);
 				out.close();
 			}
 		}
