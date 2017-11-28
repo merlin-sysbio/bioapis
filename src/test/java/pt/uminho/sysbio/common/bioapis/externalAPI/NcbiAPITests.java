@@ -34,6 +34,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummary;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
@@ -79,7 +80,7 @@ public class NcbiAPITests {
         EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
         EntrezService entrezService = entrezServiceFactory.build();
         
-        ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, "243276[Taxonomy ID]", "xml", "100");
+        ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, "322[Taxonomy ID]", "xml", "100");
 //        System.out.println(eSearchResult.count);
 //        System.out.println(eSearchResult.idList.toString());
         List<String> idList = eSearchResult.idList;
@@ -88,16 +89,32 @@ public class NcbiAPITests {
         for(String i:eSearchResult.idList)
         	uids += ","+i;
         System.out.println(uids);
+//        System.out.println(eSearchResult.idList);
 //        GBSet res = entrezService.eFetch(NcbiDatabases.assembly, "38841[UID]", "xml"); 
 //        System.out.println(res.gBSeq);
-        ESummaryResult res = entrezService.eSummary(NcbiDatabases.assembly, "706578,38841,30188");
-        System.out.println(res.documentSummarySet.get(0).documentSummary.get(0).lastupdateDate.substring(0,10));
+        ESummaryResult res = entrezService.eSummary(NcbiDatabases.assembly, uids);
+        System.out.println(res.documentSummarySet.get(0).documentSummary);
 //        System.out.println(res.assemblyAccession);
 //        System.out.println(res.accessionGenBank);
 //        System.out.println(res.accessionRefSeq);
 //        System.out.println(res.ftpGeneBank);
 //        System.out.println(res.ftpRefSeq);
+//        DocumentSummary docSum = res.documentSummarySet.get(0).documentSummary.get(0);
         
+//        String uid = docSum.uid;
+//		String speciesName = docSum.speciesName;
+//		String assemblyAccession = docSum.assemblyAccession;
+//		String lastupdateDate = docSum.lastupdateDate.substring(0, 10);
+//		String accessionGenBank = docSum.accessionGenBank;
+//		String genBankStatus = docSum.propertyList.get(3);
+//		String accessionRefSeq = docSum.accessionRefSeq;
+//		String refSeqStatus = docSum.propertyList.get(4);
+//		
+//		System.out.println("uid=" + uid + "\n" + ", assemblyAccession=" + assemblyAccession + "\n" + ", accessionGeneBank="
+//				+ accessionGenBank + "\n" + ", accessionRefSeq=" + accessionRefSeq );
+//		System.out.println(",speciesName=" + speciesName + "\n" +  ", lastUpdateDate=" + lastupdateDate + "\n" 
+//				+ ", genbankStatus=" + genBankStatus + "\n" + ", refSeqStatus=" + refSeqStatus);
+//        
 
     }
 	
@@ -306,10 +323,10 @@ public class NcbiAPITests {
 	}
 	
 //	@Test
-	public void getTaxTest() {
-
-		System.out.println(NcbiAPI.getTaxonList("243276"));
-//		System.out.println(NcbiAPI.getTaxonomyFromNCBI(taxID, errorCount));
-	}
+//	public void getDocSummarySet() {
+//		
+//		DocumentSummarySet doc = CreateGenomeFile.getESummaryFromNCBI("309800");
+//		System.out.println(doc.documentSummary);
+//	}
 
 }

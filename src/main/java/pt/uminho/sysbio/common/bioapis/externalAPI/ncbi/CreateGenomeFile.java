@@ -118,6 +118,7 @@ public class CreateGenomeFile {
         ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, taxonomyID +"[Taxonomy ID]", "xml", "100");
         
         List<String> idList = eSearchResult.idList;
+        
         String uids = idList.get(0);
         idList.remove(0);
         for(String i:eSearchResult.idList)
@@ -129,6 +130,20 @@ public class CreateGenomeFile {
         return docSummarySet;
 	}
 	
+	/**
+	 * @param docSummaryset
+	 * @return ArrayList<String> assemblyNames
+	 */
+	public static List<String> getAssemblyNames(DocumentSummarySet docSummaryset){
+		
+		List<String> assemblyNames = new ArrayList<>();
+		
+		for (int i=0; i<docSummaryset.documentSummary.size(); i++) {
+			DocumentSummary doc = docSummaryset.documentSummary.get(i);
+			assemblyNames.add(doc.assemblyName);
+		}
+		return assemblyNames;
+	}
 	
 	
 	/** Given an assembly UID and a DocumentSummarySet, retrives the desired ftp url info
