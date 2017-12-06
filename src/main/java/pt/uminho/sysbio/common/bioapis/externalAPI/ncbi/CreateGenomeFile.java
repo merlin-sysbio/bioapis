@@ -70,10 +70,8 @@ public class CreateGenomeFile {
 		
 		try {
 
-//			String nameFastaFile = "coding_sequences";
-			
 			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, CreateGenomeFile.setToday(), fileExtension)) {
-
+				
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
 				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName+"/"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()));
 				ret.putAll(aas);
@@ -393,7 +391,7 @@ public class CreateGenomeFile {
 		FileWriter fstream = new FileWriter(tempPath+"genomes.log");  
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.append(buffer);
-		out.write("genome_"+databaseName+extension+"\t"+today);
+		out.write("genome_"+databaseName+FileExtensions.valueOf(extension.toUpperCase()).extension()+"\t"+today);
 		out.close();
 	}
 
@@ -406,7 +404,7 @@ public class CreateGenomeFile {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databasename, String today, String fileExtension) throws ParseException, IOException{
+	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databaseName, String today, String fileExtension) throws ParseException, IOException{
 
 		if(numberOfDaysOld<0) {
 
@@ -425,8 +423,8 @@ public class CreateGenomeFile {
 			while ((strLine = br.readLine()) != null) {
 
 				String[] data = strLine.split("\t"); 
-
-				if(data[0].equalsIgnoreCase(databasename+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
+				
+				if(data[0].equalsIgnoreCase("genome_"+databaseName+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
 
 					logFileDate = data[1];
 				}
@@ -475,7 +473,7 @@ public class CreateGenomeFile {
 				FileWriter fWriterStream = new FileWriter(tempPath+"genomes.log");  
 				BufferedWriter out = new BufferedWriter(fWriterStream);
 				out.append(buffer);
-				out.write(databasename+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+logFileDate);
+				out.write("genome_"+databaseName+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+logFileDate);
 				out.close();
 			}
 		}

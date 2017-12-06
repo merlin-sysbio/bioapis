@@ -578,7 +578,6 @@ public class KeggAPI {
 	 */
 	public static  Map<String, List<String>> parseFullEntry(String response) {
 		// Split
-
 		String[] lines = response.split("\n");
 		Pattern p = Pattern.compile("^[A-Z].+");
 		Matcher m;

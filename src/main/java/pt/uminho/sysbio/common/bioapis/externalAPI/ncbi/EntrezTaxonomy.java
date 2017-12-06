@@ -111,8 +111,9 @@ public class EntrezTaxonomy {
 		String[] array = new String[2];
 
 		try {
-
+			
 			String query = new String(taxonomy_ids.toString().replace("[", "").replace("]", "").replace(" ", "").getBytes(),"UTF-8");
+			
 			TaxaSet taxaSet = this.entrezService.eFetchTaxonomy("taxonomy", query, "xml");
 
 
@@ -149,7 +150,7 @@ public class EntrezTaxonomy {
 			throw new Error("Service unavailable!");
 		}
 		catch(Exception e) {
-
+			
 			//e.printStackTrace();
 			logger.error("taxonomy id {}",taxonomy_ids);
 			throw new IllegalArgumentException("Error retrieving taxonomy information.\n"+e.getMessage()); 

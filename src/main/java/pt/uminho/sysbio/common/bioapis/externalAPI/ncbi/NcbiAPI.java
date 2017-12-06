@@ -688,7 +688,6 @@ public class NcbiAPI {
 				}
 			}
 		}
-		System.out.println(query);
 		if(query.size() > 0) {
 
 			queryList.add(query.toString());
