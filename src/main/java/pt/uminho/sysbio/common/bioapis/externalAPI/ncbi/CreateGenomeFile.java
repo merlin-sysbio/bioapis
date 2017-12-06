@@ -5,11 +5,15 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.spi.FileTypeDetector;
@@ -37,6 +41,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSumma
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
+import pt.uminho.sysbio.common.bioapis.externalAPI.sbml_semantics.SemanticSbmlAPI.Database;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
@@ -121,8 +126,10 @@ public class CreateGenomeFile {
         
         String uids = idList.get(0);
         idList.remove(0);
-        for(String i:eSearchResult.idList)
-        	uids += ","+i;
+        if(idList.size()>0) {
+        	for(String i:eSearchResult.idList)
+        		uids += ","+i;
+        }
         
         ESummaryResult eSummaryResult = entrezService.eSummary(NcbiDatabases.assembly, uids);
         DocumentSummarySet docSummarySet = eSummaryResult.documentSummarySet.get(0);
@@ -146,33 +153,82 @@ public class CreateGenomeFile {
 	}
 	
 	
+	public static void saveAssemblyRecordInfo(DocumentSummary docSum, String databaseName) {
+		
+		PrintWriter writer;
+		String uid = docSum.uid;
+		String speciesName = docSum.speciesName;
+		String assemblyAccession = docSum.assemblyAccession;
+		String lastupdateDate = docSum.lastupdateDate.substring(0, 10);
+		String accessionGenBank = docSum.accessionGenBank;
+		String genBankStatus = docSum.propertyList.get(3);
+		String accessionRefSeq = docSum.accessionRefSeq;
+		String refSeqStatus = docSum.propertyList.get(4);
+		String taxonomyID = docSum.taxonomyID;
+		
+		try {
+			writer = new PrintWriter(tempPath + databaseName + "/" + taxonomyID+ "/" +"assemblyRecordInfo.txt", "UTF-8");
+			writer.println("UID: " + uid + System.getProperty("line.separator") + "Assembly Accession: " + assemblyAccession + System.getProperty("line.separator")
+				+ "Accession GeneBank: " + accessionGenBank + System.getProperty("line.separator") + "Accession RefSeq: " + accessionRefSeq);
+			writer.println("Species Name: " + speciesName + System.getProperty("line.separator") +  "Last Update Date: " + lastupdateDate + System.getProperty("line.separator") 
+				+ "GenBank Status: " + genBankStatus + System.getProperty("line.separator") + "RefSeq Status: " + refSeqStatus);
+			writer.close();
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public static List<String> getAssemblyRecordInfo(String databaseName, String taxonomyID) {
+		
+		String filePath = tempPath + databaseName + "/" + taxonomyID + "/" +"assemblyRecordInfo.txt";
+		List<String> assemblyInfo = null;
+		
+		try {
+			 assemblyInfo = FileUtils.readLines(filePath);
+		} 
+		
+		catch (IOException e) {
+         e.printStackTrace();
+		} 
+		
+		return assemblyInfo;
+	}
+	
 	/** Given an assembly UID and a DocumentSummarySet, retrives the desired ftp url info
 	 * @param uid
 	 * @param docSumSet
 	 * @param isGenBankFtp
 	 * @return (GenBank/RefSeq) ftp URL info
 	 */
-	public static List<String> getFtpURLFromAssemblyUID(String uid, DocumentSummarySet docSumSet, boolean isGenBankFtp){
+	public static ArrayList<String> getFtpURLFromAssemblyUID(DocumentSummary documentSummary, boolean isGenBankFtp){
 		
-		DocumentSummary document = null;
+//		DocumentSummary document = null;
 
-		for (int i=0; i<docSumSet.documentSummary.size(); i++) {
-			DocumentSummary doc = docSumSet.documentSummary.get(i);
-			if (doc.uid == uid)
-				document = doc;
-		}
-		List<String> ftpURLinfo = new ArrayList<>();
+//		for (int i=0; i<docSumSet.documentSummary.size(); i++) {
+//			DocumentSummary doc = docSumSet.documentSummary.get(i);
+//			if (doc.uid == uid)
+//				document = doc;
+//		}
+		ArrayList<String> ftpURLinfo = new ArrayList<>();
 		
 		if(isGenBankFtp) {
 			
-			ftpURLinfo.add(document.ftpGenBank);
-			ftpURLinfo.add(document.accessionGenBank);
-			ftpURLinfo.add(document.assemblyName);
+			ftpURLinfo.add(documentSummary.ftpGenBank);
+			ftpURLinfo.add(documentSummary.accessionGenBank);
+			ftpURLinfo.add(documentSummary.assemblyName.replace(" ", "_"));
+			ftpURLinfo.add(documentSummary.taxonomyID);
 		}
 		else {
-			ftpURLinfo.add(document.ftpRefSeq);
-			ftpURLinfo.add(document.accessionRefSeq);
-			ftpURLinfo.add(document.assemblyName);
+			ftpURLinfo.add(documentSummary.ftpRefSeq);
+			ftpURLinfo.add(documentSummary.accessionRefSeq);
+			ftpURLinfo.add(documentSummary.assemblyName.replace(" ", "_"));
+			ftpURLinfo.add(documentSummary.taxonomyID);
 		}
 		
 		return ftpURLinfo;		
@@ -191,15 +247,21 @@ public class CreateGenomeFile {
 		
 		String ftpUrl = ftpURLinfo.get(0);
 		String filePath = null;
+		String savePath = null;
 		
 		for(FileExtensions extension : FileExtensions.values()){
-	//		if(isFaa)
-				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension() + ".gz";	
-	//		else
-	//			filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + naFastaExtension + ".gz";
+			if(extension.equals(FileExtensions.valueOf("ASSEMBLY_REPORT")) || extension.equals(FileExtensions.valueOf("ASSEMBLY_STATS"))) {
+				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension();	
+				savePath = tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.extension();
+			}
+			else {
+				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension() + ".gz";
+				savePath = tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + filePath;	
+			}
 			
-			String savePath = tempPath + databaseName + "/" + filePath;		
-			String ftpUrlFile = String.format(ftpUrl, filePath);
+			
+			String ftpUrlFile = ftpUrl + "/" + filePath;
+//			String ftpUrlFile = String.format(ftpUrl, filePath);
 	//        System.out.println("URL: " + ftpUrlFile);
 	 
 	        try {
@@ -218,10 +280,11 @@ public class CreateGenomeFile {
 	            outputStream.close();
 	            inputStream.close();
 	            
-	            CreateGenomeFile.unGunzipFile(savePath, tempPath + databaseName + "/" + extension.extension());
+	            if(!extension.equals(FileExtensions.valueOf("ASSEMBLY_REPORT")) && !extension.equals(FileExtensions.valueOf("ASSEMBLY_STATS"))) 
+	            	CreateGenomeFile.unGunzipFile(savePath, tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.extension());
 	            
 	        } 
-	        
+	         
 	        catch (IOException ex) {
 	            ex.printStackTrace();
 	        }
@@ -268,12 +331,13 @@ public class CreateGenomeFile {
 	 * @param databaseName
 	 * @return
 	 */
-	public static boolean createFolder(String databaseName) {
+	public static boolean createFolder(String databaseName, String taxonomyID) {
 		
-		File newPath = new File(tempPath+databaseName+"/");
+		File newPath = new File(tempPath+databaseName+"/"+taxonomyID+"/");
 		
 		if (newPath.exists())
 			return false;
+		
 		else 
 			newPath.mkdirs();
 		
@@ -284,9 +348,9 @@ public class CreateGenomeFile {
 	 * @param fastaFiles
 	 * @throws Exception 
 	 */
-	public static void createGenomeFileFromFasta(String databaseName, File fastaFile, String extension) throws Exception {
+	public static void createGenomeFileFromFasta(String databaseName, String taxonomyID, File fastaFile, String extension) throws Exception {
 		
-		CreateGenomeFile.createFolder(databaseName);
+		CreateGenomeFile.createFolder(databaseName, taxonomyID);
 		
 		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,tempPath,databaseName, today,extension)) {
 
@@ -295,8 +359,8 @@ public class CreateGenomeFile {
 			//for(File fastFile : fastaFiles)				
 			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
 
-			CreateGenomeFile.buildFastFile(databaseName, null, sequences, extension);
-			CreateGenomeFile.createLogFile(databaseName, extension);
+			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, null, sequences, extension);
+			CreateGenomeFile.createLogFile(databaseName, taxonomyID, extension);
 		}
 	}
 
@@ -317,9 +381,9 @@ public class CreateGenomeFile {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, ProteinSequence> getGenome(String databaseName, String extension) throws Exception {
+	public Map<String, ProteinSequence> getGenome(String taxonomyID, String databaseName, String extension) throws Exception {
 
-		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension()));
+		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension()));
 	}
 
 
@@ -353,9 +417,9 @@ public class CreateGenomeFile {
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private static void buildFastFile(String databaseName, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
+	private static void buildFastFile(String databaseName, String taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
 
-		File myFile = new File(tempPath+"/"+databaseName+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension());
+		File myFile = new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
@@ -380,7 +444,7 @@ public class CreateGenomeFile {
 	/**
 	 * @throws IOException
 	 */
-	private static void createLogFile(String databaseName, String extension) throws IOException{
+	private static void createLogFile(String databaseName, String taxID, String fileExtension) throws IOException{
 		
 		String pathtemp = tempPath;
 		StringBuffer buffer = new StringBuffer();
@@ -408,7 +472,7 @@ public class CreateGenomeFile {
 		FileWriter fstream = new FileWriter(tempPath+"genomes.log");  
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.append(buffer);
-		out.write("genome_"+databaseName+extension+"\t"+today);
+		out.write("genome_"+databaseName+"_"+taxID+"_"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+today);
 		out.close();
 	}
 
@@ -441,7 +505,7 @@ public class CreateGenomeFile {
 
 				String[] data = strLine.split("\t"); 
 
-				if(data[0].equalsIgnoreCase(databasename+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
+				if(data[0].equalsIgnoreCase(databasename+"_"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
 
 					logFileDate = data[1];
 				}

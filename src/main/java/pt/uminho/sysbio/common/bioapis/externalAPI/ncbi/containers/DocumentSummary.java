@@ -15,6 +15,9 @@ public class DocumentSummary {
 		@Attribute(name="uid")
 		public String uid;
 		
+		@Element(name="Taxid", required=true)
+		public String taxonomyID;
+		
 		@Element(name="AssemblyAccession", required=false)
 		public String assemblyAccession;
 		
@@ -53,7 +56,7 @@ public class DocumentSummary {
 		public String toString() {
 			return "DocumentSummary [uid=" + uid + ",speciesName=" + speciesName + ", assemblyAccession=" + assemblyAccession + ", assemblyName=" + assemblyName + ", lastUpdateDate=" + lastupdateDate + ", accessionGeneBank="
 					+ accessionGenBank + ", genbankStatus=" + propertyList.get(3) + ", accessionRefSeq=" + accessionRefSeq + ", refSeqStatus=" + propertyList.get(4) 
-					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + "]";
+					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ",taxonomyID=" + taxonomyID + "]";
 		}
 		
 }
