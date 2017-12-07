@@ -129,7 +129,7 @@ public class NcbiAPITests {
 //    	for(FileExtensions extension: FileExtensions.values())
 //    		System.out.println(extension.extension());
     	
-    	System.out.println(FileExtensions.valueOf("assembly_report".toUpperCase()).extension());
+    	System.out.println(FileExtensions.valueOf("assembly_report".toUpperCase()).getExtension());
     }
     
     //@Test

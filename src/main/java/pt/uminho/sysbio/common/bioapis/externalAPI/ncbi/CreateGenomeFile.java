@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,34 +15,26 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.spi.FileTypeDetector;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import org.antlr.v4.parse.ANTLRParser.labeledAlt_return;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
 
-import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.ceb.biosystems.mew.utilities.io.FileUtils;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummary;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
-import pt.uminho.sysbio.common.bioapis.externalAPI.sbml_semantics.SemanticSbmlAPI.Database;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class CreateGenomeFile {
 
@@ -71,16 +62,16 @@ public class CreateGenomeFile {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, String fileExtension) throws Exception {
+	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, Long taxonomyID, FileExtensions proteinFaa) throws Exception {
 		
 		try {
-
-			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, CreateGenomeFile.setToday(), fileExtension)) {
+			
+			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0,tempPath, databaseName, taxonomyID, CreateGenomeFile.setToday(), proteinFaa)) {
 				
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
-				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName+"/"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()));
+				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(tempPath+databaseName + "/" + taxonomyID +"/"+proteinFaa.getExtension()));
 				ret.putAll(aas);
-				
+
 				return ret;
 			}
 
@@ -249,11 +240,11 @@ public class CreateGenomeFile {
 		
 		for(FileExtensions extension : FileExtensions.values()){
 			if(extension.equals(FileExtensions.valueOf("ASSEMBLY_REPORT")) || extension.equals(FileExtensions.valueOf("ASSEMBLY_STATS"))) {
-				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension();	
-				savePath = tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.extension();
+				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.getExtension();	
+				savePath = tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.getExtension();
 			}
 			else {
-				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.extension() + ".gz";
+				filePath = ftpURLinfo.get(1) + "_" + ftpURLinfo.get(2) + "_" + extension.getExtension() + ".gz";
 				savePath = tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + filePath;	
 			}
 			
@@ -279,7 +270,7 @@ public class CreateGenomeFile {
 	            inputStream.close();
 	            
 	            if(!extension.equals(FileExtensions.valueOf("ASSEMBLY_REPORT")) && !extension.equals(FileExtensions.valueOf("ASSEMBLY_STATS"))) 
-	            	CreateGenomeFile.unGunzipFile(savePath, tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.extension());
+	            	CreateGenomeFile.unGunzipFile(savePath, tempPath + databaseName + "/" + ftpURLinfo.get(3) + "/" + extension.getExtension());
 	            
 	        } 
 	         
@@ -329,7 +320,7 @@ public class CreateGenomeFile {
 	 * @param databaseName
 	 * @return
 	 */
-	public static boolean createFolder(String databaseName, String taxonomyID) {
+	public static boolean createFolder(String databaseName, Long taxonomyID) {
 		
 		File newPath = new File(tempPath+databaseName+"/"+taxonomyID+"/");
 		
@@ -346,11 +337,11 @@ public class CreateGenomeFile {
 	 * @param fastaFiles
 	 * @throws Exception 
 	 */
-	public static void createGenomeFileFromFasta(String databaseName, String taxonomyID, File fastaFile, String extension) throws Exception {
+	public static void createGenomeFileFromFasta(String databaseName, Long taxonomyID, File fastaFile, FileExtensions extension) throws Exception {
 		
 		CreateGenomeFile.createFolder(databaseName, taxonomyID);
 		
-		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,tempPath,databaseName, today,extension)) {
+		if(CreateGenomeFile.currentTemporaryDataIsNOTRecent(-1,tempPath,databaseName, taxonomyID, today, extension)) {
 
 			Map<String, AbstractSequence<?>> sequences= new HashMap<String, AbstractSequence<?>>();
 
@@ -381,7 +372,7 @@ public class CreateGenomeFile {
 	 */
 	public Map<String, ProteinSequence> getGenome(String taxonomyID, String databaseName, String extension) throws Exception {
 
-		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension()));
+		return FastaReaderHelper.readFastaProteinSequence(new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+FileExtensions.valueOf(extension.toUpperCase()).getExtension()));
 	}
 
 
@@ -415,9 +406,9 @@ public class CreateGenomeFile {
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private static void buildFastFile(String databaseName, String taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, String extension) throws IOException{
+	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, FileExtensions extension) throws IOException{
 
-		File myFile = new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+FileExtensions.valueOf(extension.toUpperCase()).extension());
+		File myFile = new File(tempPath+"/"+databaseName+"/"+taxonomyID+"/"+extension.getExtension());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
@@ -442,7 +433,7 @@ public class CreateGenomeFile {
 	/**
 	 * @throws IOException
 	 */
-	private static void createLogFile(String databaseName, String taxID, String fileExtension) throws IOException{
+	private static void createLogFile(String databaseName, Long taxID, FileExtensions extension) throws IOException{
 		
 		String pathtemp = tempPath;
 		StringBuffer buffer = new StringBuffer();
@@ -470,20 +461,23 @@ public class CreateGenomeFile {
 		FileWriter fstream = new FileWriter(tempPath+"genomes.log");  
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.append(buffer);
-		out.write("genome_"+databaseName+"_"+taxID+"_"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+today);
+		out.write("genome_"+databaseName+"_"+taxID+"_"+extension.getExtension()+"\t"+today);
 		out.close();
 	}
 
+	
 	/**
 	 * @param numberOfDaysOld
 	 * @param tempPath
-	 * @param genomeID
+	 * @param databaseName
+	 * @param taxID
 	 * @param today
+	 * @param proteinFaa
 	 * @return
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databaseName, String today, String fileExtension) throws ParseException, IOException{
+	private static boolean currentTemporaryDataIsNOTRecent(int numberOfDaysOld, String tempPath, String databaseName, Long taxID, String today, FileExtensions proteinFaa) throws ParseException, IOException{
 
 		if(numberOfDaysOld<0) {
 
@@ -503,7 +497,7 @@ public class CreateGenomeFile {
 
 				String[] data = strLine.split("\t"); 
 
-				if(data[0].equalsIgnoreCase(databaseName+"_"+FileExtensions.valueOf(fileExtension.toUpperCase()).extension())) {
+				if(data[0].equalsIgnoreCase("genome_"+databaseName+"_"+ taxID +"_"+proteinFaa.getExtension())) {
 
 					logFileDate = data[1];
 				}
@@ -552,7 +546,7 @@ public class CreateGenomeFile {
 				FileWriter fWriterStream = new FileWriter(tempPath+"genomes.log");  
 				BufferedWriter out = new BufferedWriter(fWriterStream);
 				out.append(buffer);
-				out.write("genome_"+databaseName+FileExtensions.valueOf(fileExtension.toUpperCase()).extension()+"\t"+logFileDate);
+				out.write("genome_"+databaseName+proteinFaa.getExtension()+"\t"+logFileDate);
 				out.close();
 			}
 		}
@@ -590,98 +584,98 @@ public class CreateGenomeFile {
 //		return pair;
 //	}
 
-	/**
-	 * @param pair
-	 * @return
-	 */
-	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> checkForDuplicates(Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair) {
-
-		Map<String, String> locustags = pair.getValue();
-		Map<String, AbstractSequence<?>> sequences =  pair.getPairValue();
-		Set<String> locus_to_be_checked = new HashSet<String>();
-
-		List<String> duplicate_keys = new ArrayList<String>();
-
-		for(String key : locustags.keySet()) {
-
-			if(!duplicate_keys.contains(key)) {
-
-				String locus = locustags.get(key);
-				for(String test_key : locustags.keySet()) {
-
-					if(locustags.get(test_key).equals(locus)) {
-
-						duplicate_keys.add(test_key);
-						if(!test_key.equals(key)) {
-
-							locus_to_be_checked.add(key);
-						}
-					}
-				}
-				duplicate_keys.remove(key);
-			}
-		}
-
-		for(String key:duplicate_keys) {
-
-			locustags.remove(key);
-			sequences.remove(key);
-		}
-
-		duplicate_keys = new ArrayList<String>();
-		for(String key : sequences.keySet()) {
-
-			if(!duplicate_keys.contains(key)) {
-
-				AbstractSequence<?> sequence = sequences.get(key);
-				for(String test_key : sequences.keySet()) {
-
-					if(sequences.get(test_key).equals(sequence)) {
-
-						duplicate_keys.add(test_key);
-						if(!test_key.equals(key)) {
-
-							locus_to_be_checked.add(key);
-						}
-					}
-				}
-				duplicate_keys.remove(key);
-
-			}
-		}
-
-		for(String key:duplicate_keys) {
-
-			locustags.remove(key);
-			sequences.remove(key);
-		}
-
-		for(String acc : locus_to_be_checked) {
-
-			String locus = locustags.get(acc);
-			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(acc,0);
-			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-
-				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-			}
-			else {
-
-				uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(locustags.get(acc),0);
-				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-
-					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-				}
-			}
-
-			if(!locus.equalsIgnoreCase(locustags.get(acc))) {
-
-				locustags.put(acc, locus);
-			}
-		}
-		pair.setValue(locustags);
-		pair.setPairValue(sequences);
-		return pair;
-	}
+//	/**
+//	 * @param pair
+//	 * @return
+//	 */
+//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> checkForDuplicates(Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair) {
+//
+//		Map<String, String> locustags = pair.getValue();
+//		Map<String, AbstractSequence<?>> sequences =  pair.getPairValue();
+//		Set<String> locus_to_be_checked = new HashSet<String>();
+//
+//		List<String> duplicate_keys = new ArrayList<String>();
+//
+//		for(String key : locustags.keySet()) {
+//
+//			if(!duplicate_keys.contains(key)) {
+//
+//				String locus = locustags.get(key);
+//				for(String test_key : locustags.keySet()) {
+//
+//					if(locustags.get(test_key).equals(locus)) {
+//
+//						duplicate_keys.add(test_key);
+//						if(!test_key.equals(key)) {
+//
+//							locus_to_be_checked.add(key);
+//						}
+//					}
+//				}
+//				duplicate_keys.remove(key);
+//			}
+//		}
+//
+//		for(String key:duplicate_keys) {
+//
+//			locustags.remove(key);
+//			sequences.remove(key);
+//		}
+//
+//		duplicate_keys = new ArrayList<String>();
+//		for(String key : sequences.keySet()) {
+//
+//			if(!duplicate_keys.contains(key)) {
+//
+//				AbstractSequence<?> sequence = sequences.get(key);
+//				for(String test_key : sequences.keySet()) {
+//
+//					if(sequences.get(test_key).equals(sequence)) {
+//
+//						duplicate_keys.add(test_key);
+//						if(!test_key.equals(key)) {
+//
+//							locus_to_be_checked.add(key);
+//						}
+//					}
+//				}
+//				duplicate_keys.remove(key);
+//
+//			}
+//		}
+//
+//		for(String key:duplicate_keys) {
+//
+//			locustags.remove(key);
+//			sequences.remove(key);
+//		}
+//
+//		for(String acc : locus_to_be_checked) {
+//
+//			String locus = locustags.get(acc);
+//			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(acc,0);
+//			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
+//
+//				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
+//			}
+//			else {
+//
+//				uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(locustags.get(acc),0);
+//				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
+//
+//					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
+//				}
+//			}
+//
+//			if(!locus.equalsIgnoreCase(locustags.get(acc))) {
+//
+//				locustags.put(acc, locus);
+//			}
+//		}
+//		pair.setValue(locustags);
+//		pair.setPairValue(sequences);
+//		return pair;
+//	}
 
 
 //	/**
