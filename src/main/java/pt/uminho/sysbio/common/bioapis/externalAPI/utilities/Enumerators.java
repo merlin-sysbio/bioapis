@@ -32,7 +32,7 @@ public class Enumerators {
 	public enum TypeOfExport{
 		
 		PROTEIN_FAA("protein.faa"), 
-		ALL_FILES("all");
+		ALL_FILES(".mer");
 		
 		private String type;
 		
