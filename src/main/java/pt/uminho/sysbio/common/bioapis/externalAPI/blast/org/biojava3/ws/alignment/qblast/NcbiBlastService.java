@@ -269,7 +269,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 						rid = arr[1].trim();
 					}
 					else if (line.contains("RTOE = ") && !line.contains("myncbi")) {
-
+						
 						logger.debug(line);
 						String[] arr = line.split("=");
 						step = Long.parseLong(arr[1].trim()) * 1000;

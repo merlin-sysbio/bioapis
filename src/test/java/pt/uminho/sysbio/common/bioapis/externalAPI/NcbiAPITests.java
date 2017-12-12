@@ -197,6 +197,29 @@ public class NcbiAPITests {
 		
 		}
 	
+		
+	@Test
+	public void testReadConfExtensions() throws IOException{
+		
+		File extensionFile = new File("D:/projects/merlin/merlin-core/temp/../conf/ftpfiles_extensions.conf");
+		
+		HashMap<String, String> extensions = new HashMap<String,String>();
+		
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(extensionFile));
+
+		String text, type, extension;
+		while ((text = bufferedReader.readLine()) != null) {
+			if(text.toUpperCase().matches("^[A-Z].*$")) {
+				type = text.toUpperCase().split("\t")[0];
+				extension = text.split("\t")[1];
+				
+				extensions.put(type,extension);
+			}
+		}
+		bufferedReader.close();
+	}
+	
+		
 //	@Test
 	public void testDownloadFromFTP() {
 		
@@ -268,7 +291,7 @@ public class NcbiAPITests {
 		System.out.println("Ficheiro escrito com sucesso!");
 	}
 	
-	@Test
+//	@Test
 	public void readTxtFile() {
 		
 		List<String> lista = null;
