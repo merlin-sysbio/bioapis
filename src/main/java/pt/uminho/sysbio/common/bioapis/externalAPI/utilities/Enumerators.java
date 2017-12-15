@@ -13,9 +13,11 @@ public class Enumerators {
 //			GENOMIC_GFF("genomic.gff"),
 			PROTEIN_FAA("protein.faa"), 
 //			PROTEIN_GPFF("protein.gpff"),
-			RNA_FROM_GENOMIC("rna_from_genomic.fna");
+			RNA_FROM_GENOMIC("rna_from_genomic.fna"),
 			//R_RNA_FROM_GENOMIC ("rrna_from_genomic.fna"),
-			//T_RNA_FROM_GENOMIC ("trna_from_genomic.fna");
+			//T_RNA_FROM_GENOMIC ("trna_from_genomic.fna"),
+			CUSTOM_GENBANK_FILE("customGenBankFile");
+
 		
 			private String extension;
 			
@@ -42,6 +44,24 @@ public class Enumerators {
 		
 		public String extension(){
 			return this.type;
+		}
+		
+	}
+	
+	public enum GenBankFiles{
+		
+		PROTEIN_GPFF("protein.gpff"), 
+		GENOMIC_GBFF("genomic.gbff"),
+		CUSTOM_FILE("customGenBankFile");
+		
+		private String file;
+		
+		private GenBankFiles(String file){
+			this.file = file;
+		}
+		
+		public String extension(){
+			return this.file;
 		}
 		
 	}
