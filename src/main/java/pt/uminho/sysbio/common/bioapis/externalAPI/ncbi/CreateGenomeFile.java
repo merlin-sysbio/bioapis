@@ -135,8 +135,17 @@ public class CreateGenomeFile {
 		
 		for (int i=0; i<docSummaryset.documentSummary.size(); i++) {
 			DocumentSummary doc = docSummaryset.documentSummary.get(i);
-			assemblyNames.add(doc.assemblyName);
+			
+			for(String property : doc.propertyList) {
+				
+				if(property.contains("genbank")){
+					
+					if(doc.propertyList.get(doc.propertyList.indexOf(property)-1).equals("latest"))
+						assemblyNames.add(doc.assemblyName);
+				}
+			}
 		}
+		
 		return assemblyNames;
 	}
 	
@@ -149,10 +158,19 @@ public class CreateGenomeFile {
 		String assemblyAccession = docSum.assemblyAccession;
 		String lastupdateDate = docSum.lastupdateDate.substring(0, 10);
 		String accessionGenBank = docSum.accessionGenBank;
-		String genBankStatus = docSum.propertyList.get(3);
 		String accessionRefSeq = docSum.accessionRefSeq;
-		String refSeqStatus = docSum.propertyList.get(4);
 		Long taxonomyID = Long.parseLong(docSum.taxonomyID);
+		String genBankStatus = null;
+		String refSeqStatus = null;
+		
+		for(String property : docSum.propertyList) {
+			
+			if(property.contains("genbank"))
+				genBankStatus = property;
+			
+			if(property.contains("refseq"))
+				refSeqStatus = property;
+		}
 		
 		try {
 			writer = new PrintWriter(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID)  +"assemblyRecordInfo.txt", "UTF-8");

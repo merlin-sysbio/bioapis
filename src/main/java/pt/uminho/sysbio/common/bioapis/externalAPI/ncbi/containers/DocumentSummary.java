@@ -55,8 +55,8 @@ public class DocumentSummary {
 		@Override
 		public String toString() {
 			return "DocumentSummary [uid=" + uid + ",speciesName=" + speciesName + ", assemblyAccession=" + assemblyAccession + ", assemblyName=" + assemblyName + ", lastUpdateDate=" + lastupdateDate + ", accessionGeneBank="
-					+ accessionGenBank + ", genbankStatus=" + propertyList.get(propertyList.size()-2) + ", accessionRefSeq=" + accessionRefSeq + ", refSeqStatus=" + propertyList.get(propertyList.size()-1) 
-					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ",taxonomyID=" + taxonomyID + "]";
+					+ accessionGenBank + ", genbankStatus=" + propertyList.get(propertyList.size()-1) + ", accessionRefSeq=" + accessionRefSeq + ", refSeqStatus=" + propertyList.get(propertyList.size()-2) 
+					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ",taxonomyID=" + taxonomyID + ", assemblyStatus=" + propertyList.get(propertyList.size()-3) + "]";
 		}
 		
 }
