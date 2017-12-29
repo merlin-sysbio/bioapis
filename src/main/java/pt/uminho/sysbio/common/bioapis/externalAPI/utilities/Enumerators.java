@@ -50,7 +50,7 @@ public class Enumerators {
 	
 	public enum GenBankFiles{
 		
-		PROTEIN_GPFF("protein.gpff"), 
+//		PROTEIN_GPFF("protein.gpff"), 
 		GENOMIC_GBFF("genomic.gbff"),
 		CUSTOM_FILE("customGenBankFile");
 		
