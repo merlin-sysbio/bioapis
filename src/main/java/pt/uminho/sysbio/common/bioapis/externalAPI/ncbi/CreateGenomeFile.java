@@ -130,17 +130,31 @@ public class CreateGenomeFile {
 	 * @return ArrayList<String> assemblyNames
 	 */
 	public static List<String> getAssemblyNames(DocumentSummarySet docSummaryset){
-		
+
 		List<String> assemblyNames = new ArrayList<>();
-		
+
 		for (int i=0; i<docSummaryset.documentSummary.size(); i++) {
 			DocumentSummary doc = docSummaryset.documentSummary.get(i);
-			assemblyNames.add(doc.assemblyName);
+
+			for(String property : doc.propertyList) {
+
+				if(property.contains("genbank")){
+
+					if(doc.propertyList.get(doc.propertyList.indexOf(property)-1).equals("latest")) {
+
+						assemblyNames.add(doc.assemblyName);
+					}
+				}
+			}
 		}
 		return assemblyNames;
 	}
 	
 	
+	/**
+	 * @param docSum
+	 * @param databaseName
+	 */
 	public static void saveAssemblyRecordInfo(DocumentSummary docSum, String databaseName) {
 		
 		PrintWriter writer;
@@ -149,10 +163,21 @@ public class CreateGenomeFile {
 		String assemblyAccession = docSum.assemblyAccession;
 		String lastupdateDate = docSum.lastupdateDate.substring(0, 10);
 		String accessionGenBank = docSum.accessionGenBank;
-		String genBankStatus = docSum.propertyList.get(3);
 		String accessionRefSeq = docSum.accessionRefSeq;
-		String refSeqStatus = docSum.propertyList.get(4);
 		Long taxonomyID = Long.parseLong(docSum.taxonomyID);
+		
+		String genBankStatus = null;
+		String refSeqStatus = null;
+
+		
+		for(String property : docSum.propertyList) {
+			
+			if(property.contains("genbank"))
+				genBankStatus = property;
+			
+			if(property.contains("refseq"))
+				refSeqStatus = property;
+		}
 		
 		try {
 			writer = new PrintWriter(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID)  +"assemblyRecordInfo.txt", "UTF-8");
@@ -172,6 +197,11 @@ public class CreateGenomeFile {
 	}
 	
 	
+	/**
+	 * @param databaseName
+	 * @param taxonomyID
+	 * @return
+	 */
 	public static List<String> getAssemblyRecordInfo(String databaseName, String taxonomyID) {
 		
 		Long longTaxID = Long.parseLong(taxonomyID);
