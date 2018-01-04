@@ -130,9 +130,9 @@ public class CreateGenomeFile {
 	 * @return ArrayList<String> assemblyNames
 	 */
 	public static List<String> getAssemblyNames(DocumentSummarySet docSummaryset){
-		
+
 		List<String> assemblyNames = new ArrayList<>();
-		
+
 		for (int i=0; i<docSummaryset.documentSummary.size(); i++) {
 			DocumentSummary doc = docSummaryset.documentSummary.get(i);
 			
@@ -142,6 +142,7 @@ public class CreateGenomeFile {
 					
 					if(doc.propertyList.get(doc.propertyList.indexOf(property)-1).equals("latest"))
 						assemblyNames.add(doc.assemblyName);
+
 				}
 			}
 		}
@@ -150,6 +151,10 @@ public class CreateGenomeFile {
 	}
 	
 	
+	/**
+	 * @param docSum
+	 * @param databaseName
+	 */
 	public static void saveAssemblyRecordInfo(DocumentSummary docSum, String databaseName) {
 		
 		PrintWriter writer;
@@ -190,6 +195,11 @@ public class CreateGenomeFile {
 	}
 	
 	
+	/**
+	 * @param databaseName
+	 * @param taxonomyID
+	 * @return
+	 */
 	public static List<String> getAssemblyRecordInfo(String databaseName, String taxonomyID) {
 		
 		Long longTaxID = Long.parseLong(taxonomyID);
