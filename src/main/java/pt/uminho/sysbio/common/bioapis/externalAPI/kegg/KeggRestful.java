@@ -539,7 +539,25 @@ public class KeggRestful {
 			System.out.println( Arrays.toString(ret));
 		return ret;
 	}
+	
+	
+	/**
+	 * @param taxonomyID
+	 * @return Kegg Entries
+	 * @throws Exception
+	 */
+	public static String[] findKeggEntryByTaxonomyID(String taxID) throws Exception  {
 
+		String keggFindResult = fetch(KeggOperation.find, "genome", taxID);
+
+		String[] ret = retrieveColumn(keggFindResult, 0);
+
+		if ( __DEBUG_API__)
+			System.out.println( Arrays.toString(ret));
+		return ret;
+	}
+	
+	
 	/**
 	 * @param db
 	 * @param entry
