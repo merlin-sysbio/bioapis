@@ -377,8 +377,9 @@ public class KeggRestful {
 		String[] lines = keggListResult.split(NEW_LINE);
 
 		for ( int i = 0; i < lines.length; i++) {
-
+			
 			String[] data = new String[3];
+			
 			data[0] = lines[i].split(TAB)[2];
 			data[0].trim();
 			data[1] = lines[i].split(TAB)[1];
@@ -386,6 +387,11 @@ public class KeggRestful {
 			data[2] = lines[i].split(TAB)[0];
 			data[2].trim();
 			ret.add(data);
+			
+			System.out.println(data[0]);
+			System.out.println(data[1]);
+			System.out.println(data[2]);
+			
 		}
 		return ret;
 	}
