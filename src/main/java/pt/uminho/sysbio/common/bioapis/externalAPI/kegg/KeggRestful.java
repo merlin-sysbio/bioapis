@@ -559,7 +559,7 @@ public class KeggRestful {
 			String[] contents = taxIDs[2].split(";")[0].split(",");
 			
 			for(String content : contents){
-				if(content.equals("322"))
+				if(content.equals(taxID))
 					indexes.add(i);
 			}
 		}
