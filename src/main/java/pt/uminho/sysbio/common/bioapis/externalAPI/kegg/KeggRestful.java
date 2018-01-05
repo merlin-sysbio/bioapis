@@ -25,6 +25,8 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
+
 /**
  * @author Oscar Dias and fxe
  *
@@ -42,7 +44,7 @@ public class KeggRestful {
 	private static final int READ_TIMEOUT = 15000; //miliseconds
 
 	private static final HttpClientParams params = new HttpClientParams();
-	private static final int MAX_TRIES = 3;
+	private static final int MAX_TRIES = 15;
 
 	static {
 		params.setSoTimeout(READ_TIMEOUT);
@@ -189,13 +191,18 @@ public class KeggRestful {
 		} 
 		catch(SocketTimeoutException e) {
 			
-			e.printStackTrace();
-			System.out.println(url);
+			logger.warn("Error: {}\ttry: {}\turl: {}", e.getMessage(), num,  url);
+			
+			MySleep.myWait(3000);
 			
 			if(num<MAX_TRIES){
 				num++;
 				if(__DEBUG_API__) System.out.println("Time out number " + num);
 				body = fetch(operation, num, args);
+			}
+			else {
+				
+				e.printStackTrace();
 			}
 
 		} catch (HttpException e) {
