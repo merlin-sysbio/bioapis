@@ -227,15 +227,15 @@ public class KeggAPI {
 	 */
 	public static List<String> findKeggTaxonomyID(String taxonomyID) throws Exception{
 		
-		String[] keggEntry = KeggRestful.findKeggEntryByTaxonomyID(taxonomyID);
-		List<String> keggID = new ArrayList<String>();
+		String[] keggTaxonomyEntry = KeggRestful.findKeggEntryByTaxonomyID(taxonomyID);
+		List<String> keggTaxonomyID = new ArrayList<String>();
 		
-		for(int i=0 ; i<keggEntry.length; i++){
-			String id = keggEntry[i].split(":")[1];
-			keggID.add(id);
+		for(int i=0 ; i<keggTaxonomyEntry.length; i++){
+			String id = keggTaxonomyEntry[i].split(":")[1];
+			keggTaxonomyID.add(id);
 		}
 		
-		return keggID;
+		return keggTaxonomyID;
 	}
 	
 	

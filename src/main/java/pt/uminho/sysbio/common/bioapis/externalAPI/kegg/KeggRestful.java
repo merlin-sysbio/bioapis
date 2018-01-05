@@ -395,10 +395,6 @@ public class KeggRestful {
 			data[2].trim();
 			ret.add(data);
 			
-//			System.out.println(data[0]);
-//			System.out.println(data[1]);
-//			System.out.println(data[2]);
-			
 		}
 		return ret;
 	}
@@ -556,11 +552,31 @@ public class KeggRestful {
 
 		String keggFindResult = fetch(KeggOperation.find, "genome", taxID);
 
-		String[] ret = retrieveColumn(keggFindResult, 0);
-
+		String[] tNumbers = retrieveColumn(keggFindResult, 0);
+		String[] taxIDs = retrieveColumn(keggFindResult, 1);
+		List<Integer> indexes = new ArrayList<Integer>();
+		
+		for(int i = 0; i<taxIDs.length; i++){
+			
+			String[] contents = taxIDs[i].split(";")[0].split(",");
+			
+			for(String content : contents){
+				if(content.trim().equals(taxID))
+					indexes.add(i);
+			}
+		}
+		
+		String[] keggTaxonomyIDs = new String[indexes.size()];
+		
+		if(!indexes.isEmpty()){
+			for(int index = 0; index<indexes.size(); index++)
+				keggTaxonomyIDs[index] = tNumbers[indexes.get(index)];
+		}
+			
 		if ( __DEBUG_API__)
-			System.out.println( Arrays.toString(ret));
-		return ret;
+			System.out.println( Arrays.toString(keggTaxonomyIDs));
+		
+		return keggTaxonomyIDs;
 	}
 	
 	
