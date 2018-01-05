@@ -135,18 +135,18 @@ public class CreateGenomeFile {
 
 		for (int i=0; i<docSummaryset.documentSummary.size(); i++) {
 			DocumentSummary doc = docSummaryset.documentSummary.get(i);
-
+			
 			for(String property : doc.propertyList) {
-
+				
 				if(property.contains("genbank")){
-
-					if(doc.propertyList.get(doc.propertyList.indexOf(property)-1).equals("latest")) {
-
+					
+					if(doc.propertyList.get(doc.propertyList.indexOf(property)-1).equals("latest"))
 						assemblyNames.add(doc.assemblyName);
-					}
+
 				}
 			}
 		}
+		
 		return assemblyNames;
 	}
 	
@@ -165,10 +165,8 @@ public class CreateGenomeFile {
 		String accessionGenBank = docSum.accessionGenBank;
 		String accessionRefSeq = docSum.accessionRefSeq;
 		Long taxonomyID = Long.parseLong(docSum.taxonomyID);
-		
 		String genBankStatus = null;
 		String refSeqStatus = null;
-
 		
 		for(String property : docSum.propertyList) {
 			

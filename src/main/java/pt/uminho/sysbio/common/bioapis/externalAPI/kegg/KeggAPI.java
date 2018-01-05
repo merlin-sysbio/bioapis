@@ -216,7 +216,27 @@ public class KeggAPI {
 		String [] res = KeggRestful.findGenomeByQuery(query);
 		return res;
 	}
-
+	
+	
+	/**
+	 * @param taxonomyID
+	 * @return KeggIDs
+	 * @throws Exception
+	 */
+	public static List<String> findKeggID(String taxonomyID) throws Exception{
+		
+		String[] keggEntry = KeggRestful.findKeggEntryByTaxonomyID(taxonomyID);
+		List<String> keggID = new ArrayList<String>();
+		
+		for(int i=0 ; i<keggEntry.length; i++){
+			String id = keggEntry[i].split(":")[1];
+			keggID.add(id);
+		}
+		
+		return keggID;
+	}
+	
+	
 	/**
 	 * @param organism
 	 * @return
