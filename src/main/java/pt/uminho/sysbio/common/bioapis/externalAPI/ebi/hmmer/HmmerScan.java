@@ -22,6 +22,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +132,8 @@ public class HmmerScan {
 	public String hmmerSubmitJob() throws IOException {
 
 		String res = null;
-		String fasta = ">" + header + "\n" + sequence;
+		//">" + header + "\n" +
+		String fasta =  sequence;
 		
 		HttpClient httpClient = HttpClientBuilder.create().build();
 		HttpPost httpPost = new HttpPost(EBI_URL);
@@ -142,20 +144,25 @@ public class HmmerScan {
 		params.put("seq", fasta);
 		for (String key : params.keySet())
 			nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
-
+		
+		
 		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		System.out.println(httpPost.getRequestLine()+ nameValuePairs.toString());
+		
+		System.out.println(httpPost.getRequestLine() + nameValuePairs.toString());
 		logger.debug("line {}", httpPost.getRequestLine() );
+		
 		HttpResponse httpResponse = httpClient.execute(httpPost);
 		HttpEntity httpEntity = httpResponse.getEntity();
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
+		
 		StringBuilder responseString = new StringBuilder();
 		Pattern pattern = Pattern.compile("http*?.+score");
 
 		String readline;
-
+		
 		while ((readline = br.readLine()) != null) {
-
+			
 			Matcher matcher = pattern.matcher(readline);
 
 			while(matcher.find()) {
