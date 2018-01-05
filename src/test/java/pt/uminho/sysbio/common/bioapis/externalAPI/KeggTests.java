@@ -1,5 +1,6 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,9 +34,9 @@ public class KeggTests {
 	@Test
 	public void findEntryByTaxonomyID() throws Exception  {
 
-		List<String> keggIDs = KeggAPI.findKeggID("243276");
-
-		System.out.println(keggIDs);
+		List<String> keggTaxonomyIDs = KeggAPI.findKeggID("322");
+		
+		System.out.println(keggTaxonomyIDs);
 	}
 	
 }
