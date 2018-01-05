@@ -395,9 +395,9 @@ public class KeggRestful {
 			data[2].trim();
 			ret.add(data);
 			
-			System.out.println(data[0]);
-			System.out.println(data[1]);
-			System.out.println(data[2]);
+//			System.out.println(data[0]);
+//			System.out.println(data[1]);
+//			System.out.println(data[2]);
 			
 		}
 		return ret;

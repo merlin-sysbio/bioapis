@@ -33,7 +33,7 @@ public class KeggTests {
 	@Test
 	public void findEntryByTaxonomyID() throws Exception  {
 
-		List<String> keggIDs = KeggAPI.findKeggID("243276");
+		List<String> keggIDs = KeggAPI.findKeggTaxonomyID("243276");
 
 		System.out.println(keggIDs);
 	}
