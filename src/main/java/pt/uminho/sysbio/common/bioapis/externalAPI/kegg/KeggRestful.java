@@ -556,10 +556,12 @@ public class KeggRestful {
 		
 		for(int i = 0; i<taxIDs.length; i++){
 			
-			String[] contents = taxIDs[2].split(";")[0].split(",");
+			String[] contents = taxIDs[i].split(";")[0].split(",");
+			
+			System.out.println(contents[1]);
 			
 			for(String content : contents){
-				if(content.equals(taxID))
+				if(content.trim().equals(taxID))
 					indexes.add(i);
 			}
 		}
