@@ -62,7 +62,6 @@ public class EbiAPI extends Observable implements Observer {
 				((EbiRunnable) lc).addObserver(this);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
-				System.out.println("Start "+i);
 				thread.start();
 			}
 
@@ -108,7 +107,6 @@ public class EbiAPI extends Observable implements Observer {
 
 				Thread thread = new Thread(lc);
 				threads.add(thread);
-				System.out.println("Start "+i);
 				thread.start();
 			}
 
@@ -166,7 +164,6 @@ public class EbiAPI extends Observable implements Observer {
 				((EbiRunnable) lc).addObserver(this);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
-				System.out.println("Start "+i);
 				thread.start();
 			}
 
@@ -221,7 +218,6 @@ public class EbiAPI extends Observable implements Observer {
 				((EbiRunnable) lc).setInterpro2go(interpro2go);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
-				System.out.println("Start "+i);
 				thread.start();
 			}
 

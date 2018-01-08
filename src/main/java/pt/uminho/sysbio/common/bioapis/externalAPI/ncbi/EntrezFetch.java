@@ -448,7 +448,7 @@ public class EntrezFetch {
 
 			int numberOfCores = Runtime.getRuntime().availableProcessors()*2;
 			if(queryArray.size()<numberOfCores){numberOfCores=queryArray.size();}
-			System.out.println("number Of threads: "+numberOfCores);
+//			System.out.println("number Of threads: "+numberOfCores);
 
 			ConcurrentHashMap<String, AbstractSequence<?>> sequences = new ConcurrentHashMap<String, AbstractSequence<?>>();
 			ConcurrentHashMap<String,String> locus_Tag = new ConcurrentHashMap<String,String>();
@@ -458,7 +458,6 @@ public class EntrezFetch {
 				Runnable lc	= new RunnableSequencesRetriever(queryArray,locus_Tag,sequences,sourceDB);
 				Thread thread = new Thread(lc);
 				threads.add(thread);
-				System.out.println("Start "+i);
 				thread.start();
 			}
 

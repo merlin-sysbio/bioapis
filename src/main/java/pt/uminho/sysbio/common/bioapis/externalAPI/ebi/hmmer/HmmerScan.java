@@ -148,7 +148,6 @@ public class HmmerScan {
 		
 		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 		
-		System.out.println(httpPost.getRequestLine() + nameValuePairs.toString());
 		logger.debug("line {}", httpPost.getRequestLine() );
 		
 		HttpResponse httpResponse = httpClient.execute(httpPost);
