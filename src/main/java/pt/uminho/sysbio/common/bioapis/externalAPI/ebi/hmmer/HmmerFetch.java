@@ -30,6 +30,7 @@ public class HmmerFetch {
 		try{
 			
 			StringBuilder sb = new StringBuilder();
+			
 			URL urlres = new URL(jobID);
 			if(range>0)
 				urlres = new URL(jobID+"?range=1,"+range);

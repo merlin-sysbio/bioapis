@@ -22,7 +22,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class HmmerScan {
 	//private String email;
 	private String sequence;
 	private String header = "seq";
-	private static final String EBI_URL = "http://www.ebi.ac.uk/Tools/hmmer/search/phmmer";
+	private static final String EBI_URL = "https://www.ebi.ac.uk/Tools/hmmer/search/phmmer";
 	private String database = "uniprotkb"; //SET AS DEFAULT
 	//nr, uniprotkb, swissprot, pdb, env_nr, unimes, rp
 
@@ -132,14 +131,14 @@ public class HmmerScan {
 	public String hmmerSubmitJob() throws IOException {
 
 		String res = null;
-		//">" + header + "\n" +
-		String fasta =  sequence;
+		//
+		String fasta = ">" + header + "\n" + sequence;
 		
 		HttpClient httpClient = HttpClientBuilder.create().build();
 		HttpPost httpPost = new HttpPost(EBI_URL);
 		List<NameValuePair> nameValuePairs = new ArrayList<> ();
 		Map<String, String> params = new HashMap<> ();
-		//params.put("email", this.email);
+//		params.put("email", this.email);
 		params.put("seqdb", this.database);
 		params.put("seq", fasta);
 		for (String key : params.keySet())
@@ -148,17 +147,18 @@ public class HmmerScan {
 		
 		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 		
-		System.out.println(httpPost.getRequestLine() + nameValuePairs.toString());
 		logger.debug("line {}", httpPost.getRequestLine() );
 		
 		HttpResponse httpResponse = httpClient.execute(httpPost);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		
+		logger.debug("status {}", httpResponse.getStatusLine());
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
 		
 		StringBuilder responseString = new StringBuilder();
 		Pattern pattern = Pattern.compile("http*?.+score");
-
+		
 		String readline;
 		
 		while ((readline = br.readLine()) != null) {
