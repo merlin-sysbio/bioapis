@@ -384,8 +384,9 @@ public class KeggRestful {
 		String[] lines = keggListResult.split(NEW_LINE);
 
 		for ( int i = 0; i < lines.length; i++) {
-
+			
 			String[] data = new String[3];
+			
 			data[0] = lines[i].split(TAB)[2];
 			data[0].trim();
 			data[1] = lines[i].split(TAB)[1];
@@ -393,6 +394,7 @@ public class KeggRestful {
 			data[2] = lines[i].split(TAB)[0];
 			data[2].trim();
 			ret.add(data);
+			
 		}
 		return ret;
 	}
@@ -557,8 +559,6 @@ public class KeggRestful {
 		for(int i = 0; i<taxIDs.length; i++){
 			
 			String[] contents = taxIDs[i].split(";")[0].split(",");
-			
-			System.out.println(contents[1]);
 			
 			for(String content : contents){
 				if(content.trim().equals(taxID))

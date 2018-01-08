@@ -219,11 +219,13 @@ public class KeggAPI {
 	
 	
 	/**
+	 * Retrieve Tnumber from NCBI taxonomyID.
+	 * 
 	 * @param taxonomyID
 	 * @return KeggIDs
 	 * @throws Exception
 	 */
-	public static List<String> findKeggID(String taxonomyID) throws Exception{
+	public static List<String> findKeggTaxonomyID(String taxonomyID) throws Exception{
 		
 		String[] keggTaxonomyEntry = KeggRestful.findKeggEntryByTaxonomyID(taxonomyID);
 		List<String> keggTaxonomyID = new ArrayList<String>();
