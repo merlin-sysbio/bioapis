@@ -166,6 +166,7 @@ public class CreateGenomeFile {
 		String accessionGenBank = docSum.accessionGenBank;
 		String accessionRefSeq = docSum.accessionRefSeq;
 		Long taxonomyID = Long.parseLong(docSum.taxonomyID);
+		String submitter = docSum.submitter;
 		String genBankStatus = null;
 		String refSeqStatus = null;
 
@@ -183,7 +184,8 @@ public class CreateGenomeFile {
 			writer.println("UID: " + uid + System.getProperty("line.separator") + "Assembly Accession: " + assemblyAccession + System.getProperty("line.separator")
 			+ "Accession GeneBank: " + accessionGenBank + System.getProperty("line.separator") + "Accession RefSeq: " + accessionRefSeq);
 			writer.println("Species Name: " + speciesName + System.getProperty("line.separator") +  "Last Update Date: " + lastupdateDate + System.getProperty("line.separator") 
-			+ "GenBank Status: " + genBankStatus + System.getProperty("line.separator") + "RefSeq Status: " + refSeqStatus);
+			+ "GenBank Status: " + genBankStatus + System.getProperty("line.separator") + "RefSeq Status: " + refSeqStatus + System.getProperty("line.separator") 
+			+ "Submitter: " + submitter);
 			writer.close();
 		} 
 		catch (FileNotFoundException e) {

@@ -39,6 +39,18 @@ public class DocumentSummary {
 		@Element(name="FtpPath_RefSeq", required=false)
 		public String ftpRefSeq;
 		
+		@Element(name="SubmitterOrganization", required=false)
+		public String submitter;
+		
+		@Element(name="InfraspeciesList", required=false)
+		public String infraspecificName;
+		
+		@Element(name="Assembly method", required=false)
+		public String assemblyMethod;
+		
+		@Element(name="Sequencing technology", required=false)
+		public String sequencingTechnology;
+		
 		@Element(name="Genbank", required=false)
 		@Path("Synonym")
 		public String accessionGenBank;
@@ -46,17 +58,19 @@ public class DocumentSummary {
 		@Element(name="RefSeq", required=false)
 		@Path("Synonym")
 		public String accessionRefSeq;
-		
-		
 
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		@Override
 		public String toString() {
-			return "DocumentSummary [uid=" + uid + ",speciesName=" + speciesName + ", assemblyAccession=" + assemblyAccession + ", assemblyName=" + assemblyName + ", lastUpdateDate=" + lastupdateDate + ", accessionGeneBank="
-					+ accessionGenBank + ", genbankStatus=" + propertyList.get(propertyList.size()-1) + ", accessionRefSeq=" + accessionRefSeq + ", refSeqStatus=" + propertyList.get(propertyList.size()-2) 
-					+ ", ftpGenBank=" + ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ",taxonomyID=" + taxonomyID + ", assemblyStatus=" + propertyList.get(propertyList.size()-3) + "]";
+			return "DocumentSummary [uid=" + uid + ", taxonomyID=" + taxonomyID + ", assemblyAccession="
+					+ assemblyAccession + ", assemblyName=" + assemblyName + ", speciesName=" + speciesName
+					+ ", lastupdateDate=" + lastupdateDate + ", propertyList=" + propertyList + ", ftpGenBank="
+					+ ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ", submitter=" + submitter + ", infraspecificName="
+					+ infraspecificName + ", assemblyMethod=" + assemblyMethod + ", sequencingTechnology="
+					+ sequencingTechnology + ", accessionGenBank=" + accessionGenBank + ", accessionRefSeq="
+					+ accessionRefSeq + "]";
 		}
 		
 }
