@@ -24,6 +24,9 @@ public class DocumentSummary {
 		@Element(name="AssemblyName", required=false)
 		public String assemblyName;
 		
+		@Element(name="AssemblyStatus",  required=false)
+		public String assemblyLevel;
+		
 		@Element(name="SpeciesName", required=false)
 		public String speciesName;
 		
@@ -65,7 +68,7 @@ public class DocumentSummary {
 		@Override
 		public String toString() {
 			return "DocumentSummary [uid=" + uid + ", taxonomyID=" + taxonomyID + ", assemblyAccession="
-					+ assemblyAccession + ", assemblyName=" + assemblyName + ", speciesName=" + speciesName
+					+ assemblyAccession + ", assemblyName=" + assemblyName + ", assemblyLevel=" + assemblyLevel + ", speciesName=" + speciesName
 					+ ", lastupdateDate=" + lastupdateDate + ", propertyList=" + propertyList + ", ftpGenBank="
 					+ ftpGenBank + ", ftpRefSeq=" + ftpRefSeq + ", submitter=" + submitter + ", infraspecificName="
 					+ infraspecificName + ", assemblyMethod=" + assemblyMethod + ", sequencingTechnology="
