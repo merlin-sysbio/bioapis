@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.velocity.util.introspection.Uberspect;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.biojava.nbio.core.sequence.AccessionID;
 import org.biojava.nbio.core.sequence.DataSource;
@@ -22,11 +23,13 @@ import pt.uminho.ceb.biosystems.mew.utilities.datastructures.list.ListUtilities;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.EntryData;
 import pt.uminho.sysbio.common.bioapis.externalAPI.datatypes.HomologuesData;
+import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
 import uk.ac.ebi.kraken.interfaces.common.Sequence;
 import uk.ac.ebi.kraken.interfaces.uniprot.DatabaseCrossReference;
 import uk.ac.ebi.kraken.interfaces.uniprot.DatabaseType;
 import uk.ac.ebi.kraken.interfaces.uniprot.Gene;
+import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxonomyId;
 import uk.ac.ebi.kraken.interfaces.uniprot.Organelle;
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
@@ -242,7 +245,7 @@ public class UniProtAPI {
 						}
 					}
 				}
-				
+
 				for(DatabaseCrossReference dbcr : uniProtEntry.getDatabaseCrossReferences()) {
 
 					String[] xRefs = dbcr.toString().split(":");
@@ -296,7 +299,7 @@ public class UniProtAPI {
 	 * @return
 	 */
 	public static UniProtEntry getUniProtEntryFromXRef(String crossReference, int errorCount) {
-		
+
 		return UniProtAPI.getUniProtEntryFromXRef(crossReference, errorCount, -1);
 	}
 	/**
@@ -306,72 +309,88 @@ public class UniProtAPI {
 	 * @return
 	 */
 	public static UniProtEntry getUniProtEntryFromXRef(String crossReference, long taxonomyID, int errorCount) {
-		
+
 		UniProtAPI.getInstance();
 
 		try {
 
 			Query query = UniProtQueryBuilder.xref(crossReference);
-			
+
 			Query finalQuery = query; 
 			if(taxonomyID>0)
 				finalQuery = UniProtQueryBuilder.and(query, UniProtQueryBuilder.taxonID(Integer.parseInt(taxonomyID+""))); 
-			
+
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(finalQuery);
 
 			if(entries.getNumberOfHits()<1) {
-				
+
 				finalQuery = UniProtQueryBuilder.xref(crossReference.split("\\.")[0]);
 				entries = uniProtService.getEntries(finalQuery);
 			}
 
 			while(entries.hasNext()) {
-				
+
 				UniProtEntry uniProtEntry = entries.next();
 				boolean go = false;
-				for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())
+				for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())					
 					if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
 						go=true;
 				
+				
+				if(!go) {
+					
+					List<NcbiTaxon> uniprotTaxon = uniProtEntry.getTaxonomy();
+					List<NcbiTaxon> taxonNcbi = NcbiAPI.getTaxonomyFromNCBI(taxonomyID, 0).getTaxonomy();
+					
+					for(NcbiTaxon taxon: taxonNcbi)
+						for(int i= 0; i < uniprotTaxon.size(); i++)
+							if(uniprotTaxon.get(i).getValue().equalsIgnoreCase(taxon.getValue()))
+								uniprotTaxon.remove(i);
+						
+					if(uniprotTaxon.isEmpty())
+						go = true;
+					
+				}
+
 				if(go) {
-				
-				Iterator<DatabaseCrossReference> it = uniProtEntry.getDatabaseCrossReferences().iterator();
-				
-				while(it.hasNext()) {
 
-					DatabaseCrossReference dbcr = it.next();
+					Iterator<DatabaseCrossReference> it = uniProtEntry.getDatabaseCrossReferences().iterator();
 
-					//DatabaseType database = dbcr.getDatabase();
-					//if(database.equals(DatabaseType.REFSEQ)) {	
-					
-					String x_ref = dbcr.getPrimaryId().getValue();
-					
-					for(String id:x_ref.split(":")) {
+					while(it.hasNext()) {
 
-						if(id.trim().equalsIgnoreCase(crossReference.trim()))
+						DatabaseCrossReference dbcr = it.next();
+
+						//DatabaseType database = dbcr.getDatabase();
+						//if(database.equals(DatabaseType.REFSEQ)) {	
+
+						String x_ref = dbcr.getPrimaryId().getValue();
+
+						for(String id:x_ref.split(":")) {
+
+							if(id.trim().equalsIgnoreCase(crossReference.trim()))
+								return uniProtEntry;
+
+							id = id.trim().split("\\.")[0];
+							String cross = crossReference.split("\\.")[0];
+
+							if(id.equalsIgnoreCase(cross))
+								return uniProtEntry;
+						}
+
+						for(EvidenceId e : dbcr.getEvidenceIds())
+							if(e.getValue().trim().equalsIgnoreCase(crossReference.trim()))
+								return uniProtEntry;
+
+						if(dbcr.getThird()!= null && dbcr.getThird().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 							return uniProtEntry;
 
-						id = id.trim().split("\\.")[0];
-						String cross = crossReference.split("\\.")[0];
+						if(dbcr.getFourth()!= null && dbcr.getFourth().getValue().trim().equalsIgnoreCase(crossReference.trim()))
+							return uniProtEntry;
 
-						if(id.equalsIgnoreCase(cross))
+						if(dbcr.getDescription()!= null && dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
 							return uniProtEntry;
 					}
-					
-					for(EvidenceId e : dbcr.getEvidenceIds())
-						if(e.getValue().trim().equalsIgnoreCase(crossReference.trim()))
-							return uniProtEntry;
-						
-					if(dbcr.getThird()!= null && dbcr.getThird().getValue().trim().equalsIgnoreCase(crossReference.trim()))
-						return uniProtEntry;
-					
-					if(dbcr.getFourth()!= null && dbcr.getFourth().getValue().trim().equalsIgnoreCase(crossReference.trim()))
-						return uniProtEntry;
-					
-					if(dbcr.getDescription()!= null && dbcr.getDescription().getValue().trim().equalsIgnoreCase(crossReference.trim()))
-						return uniProtEntry;
 				}
-			}
 			}
 		}
 		catch(Exception e) {
@@ -471,7 +490,7 @@ public class UniProtAPI {
 
 		if(entry!=null)
 			return entry.getProteinExistence().getValue();
-		
+
 		return null;
 	}
 
@@ -538,13 +557,13 @@ public class UniProtAPI {
 	 * @return
 	 */
 	public static List<String> getECnumbers(UniProtEntry entry){
-		
+
 		if(entry!=null) {
-			
+
 			if(entry.getProteinDescription()!=null) {
-				
+
 				if(entry.getProteinDescription().getEcNumbers()!=null) {
-					
+
 					List<String> ecs = entry.getProteinDescription().getEcNumbers();
 					if(!ecs.isEmpty())
 						return ecs;
@@ -561,11 +580,11 @@ public class UniProtAPI {
 	public static String getOrganism(UniProtEntry entry){
 
 		if(entry!=null) {
-			
+
 			String organism = entry.getOrganism().getScientificName().getValue();
 			if(organism!=null)
 				return organism;
-			
+
 		}
 		return null;
 	}
@@ -597,7 +616,7 @@ public class UniProtAPI {
 				entry=getUniprotEntry(uniprotID, (errorCount+1)); 
 			}
 			else {
-				
+
 				logger.error("GetUniprotEntry error {}",uniprotID);	
 				logger.trace("StackTrace {}",e);
 			}
@@ -647,7 +666,7 @@ public class UniProtAPI {
 				result=UniProtAPI.setOriginOrganism(locusTag, errorCount);
 			}
 			else {
-				
+
 				logger.error("setOriginOrganism error {}",locusTag);	
 				logger.trace("StackTrace {}",e);
 			}
@@ -686,9 +705,9 @@ public class UniProtAPI {
 	 */
 	public static String[] getOrganismTaxa(UniProtEntry entry) {
 		String [] taxon = new String[2];
-		
+
 		if(entry!=null) {
-			
+
 			String organism = entry.getOrganism().getScientificName().getValue();
 			if(organism!=null)
 				taxon[0] = organism;
@@ -798,14 +817,14 @@ public class UniProtAPI {
 
 				for(String ecnumber : ecnumbers)
 					uniprot_ecnumber += ecnumber+", ";
-				
+
 				if(uniprot_ecnumber.contains(", "))
 					uniprot_ecnumber = uniprot_ecnumber.substring(0, uniprot_ecnumber.lastIndexOf(", "));
-				
+
 			}
 		}
 		catch(Exception e) {
-			
+
 			logger.error("getUniprotECnumbers error {}",query);	
 			logger.trace("StackTrace {}",e);
 		}
@@ -1068,7 +1087,7 @@ public class UniProtAPI {
 				String taxLocus = locus;
 				if(taxLocus.equalsIgnoreCase(primary_accession))
 					taxLocus = homologuesData.getQuery();
-				
+
 				if(goTaxonomyID && (homologuesData.getLocusTag()==null || homologuesData.getLocusTag().equalsIgnoreCase(homologuesData.getQuery())))
 					UniProtAPI.setHomologuesData(homologuesData, primary_accession, taxLocus, entry);
 
@@ -1093,13 +1112,13 @@ public class UniProtAPI {
 					} 
 					catch (Exception e) {name=null;}
 				}
-				
+
 				homologuesData.addDefinition(primary_accession, name);
 				homologuesData.addProduct(primary_accession, name);		
 				homologuesData.addOrganism(primary_accession, entry.getOrganism().getScientificName().getValue());
 				homologuesData.addTaxonomy(primary_accession, entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", ""));
 				homologuesData.addUniprotStatus(primary_accession, entry.getType().getValue().equals(UniProtEntryType.SWISSPROT.getValue()));
-				
+
 				try {
 
 					List<String> le = entry.getProteinDescription().getEcNumbers();
@@ -1125,7 +1144,7 @@ public class UniProtAPI {
 				}
 			}
 		}
-		
+
 		return homologuesData;
 	}
 
@@ -1148,12 +1167,12 @@ public class UniProtAPI {
 			homologuesData.setGene(entry.getGenes().get(0).getGeneName().getValue());
 		}
 		catch (Exception e) {
-			
+
 			logger.trace("StackTrace {}",e);
 		}
-		
+
 		homologuesData.addUniprotStatus(homologuesData.getQuery(), entry.getType().getValue().equals(UniProtEntryType.SWISSPROT.getValue()));
-		
+
 		return homologuesData;
 	}
 
@@ -1191,14 +1210,14 @@ public class UniProtAPI {
 		String out = null;
 
 		try {
-			
+
 			for(int i = 0; i<entry.getGenes().size(); i++)
 				if(out == null)
 					for(int j = 0; j<entry.getGenes().get(i).getOrderedLocusNames().size(); j++) {
-						
+
 						if(out == null && entry.getGenes().get(i).getOrderedLocusNames().get(j).getValue()!= null )
 							out = entry.getGenes().get(i).getOrderedLocusNames().get(j).getValue();
-						
+
 					}
 		}
 		catch(Exception e) {
@@ -1213,7 +1232,7 @@ public class UniProtAPI {
 				for(int i = 0; i<entry.getGenes().size(); i++)
 					if(out == null)
 						for(int j = 0; j<entry.getGenes().get(i).getORFNames().size(); j++) {
-						
+
 							if(out == null && entry.getGenes().get(i).getORFNames().get(j).getValue()!= null )
 								out = entry.getGenes().get(i).getORFNames().get(j).getValue();
 						}
@@ -1229,7 +1248,7 @@ public class UniProtAPI {
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Get entry data from query.
 	 * 
@@ -1241,10 +1260,10 @@ public class UniProtAPI {
 
 		EntryData entryData = UniProtAPI.getEntryData(query, taxonomyID);
 		String function = entryData.getFunction();
-		
+
 		if(function != null && entryData.getEcNumbers()!= null && entryData.getEcNumbers().size()>0)
 			function = function.concat(" (EC:").concat(entryData.getEcNumbers().toString().replaceAll("\\[", "").replaceAll("\\]", "")).concat(")");
-			
+
 		return function;
 	}
 
@@ -1261,26 +1280,29 @@ public class UniProtAPI {
 		UniProtEntry uniProtEntry;
 
 		uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(query, taxonomyID, 0);
-		
+
 		try {
 
-			if(uniProtEntry==null)
-				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
+			boolean go = true;
 
-			boolean go = false;
-			for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())	
-				if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
-					go=true;
+			if(uniProtEntry==null) {
+
+				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
+				go = false;
+				for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())	
+					if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
+						go=true;
+			}
 
 			if(go) {
-				
+
 				entry = new EntryData(uniProtEntry.getPrimaryUniProtAccession().getValue());
 				entry.setEcNumbers(UniProtAPI.get_ecnumbers(uniProtEntry));
 				entry.setUniprotReviewStatus(UniProtAPI.isStarred(uniProtEntry)+"");
-				
+
 				if(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).size()>0)
 					entry.setFunction(uniProtEntry.getProteinDescription().getRecommendedName().getFieldsByType(FieldType.FULL).get(0).getValue());
-				
+
 				if(entry.getFunction()==null && uniProtEntry.getProteinDescription().getSubNames().size()>0 &&
 						uniProtEntry.getProteinDescription().getSubNames().get(0).getFieldsByType(FieldType.FULL).size()>0)
 					entry.setFunction(uniProtEntry.getProteinDescription().getSubNames().get(0).getFieldsByType(FieldType.FULL).get(0).getValue());
@@ -1302,11 +1324,11 @@ public class UniProtAPI {
 
 		}
 		catch (Exception e) {
-			
+
 			logger.trace("StackTrace {}",e);
-			
+
 			errorCount+=1;
-			
+
 			if(errorCount<3) {
 
 				MySleep.myWait(1000);
@@ -1321,7 +1343,7 @@ public class UniProtAPI {
 					String newQuery = query;
 					if(query.contains("."))
 						newQuery = query.split("\\.")[0];
-					
+
 					logger.trace("Get EntryData trial {}.", errorCount);
 					entry = UniProtAPI.getEntryData(newQuery+".*", taxonomyID, errorCount);
 					entry.setEntryID(query);
@@ -1374,7 +1396,7 @@ public class UniProtAPI {
 		catch (Exception e) {
 
 			logger.trace("StackTrace {}",e);
-			
+
 			errorCount+=1;
 
 			if(errorCount<3) {
@@ -1386,7 +1408,7 @@ public class UniProtAPI {
 			else {
 
 				logger.warn("getEntryDataFromAccession error {}.", accession);
-				
+
 				entry = new EntryData(accession.replace(".*", ""));
 				entry.setUniprotReviewStatus(null);
 				entry.setEcNumbers(null);
@@ -1402,39 +1424,39 @@ public class UniProtAPI {
 	 * @param i
 	 * @return
 	 */
-//	public static String[] newTaxID(String organismmId, int i) {
-//
-//		UniProtAPI.getInstance();
-//
-//		try {
-//			String[] result = new String[2];
-//
-//			Query query = UniProtQueryBuilder.organismName(organismmId);
-//			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
-//
-//			while (entries.hasNext()) {
-//
-//				UniProtEntry entry = entries.next();
-//				result[0] = entry.getOrganism().getScientificName().getValue();
-//				result[1] = entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", "");
-//
-//				return result;
-//			}
-//
-//		} catch (ServiceException e) {
-//
-//			logger.debug("newTaxID ServiceException trial {}.", i);
-//			i++;
-//			if(i<10)
-//				return newTaxID(organismmId, i);
-//			
-//			logger.error("newTaxID ServiceException error {}.", organismmId);
-//			logger.trace("StackTrace {}",e);
-//		}
-//
-//		return null;
-//	} 
-	
+	//	public static String[] newTaxID(String organismmId, int i) {
+	//
+	//		UniProtAPI.getInstance();
+	//
+	//		try {
+	//			String[] result = new String[2];
+	//
+	//			Query query = UniProtQueryBuilder.organismName(organismmId);
+	//			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
+	//
+	//			while (entries.hasNext()) {
+	//
+	//				UniProtEntry entry = entries.next();
+	//				result[0] = entry.getOrganism().getScientificName().getValue();
+	//				result[1] = entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", "");
+	//
+	//				return result;
+	//			}
+	//
+	//		} catch (ServiceException e) {
+	//
+	//			logger.debug("newTaxID ServiceException trial {}.", i);
+	//			i++;
+	//			if(i<10)
+	//				return newTaxID(organismmId, i);
+	//			
+	//			logger.error("newTaxID ServiceException error {}.", organismmId);
+	//			logger.trace("StackTrace {}",e);
+	//		}
+	//
+	//		return null;
+	//	} 
+
 	public static String[] newTaxID(int organismmId, int i) {
 
 		UniProtAPI.getInstance();
@@ -1444,9 +1466,9 @@ public class UniProtAPI {
 
 			Query query = UniProtQueryBuilder.taxonID(organismmId);
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
-			
+
 			while (entries.hasNext()) {
-				
+
 				UniProtEntry entry = entries.next();
 				result[0] = entry.getOrganism().getScientificName().getValue();
 				result[1] = entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", "");
@@ -1460,7 +1482,7 @@ public class UniProtAPI {
 			i++;
 			if(i<10)
 				return newTaxID(organismmId, i);
-			
+
 			logger.error("newTaxID ServiceException error {}.", organismmId);
 			logger.trace("StackTrace {}",e);
 		}
