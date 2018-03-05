@@ -126,7 +126,6 @@ public class EbiTests {
 			List<String> result = EbiRestful.getXml(phobius, "phobius", waitingPeriod, new AtomicBoolean(false));
 			int h = PhobiusParser.getNumberOfHelices(result);
 			
-			System.out.println(key+" "+h);
 		}
 
 		//		String interpro = EbiWebServices.runInterProScan(email, title, sequence, (String) args.get(0), (String) args.get(1), (List<String>) args.get(2));
@@ -148,8 +147,6 @@ public class EbiTests {
 
 		Map<String,InterProResultsList> interpro = InterProMain.processGenome("mikemike@gmail.com", "title", "true", "true",new ArrayList<String>(), map);
 
-		System.out.println(interpro);
-		
 		//		long endTime = System.currentTimeMillis();
 
 		//		System.out.println("That took " + (endTime - startTime) + " milliseconds");

@@ -123,7 +123,7 @@ public class InterProMain {
 
 		for (String query: requests.keySet()) {
 
-			System.out.println("submiting  "+requests.get(query).getOriginalHeader());
+//			System.out.println("submiting  "+requests.get(query).getOriginalHeader());
 			String requestId = getJobID(email, title, query, requests.get(query), goterms, pathways, appls);
 
 			result.put(query, requestId);
@@ -152,8 +152,8 @@ public class InterProMain {
 
 				if (keys.contains(request)) {
 
-					System.out.println(getStatus(requests.get(request)) + " " + request);
-					System.out.println(getStatus(requests.get(request)).equalsIgnoreCase("FINISHED") + " " + request);
+//					System.out.println(getStatus(requests.get(request)) + " " + request);
+//					System.out.println(getStatus(requests.get(request)).equalsIgnoreCase("FINISHED") + " " + request);
 					
 					if (getStatus(requests.get(request)).equalsIgnoreCase("FINISHED")){
 
@@ -165,7 +165,7 @@ public class InterProMain {
 						result.put(requests.get(request),parsed);
 
 						keys.remove(request);
-						System.out.println(keys);
+//						System.out.println(keys);
 
 					}
 					else if (getStatus(requests.get(request)).equalsIgnoreCase("ERROR") || 

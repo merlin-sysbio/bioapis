@@ -44,7 +44,6 @@ public class RunnableSequencesRetriever implements Runnable {
 
 		while(this.queryArray.size()>0) {
 
-			System.out.println("countdown " + this.queryArray.size());
 			List<String> query = this.queryArray.poll();
 
 			try {

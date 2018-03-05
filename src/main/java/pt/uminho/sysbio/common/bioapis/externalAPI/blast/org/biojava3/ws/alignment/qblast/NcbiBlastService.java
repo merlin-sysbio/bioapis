@@ -290,7 +290,6 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 				 */
 				else {
 
-					System.out.println(line);
 					// Capture everything to the left of this HTML statement...
 					String[] tmp = line.split("</p></li></ul>");
 
@@ -653,12 +652,6 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 			// Get the response
 			BufferedReader rd = new BufferedReader(new InputStreamReader(
 					uConn.getInputStream()));
-
-			String line = "";
-
-			while ((line = rd.readLine()) != null) {
-				System.out.println(line);
-			}
 
 			out.close();
 			rd.close();

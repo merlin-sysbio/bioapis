@@ -1,5 +1,7 @@
 package pt.uminho.sysbio.common.bioapis.externalAPI;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggAPI;
@@ -21,9 +23,19 @@ public class KeggTests {
 		KeggRestful.fetch(KeggOperation.get, "cpd:C15025");
 	}
 	
-	@Test
+//	@Test
 	public void koTest() throws Exception {
 		
 		System.out.println(KeggRestful.findOrthologsByECnumber("2.1.1.5"));
 	}
+	
+	@Test
+	public void findEntryByTaxonomyID() throws Exception  {
+
+		List<String> keggIDs = KeggAPI.findKeggTaxonomyID("243276");
+
+		System.out.println(keggIDs);
+
+	}
+	
 }

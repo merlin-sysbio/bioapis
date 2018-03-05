@@ -384,8 +384,9 @@ public class KeggRestful {
 		String[] lines = keggListResult.split(NEW_LINE);
 
 		for ( int i = 0; i < lines.length; i++) {
-
+			
 			String[] data = new String[3];
+			
 			data[0] = lines[i].split(TAB)[2];
 			data[0].trim();
 			data[1] = lines[i].split(TAB)[1];
@@ -393,6 +394,7 @@ public class KeggRestful {
 			data[2] = lines[i].split(TAB)[0];
 			data[2].trim();
 			ret.add(data);
+			
 		}
 		return ret;
 	}
@@ -539,7 +541,45 @@ public class KeggRestful {
 			System.out.println( Arrays.toString(ret));
 		return ret;
 	}
+	
+	
+	/**
+	 * @param taxonomyID
+	 * @return Kegg Entries
+	 * @throws Exception
+	 */
+	public static String[] findKeggEntryByTaxonomyID(String taxID) throws Exception  {
 
+		String keggFindResult = fetch(KeggOperation.find, "genome", taxID);
+
+		String[] tNumbers = retrieveColumn(keggFindResult, 0);
+		String[] taxIDs = retrieveColumn(keggFindResult, 1);
+		List<Integer> indexes = new ArrayList<Integer>();
+		
+		for(int i = 0; i<taxIDs.length; i++){
+			
+			String[] contents = taxIDs[i].split(";")[0].split(",");
+			
+			for(String content : contents){
+				if(content.trim().equals(taxID))
+					indexes.add(i);
+			}
+		}
+		
+		String[] keggTaxonomyIDs = new String[indexes.size()];
+		
+		if(!indexes.isEmpty()){
+			for(int index = 0; index<indexes.size(); index++)
+				keggTaxonomyIDs[index] = tNumbers[indexes.get(index)];
+		}
+			
+		if ( __DEBUG_API__)
+			System.out.println( Arrays.toString(keggTaxonomyIDs));
+		
+		return keggTaxonomyIDs;
+	}
+	
+	
 	/**
 	 * @param db
 	 * @param entry

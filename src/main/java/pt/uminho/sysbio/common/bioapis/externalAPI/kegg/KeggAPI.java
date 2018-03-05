@@ -216,7 +216,29 @@ public class KeggAPI {
 		String [] res = KeggRestful.findGenomeByQuery(query);
 		return res;
 	}
-
+	
+	
+	/**
+	 * Retrieve Tnumber from NCBI taxonomyID.
+	 * 
+	 * @param taxonomyID
+	 * @return KeggIDs
+	 * @throws Exception
+	 */
+	public static List<String> findKeggTaxonomyID(String taxonomyID) throws Exception{
+		
+		String[] keggTaxonomyEntry = KeggRestful.findKeggEntryByTaxonomyID(taxonomyID);
+		List<String> keggTaxonomyID = new ArrayList<String>();
+		
+		for(int i=0 ; i<keggTaxonomyEntry.length; i++){
+			String id = keggTaxonomyEntry[i].split(":")[1];
+			keggTaxonomyID.add(id);
+		}
+		
+		return keggTaxonomyID;
+	}
+	
+	
 	/**
 	 * @param organism
 	 * @return
