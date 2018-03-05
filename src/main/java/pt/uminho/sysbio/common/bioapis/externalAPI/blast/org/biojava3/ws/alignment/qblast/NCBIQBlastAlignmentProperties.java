@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.jcs.access.exception.InvalidArgumentException;
+
 import pt.uminho.sysbio.common.bioapis.externalAPI.blast.org.biojava3.ws.alignment.RemotePairwiseAlignmentProperties;
 
 /**
@@ -106,7 +108,7 @@ public class NCBIQBlastAlignmentProperties implements
 	 *                if the named program is not a valid blastall options
 	 * 
 	 */
-	public void setBlastProgram(String program) throws Exception {
+	public void setBlastProgram(String program) throws InvalidArgumentException {
 
 		boolean isValid = false;
 		String[] blastPr = new String[] { "blastn", "blastp", "blastx",
@@ -124,7 +126,7 @@ public class NCBIQBlastAlignmentProperties implements
 		}
 
 		if (!isValid) {
-			throw new Exception(
+			throw new InvalidArgumentException(
 					"Invalid blastall program selection! Use one of valid values: blastn/blastp/blastx/tblastn/tblastx");
 		}
 	}
@@ -376,7 +378,7 @@ public class NCBIQBlastAlignmentProperties implements
 	 * @throws Exception
 	 *             if matrix name is not part of allowed BLAST matrices
 	 */
-	public void setBlastMatrix(String mtx) throws Exception {
+	public void setBlastMatrix(String mtx) throws InvalidArgumentException {
 		boolean isValid = false;
 		String[] blastMat = new String[] { "BLOSUM45", "BLOSUM50", "BLOSUM62",
 				"BLOSUM80", "BLOSUM90", "PAM250", "PAM30", "PAM70" };
@@ -454,7 +456,7 @@ public class NCBIQBlastAlignmentProperties implements
 		}
 		
 		if (!isValid)
-			throw new Exception(
+			throw new InvalidArgumentException(
 					"Invalid blastp substitution matrix selection! Use one of valid values: PAM30,PAM70,PAM250,BLOSUM45,BLOSUM50,BLOSUM62,BLOSUM80\n");
 	}
 

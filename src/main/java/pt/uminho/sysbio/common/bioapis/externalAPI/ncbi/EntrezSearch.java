@@ -6,9 +6,12 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.ncbi;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ctc.wstx.exc.WstxIOException;
+
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezLink.KINGDOM;
 import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
+import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.MySleep;
 
 /**
  * @author oscar
@@ -158,8 +161,12 @@ public class EntrezSearch {
 		} 
 		catch (Exception e) {
 
+			MySleep.myWait(10000);
+			
 			e.printStackTrace();
 			throw e;
+			
+			
 		}
 	}
 
