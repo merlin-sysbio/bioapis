@@ -1465,6 +1465,9 @@ public class UniProtAPI {
 			String[] result = new String[2];
 
 			Query query = UniProtQueryBuilder.taxonID(organismmId);
+			
+			System.out.println(query);
+			
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			while (entries.hasNext()) {
@@ -1477,6 +1480,8 @@ public class UniProtAPI {
 			}
 
 		} catch (ServiceException e) {
+			
+			e.printStackTrace();
 
 			logger.debug("newTaxID ServiceException trial {}.", i);
 			i++;

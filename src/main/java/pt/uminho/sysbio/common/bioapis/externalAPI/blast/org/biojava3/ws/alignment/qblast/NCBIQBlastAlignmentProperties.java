@@ -48,7 +48,7 @@ import pt.uminho.sysbio.common.bioapis.externalAPI.blast.org.biojava3.ws.alignme
  * 
  */
 public class NCBIQBlastAlignmentProperties implements
-		RemotePairwiseAlignmentProperties {
+RemotePairwiseAlignmentProperties {
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, String> param = new HashMap<String, String>();
@@ -75,7 +75,7 @@ public class NCBIQBlastAlignmentProperties implements
 		this.param.put("HITLIST_SIZE", "100");
 		// Everything else
 		this.param.put("OTHER_ADVANCED", "not_set");
-		
+
 		try {
 			this.setBlastMatrix("BLOSUM62");
 		} catch (Exception e) {
@@ -187,7 +187,7 @@ public class NCBIQBlastAlignmentProperties implements
 		String str = Double.toString(expect);
 		this.param.put("EXPECT", str);
 	}
-	
+
 	/**
 	 * This method set the EXPECT parameter to be use with blastall
 	 * 
@@ -200,8 +200,38 @@ public class NCBIQBlastAlignmentProperties implements
 	 * @param expect
 	 *            : a double used to set EXPECT
 	 */
-	public void setBlastExpect(String expect) {
-		this.param.put("EXPECT", expect);
+	public void setBlastExpectEBI(double expect) {
+		String expectString = NCBIQBlastAlignmentProperties.ConvertExpectedValue(expect);
+		this.param.put("EXPECT", expectString);
+	}
+
+	private static String ConvertExpectedValue(double expect) {
+
+		if(expect<=1e-200)
+			return "1e-200"; 
+		else if(expect<=1e-100)
+			return  "1e-100"; 
+		else if(expect<=1e-50)
+			return  "1e-50";
+		else if(expect<=1e-10)
+			return  "1e-10";
+		else if(expect<=1e-5)
+			return  "1e-5";
+		else if(expect<=1e-4)
+			return  "1e-4";
+		else if(expect<=1e-3)
+			return  "1e-3";
+		else if(expect<=1e-2)
+			return  "1e-2";
+		else if(expect<=1e-1)
+			return  "1e-1";
+		else if(expect<=1)
+			return  "1.0";
+		else if(expect<=100)
+			return  "100";
+		else {
+			return "1000";
+		}
 	}
 
 	/**
@@ -240,7 +270,7 @@ public class NCBIQBlastAlignmentProperties implements
 	 * 
 	 * More at http://www.ncbi.nlm.nih.gov/staff/tao/URLAPI/new/node74.html
 	 * 
-	 * Blastall equivalent: -W
+	 * Blastall equivalen) -W
 	 * 
 	 * @param word
 	 *            : an integer used to set WORD_SIZE
@@ -273,7 +303,7 @@ public class NCBIQBlastAlignmentProperties implements
 	public void setHitlistSize(int g) {
 		this.param.put("HITLIST_SIZE", Integer.toString(g));
 	}
-	
+
 	/**
 	 * 
 	 * This method returns the value for the HitlistSize
@@ -404,7 +434,7 @@ public class NCBIQBlastAlignmentProperties implements
 				if (mtx == "PAM30") {
 					if (this.getBlastGapCreation() == -1
 							&& this.getBlastGapExtension() == -1) {
-						
+
 						this.setBlastGapCreation(9);
 						this.setBlastGapExtension(1);
 					}
@@ -449,12 +479,12 @@ public class NCBIQBlastAlignmentProperties implements
 				}
 			}
 			else {
-				
+
 				this.setBlastGapCreation(11);
 				this.setBlastGapExtension(1);
 			}
 		}
-		
+
 		if (!isValid)
 			throw new InvalidArgumentException(
 					"Invalid blastp substitution matrix selection! Use one of valid values: PAM30,PAM70,PAM250,BLOSUM45,BLOSUM50,BLOSUM62,BLOSUM80\n");
@@ -602,11 +632,11 @@ public class NCBIQBlastAlignmentProperties implements
 	 * 
 	 */
 	public String getBlastCommandsToQBlast() throws Exception {
-		
+
 		this.setBlastCommandsToQBlast();
 		return this.cmd;
 	}
-	
+
 	/**
 	 * 
 	 * This method is responsible for building the String with all the alignment
@@ -617,7 +647,7 @@ public class NCBIQBlastAlignmentProperties implements
 	 * 
 	 */
 	public void setBlastCommandsToQBlast() throws Exception {
-		
+
 		this.reinitializeBlastCommandsToQBlast();
 		/*
 		 * blastall program has to be set...
@@ -628,7 +658,7 @@ public class NCBIQBlastAlignmentProperties implements
 		} else {
 			this.cmd = this.cmd + "&PROGRAM=" + this.getBlastProgram();
 		}
-		
+
 		if (this.getBlastProgram() != "blastn") {
 			if (this.getBlastMatrix() != "BLOSUM62") {
 				this.cmd = this.cmd + "&MATRIX_NAME=" + this.getBlastMatrix();
@@ -649,7 +679,7 @@ public class NCBIQBlastAlignmentProperties implements
 		} else {
 			this.cmd = this.cmd + "&DATABASE=" + this.getBlastDatabase();
 		}
-		
+
 		if (this.getHitlistSize() != -1) {
 			this.cmd = this.cmd + "&HITLIST_SIZE="+ this.getAlignmentOption("HITLIST_SIZE");
 		}
@@ -661,7 +691,7 @@ public class NCBIQBlastAlignmentProperties implements
 		if (this.getBlastExpect() != -1) {
 			this.cmd = this.cmd + "&EXPECT=" + this.getBlastExpect();
 		}
-		
+
 		if (this.getBlastWordSize() != -1) {
 			this.cmd = this.cmd + "&WORD_SIZE="
 					+ this.getAlignmentOption("WORD_SIZE");
@@ -670,18 +700,18 @@ public class NCBIQBlastAlignmentProperties implements
 		if (this.getBlastFromPosition() != -1
 				&& this.getBlastToPosition() != -1) {
 			this.cmd = this.cmd + "&QUERY_FROM=" + this.getBlastFromPosition()
-					+ "&QUERY_TO=" + this.getBlastToPosition();
+			+ "&QUERY_TO=" + this.getBlastToPosition();
 		}
 
 		if (this.param.containsKey("DB_GENETIC_CODE")) {
-			
-				this.cmd = this.cmd + "&DB_GENETIC_CODE=" + this.param.get("DB_GENETIC_CODE");
+
+			this.cmd = this.cmd + "&DB_GENETIC_CODE=" + this.param.get("DB_GENETIC_CODE");
 		}
-		
-		 if (this.getBlastAdvancedOptions()!="not_set") {
-		 cmd = cmd + "&OTHER_ADVANCED=" +
-		 this.getAlignmentOption("OTHER_ADVANCED");
-		 }
+
+		if (this.getBlastAdvancedOptions()!="not_set") {
+			cmd = cmd + "&OTHER_ADVANCED=" +
+					this.getAlignmentOption("OTHER_ADVANCED");
+		}
 	}
 
 	/**
@@ -720,12 +750,12 @@ public class NCBIQBlastAlignmentProperties implements
 	}
 
 	public void setOrganism(String organism) {
-		
+
 		this.organism = organism;
 	}
-	
+
 	public String getOrganism() {
-		
+
 		return this.organism;
 	}
 
@@ -733,17 +763,17 @@ public class NCBIQBlastAlignmentProperties implements
 
 		this.param.put("DB_GENETIC_CODE", geneticCode+"");
 	}
-	
+
 	public void setSequenceType(String type) {
-		
+
 		this.param.put("TYPE",type);
 	}
-	
+
 	public String getType() {
-		
+
 		if(this.param.get("TYPE")==null)
 			return("protein");
-		
+
 		return this.param.get("TYPE");
 	}
 }
