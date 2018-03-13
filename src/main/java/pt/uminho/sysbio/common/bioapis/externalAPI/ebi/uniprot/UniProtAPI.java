@@ -1466,8 +1466,6 @@ public class UniProtAPI {
 
 			Query query = UniProtQueryBuilder.taxonID(organismmId);
 			
-			System.out.println(query);
-			
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			while (entries.hasNext()) {
