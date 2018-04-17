@@ -112,7 +112,13 @@ public class EntrezTaxonomy {
 
 		try {
 			
+			System.out.println("TAXONOMY IDS---->"+taxonomy_ids);
+			
 			String query = new String(taxonomy_ids.toString().replace("[", "").replace("]", "").replace(" ", "").getBytes(),"UTF-8");
+			
+			
+			System.out.println("TAX IDS QUERY----->"+query);
+			
 			
 			TaxaSet taxaSet = this.entrezService.eFetchTaxonomy("taxonomy", query, "xml");
 
