@@ -3,8 +3,8 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures;
 import java.util.List;
 import java.util.Map;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRef;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
 
 public class KeggOrthologyEntry extends ExternalRef {
 

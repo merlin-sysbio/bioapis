@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
-import pt.uminho.sysbio.common.bioapis.externalAPI.IMetaboliteExternalRef;
-import pt.uminho.sysbio.common.bioapis.externalAPI.MetaboliteExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.IMetaboliteExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.MetaboliteExternalRef;
 
 public class ChebiER extends MetaboliteExternalRef implements IMetaboliteExternalRef{
 

@@ -2,8 +2,8 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures;
 
 import java.util.List;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
-import pt.uminho.sysbio.common.bioapis.externalAPI.MetaboliteExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.MetaboliteExternalRef;
 
 public class KeggCompoundER extends MetaboliteExternalRef {
 
