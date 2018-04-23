@@ -44,7 +44,6 @@ public class EntrezTaxonomy {
 
 			for (int index_=0;index_<taxonomy_ids_list.size();index_++) {
 
-				//req_taxon.setId("9685,522328");
 				String query = new String(taxonomy_ids_list.get(index_).toString().replace("[", "").replace("]", "").replace(" ", "").getBytes(),"UTF-8");
 				TaxaSet taxaSet = this.entrezService.eFetchTaxonomy("taxonomy", query, "xml");
 
@@ -112,16 +111,9 @@ public class EntrezTaxonomy {
 
 		try {
 			
-			System.out.println("TAXONOMY IDS---->"+taxonomy_ids);
-			
 			String query = new String(taxonomy_ids.toString().replace("[", "").replace("]", "").replace(" ", "").getBytes(),"UTF-8");
 			
-			
-			System.out.println("TAX IDS QUERY----->"+query);
-			
-			
 			TaxaSet taxaSet = this.entrezService.eFetchTaxonomy("taxonomy", query, "xml");
-
 
 			for (int i = 0; i < taxaSet.taxon.size(); i++) {
 
