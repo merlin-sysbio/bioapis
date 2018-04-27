@@ -44,7 +44,7 @@ public class EbiBlastClientRest implements RemotePairwiseAlignmentService {
 	private static final String RESULT_TYPE_URL = "http://www.ebi.ac.uk/Tools/services/rest/ncbiblast/resulttypes/%s";
 	private static final String GET_RESULT_URL = "http://www.ebi.ac.uk/Tools/services/rest/ncbiblast/result/%s/%s";
 	private static final Logger logger = LoggerFactory.getLogger(EbiBlastClientRest.class);
-	private String email = "biosystems.um@gmail.com";
+	private String email = "";
 	private static final String tool = "www.merlin_sysbio.org";
 
 	private ConcurrentHashMap<String, Long> holder;
@@ -92,46 +92,63 @@ public class EbiBlastClientRest implements RemotePairwiseAlignmentService {
 	 */
 	public String sendAlignmentRequest(String query, RemotePairwiseAlignmentProperties rpap) throws Exception {
 
-		NCBIQBlastAlignmentProperties rqb = (NCBIQBlastAlignmentProperties) rpap;
-		HttpClient httpClient = HttpClientBuilder.create().build();
-		HttpPost httpPost = new HttpPost(BLAST_RUN_URL);
-		List<NameValuePair> nameValuePairs = new ArrayList<> ();
+		try {
+			
+			NCBIQBlastAlignmentProperties rqb = (NCBIQBlastAlignmentProperties) rpap;
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpPost httpPost = new HttpPost(BLAST_RUN_URL);
+			
+//			if(httpPost.started();)
+			{
+				List<NameValuePair> nameValuePairs = new ArrayList<> ();
 
-		Map<String, String> params = new HashMap<> ();
-		params.put("email", email);
-		params.put("title", tool);
-		//params.put("gapalign", rqb.getBlastGapCreation());
-		params.put("database", rqb.getBlastDatabase());
-		params.put("alignments", rqb.getHitlistSize()+"");
-		
-		params.put("stype", rqb.getType());
-		params.put("program", rqb.getBlastProgram());
-		String exp = (rqb.getBlastExpect()+"").replace(".0","").toLowerCase();
-		params.put("exp", exp);
-		params.put("gapopen", rqb.getBlastGapCreation()+"");
-		params.put("gapext", rqb.getBlastGapExtension()+"");
-		params.put("sequence", query);
-	
-		for (String key : params.keySet()) {
-			nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
+			Map<String, String> params = new HashMap<> ();
+			params.put("email", email);
+			params.put("title", tool);
+			//params.put("gapalign", rqb.getBlastGapCreation());
+			params.put("database", rqb.getBlastDatabase());
+			params.put("alignments", rqb.getHitlistSize()+"");
+			
+			params.put("stype", rqb.getType());
+			params.put("program", rqb.getBlastProgram());
+			String exp = (rqb.getBlastExpect()+"").replace(".0","").toLowerCase();
+			params.put("exp", exp);
+			params.put("gapopen", rqb.getBlastGapCreation()+"");
+			params.put("gapext", rqb.getBlastGapExtension()+"");
+			params.put("sequence", query);
+
+			for (String key : params.keySet()) {
+				nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
+			}
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			logger.debug("line {}, {}", httpPost.getRequestLine(), nameValuePairs);
+			
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+			HttpEntity httpEntity = httpResponse.getEntity();
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
+			StringBuilder responseString = new StringBuilder();
+			
+			String readline;
+			while ((readline = br.readLine()) != null) {
+				responseString.append(readline);
+			}
+
+			br.close();
+			httpPost.releaseConnection();
+
+			start = System.currentTimeMillis() + step;
+			holder.put(responseString.toString(), start);
+			
+			return responseString.toString();
+			}
 		}
-		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		logger.debug("line {}", httpPost.getRequestLine());
-		HttpResponse httpResponse = httpClient.execute(httpPost);
-		HttpEntity httpEntity = httpResponse.getEntity();
-		BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
-		StringBuilder responseString = new StringBuilder();
-		String readline;
-		while ((readline = br.readLine()) != null) {
-			responseString.append(readline);
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			throw e;
 		}
-
-		br.close();
-
-		start = System.currentTimeMillis() + step;
-		holder.put(responseString.toString(), start);
-		
-		return responseString.toString();
 
 	}
 	

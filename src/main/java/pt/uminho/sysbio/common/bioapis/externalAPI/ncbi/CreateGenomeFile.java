@@ -397,6 +397,7 @@ public class CreateGenomeFile {
 	public static boolean createFolder(String databaseName, Long taxonomyID) {
 
 		File newPath = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID));
+//		File newPath = new File(FileUtils.getWorkspacesFolderPath().concat(databaseName).concat("/").concat(taxonomyID.toString()));
 
 		if (newPath.exists())
 			return false;

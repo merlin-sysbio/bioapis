@@ -24,6 +24,8 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.blast.org.biojava3.ws.alignm
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.jcs.access.exception.InvalidArgumentException;
+
 import pt.uminho.sysbio.common.bioapis.externalAPI.blast.org.biojava3.ws.alignment.RemotePairwiseAlignmentOutputProperties;
 
 /**
@@ -86,7 +88,7 @@ public class NCBIQBlastOutputProperties implements
 	 * @throws Exception if the enum is neither of RemoteQBlastOutputFormat.TEXT/XML/HTML
 	 */
 	public void setOutputFormat(NCBIQBlastOutputFormat rf)
-			throws Exception {
+			throws InvalidArgumentException {
 		switch (rf) {
 		case TEXT:
 			this.outFormat = "FORMAT_TYPE=Text";
@@ -101,7 +103,7 @@ public class NCBIQBlastOutputProperties implements
 			this.out.put("FORMAT_TYPE", outFormat);
 			break;
 		default:
-			throw new Exception(
+			throw new InvalidArgumentException(
 					"Unacceptable selection of format type. Only values text / XML / HTML accepted");
 		}
 	}
@@ -123,7 +125,7 @@ public class NCBIQBlastOutputProperties implements
 	 *         FLAT_QUERY_ANCHORED_NO_IDENTITIES/TABULAR
 	 */
 	public void setAlignmentOutputFormat(NCBIQBlastOutputFormat rf)
-			throws Exception {
+			throws InvalidArgumentException {
 		switch (rf) {
 		case PAIRWISE:
 			this.alignFormat = "ALIGNMENT_VIEW=Pairwise";
@@ -150,7 +152,7 @@ public class NCBIQBlastOutputProperties implements
 			this.out.put("ALIGNMENT_VIEW", alignFormat);
 			break;
 		default:
-			throw new Exception(
+			throw new InvalidArgumentException(
 					"Unacceptable selection of alignment type. Only values Pairwise / QueryAnchored / QueryAnchoredNoIdentities / FlatQueryAnchored / FlatQueryAnchoredNoIdentities / Tabular accepted");
 		}
 	}
