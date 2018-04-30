@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import javax.xml.ws.WebServiceException;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
 import uk.ac.ebi.chebi.webapps.chebiWS.client.ChebiWebServiceClient;

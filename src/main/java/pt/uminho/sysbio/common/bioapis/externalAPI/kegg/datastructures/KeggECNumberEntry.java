@@ -3,8 +3,8 @@ package pt.uminho.sysbio.common.bioapis.externalAPI.kegg.datastructures;
 import java.util.List;
 import java.util.Set;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
-import pt.uminho.sysbio.common.bioapis.externalAPI.IExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.IExternalRef;
 
 public class KeggECNumberEntry implements IExternalRef {
 
@@ -72,6 +72,13 @@ public class KeggECNumberEntry implements IExternalRef {
 	@Override
 	public String getMiriamCode() {
 		return "urn:miriam:ec-code:" + id;
+	}
+
+
+	@Override
+	public String getIdentifierCode() {
+		// TODO Auto-generated method stub
+		return ExternalRefSource.EC_Code.getIdentifierCode(id);
 	}
 
 }

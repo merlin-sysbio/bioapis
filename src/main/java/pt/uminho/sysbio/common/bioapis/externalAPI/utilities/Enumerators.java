@@ -65,31 +65,22 @@ public class Enumerators {
 		}
 
 	}
-
-//	public enum ExpectedValues{
-//
-//		_1E_minus_200 (1e-200),
-//		_1E_minus_100 (1e-100),
-//		_1E_minus_50 (1e-50),
-//		_1E_minus_10 (1e-10),
-//		_1E_minus_5 (1e-5),
-//		_1E_minus_4 (1e-4),
-//		_1E_minus_3 (1e-3),
-//		_1E_minus_2 (1e-2),
-//		_1E_minus_1 (1e-1),
-//		_1 (1.0),
-//		_100 (100),
-//		_1000 (1000);
-//
-//		private final double index;   
-//
-//		ExpectedValues(double index) {
-//			this.index = index;
-//		}
-//
-//		public double index() { 
-//			return index; 
-//		}
-//
-//	}
+	
+	
+	public enum ModelSources{
+		
+		MODEL_SEED("ModelSEED smbl model");
+		
+		private String source;
+		
+		private ModelSources(String modelSource){
+			this.source = modelSource;
+		}
+		
+		public String source(){
+			return this.source;
+		}
+		
+	}
+	
 }

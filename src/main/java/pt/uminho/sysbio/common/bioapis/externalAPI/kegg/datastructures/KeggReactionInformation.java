@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRef;
+import pt.uminho.ceb.biosystems.mew.utilities.ExternalRefSource;
+import pt.uminho.ceb.biosystems.mew.utilities.IExternalRef;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.collection.CollectionUtils;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRef;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ExternalRefSource;
-import pt.uminho.sysbio.common.bioapis.externalAPI.IExternalRef;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggAPI;
 import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggUtils;
 
