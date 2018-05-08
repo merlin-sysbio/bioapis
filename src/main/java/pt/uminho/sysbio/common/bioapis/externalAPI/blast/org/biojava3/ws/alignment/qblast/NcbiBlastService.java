@@ -84,7 +84,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 	private OutputStreamWriter fromQBlast;
 	private BufferedReader rd;
 
-	private String email = "biosystems.um@gmail.com";
+	private String email = "support@merlin-sysbio.org";
 	private String tool = "www.merlin-sysbio.org";
 
 	private String cmd = null;
@@ -228,10 +228,9 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 			throw new Exception("Impossible to execute QBlast request. Your sequence info has not been set correctly.\n");
 		} 
 		else {
-			//seq = "&QUERY=" + str;
-			seq = "QUERY=" + str;
+			seq = "&QUERY=" + str;
 		}
-
+		
 		cmd = rpa.getBlastCommandsToQBlast() + "&TOOL=" + this.getTool() + "&EMAIL=" + this.getEmail();
 
 		// Let's end with the sequence's string
@@ -674,11 +673,11 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 		conn.setDoOutput(true);
 		conn.setUseCaches(false);
 
-		tmp.setRequestProperty("User-Agent", "Biojava/NCBIQBlastService");
+		tmp.setRequestProperty("User-Agent", "merlin/Biojava/NCBIQBlastService");
 		tmp.setRequestProperty("Connection", "Keep-Alive");
 		tmp.setRequestProperty("Content-type",
 				"application/x-www-form-urlencoded");
-		tmp.setRequestProperty("Content-length", "200");
+//		tmp.setRequestProperty("Content-length", "200");
 
 		return tmp;
 	}

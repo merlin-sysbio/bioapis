@@ -290,6 +290,8 @@ RemotePairwiseAlignmentProperties {
 		return Integer.parseInt(this.param.get("GAP_CREATION"));
 	}
 
+	
+	
 	/**
 	 * This method set the HitlistSize
 	 * for blastall
@@ -314,7 +316,7 @@ RemotePairwiseAlignmentProperties {
 	public int getHitlistSize() {
 		return Integer.parseInt(this.param.get("HITLIST_SIZE"));
 	}
-
+	
 	/**
 	 * This method set the gap creation value for the GAPCOST parameter to use
 	 * for blastall
