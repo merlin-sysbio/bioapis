@@ -1073,7 +1073,7 @@ public class NcbiAPI {
 			if(trial<_trials) {
 
 				result = null;
-				System.out.println("Trial getTaxonList "+trial);
+				logger.error("Trial getTaxonList {} ", trial);
 				result = getTaxID_and_Superkingdom(taxonomy_ids_list, trial++);
 			}
 		}
@@ -1087,7 +1087,7 @@ public class NcbiAPI {
 	 */
 	public static List<String> getReferenceTaxonomy(long tax_id_long) throws Exception {
 
-		String tax_id = tax_id_long+"";
+		String tax_id = String.valueOf(tax_id_long);
 		List<String> referenceTaxonomy = new ArrayList<>();
 		Map<String, String[]> ncbi_ids;
 
@@ -1135,8 +1135,12 @@ public class NcbiAPI {
 		catch (IllegalArgumentException e) {
 
 
-			if(trial< _trials)
+			if(trial< _trials) {
+				
+				trial = trial+1;
+				logger.error("Trial getTaxonList {} for tax_ids {}", trial, tax_ids);
 				return NcbiAPI.getTaxonList(tax_ids,trial++);
+			}
 			e.printStackTrace();
 		}
 		return null;

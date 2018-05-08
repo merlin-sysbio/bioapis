@@ -91,10 +91,12 @@ public class EntrezTaxonomy {
 		}
 		catch (Error e) {
 
+			logger.error("error for taxonomy identifiers {}", taxonomy_ids);
 			throw e;
 		}
 		catch(IllegalArgumentException e) {
 
+			logger.error("illegal argument for taxonomy identifiers {}", taxonomy_ids);
 				throw e;
 		}
 		return result;
@@ -145,12 +147,13 @@ public class EntrezTaxonomy {
 		catch (Error e) {
 
 			//e.printStackTrace();
+			logger.error(" service unavailable: error for taxonomy identifiers {}", taxonomy_ids);
 			throw new Error("Service unavailable!");
 		}
 		catch(Exception e) {
 			
 			//e.printStackTrace();
-			logger.error("taxonomy id {}",taxonomy_ids);
+			logger.error("Error retrieving taxonomy information for taxonomy id {}",taxonomy_ids);
 			throw new IllegalArgumentException("Error retrieving taxonomy information.\n"+e.getMessage()); 
 		}
 //		array = new String[2];
