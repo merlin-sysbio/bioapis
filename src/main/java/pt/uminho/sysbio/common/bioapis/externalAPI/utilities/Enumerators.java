@@ -6,18 +6,32 @@ public class Enumerators {
 
 		//			ASSEMBLY_REPORT("assembly_report.txt"),
 		//			ASSEMBLY_STATS("assembly_stats.txt"),
-		CDS_FROM_GENOMIC("cds_from_genomic.fna"),
+		CDS_FROM_GENOMIC("cds_from_genomic.fna"){
+			@Override
+			public String toString(){
+				return "cds file (cds_from_genomic.fna)";
+			}
+		},
 		//			FEATURE_TABLE("feature_table.txt"),
 		//			GENOMIC_FNA("genomic.fna"),
 		//			GENOMIC_GBFF("genomic.gbff"),
 		//			GENOMIC_GFF("genomic.gff"),
 		PROTEIN_FAA("protein.faa"), 
 		//			PROTEIN_GPFF("protein.gpff"),
-		RNA_FROM_GENOMIC("rna_from_genomic.fna"),
+		RNA_FROM_GENOMIC("rna_from_genomic.fna"){
+			@Override
+			public String toString(){
+				return "rna file (rna_from_genomic.fna)";
+			}
+		},
 		//R_RNA_FROM_GENOMIC ("rrna_from_genomic.fna"),
 		//T_RNA_FROM_GENOMIC ("trna_from_genomic.fna"),
-		CUSTOM_GENBANK_FILE("customGenBankFile");
-
+		CUSTOM_GENBANK_FILE("customGenBankFile"){
+			@Override
+			public String toString(){
+				return "custom genbank file ('.gbff')";
+			}
+		};
 
 		private String extension;
 
@@ -28,12 +42,22 @@ public class Enumerators {
 		public String getExtension(){
 			return extension;
 		}
+		
+		@Override
+		public String toString(){
+			return "fasta file (protein.faa)";
+		}
 
 	}
 
 	public enum TypeOfExport{
 
-		PROTEIN_FAA("protein.faa"), 
+		PROTEIN_FAA("protein.faa"){
+			@Override
+			public String toString(){
+				return "fasta file (protein.faa)";
+			}
+		}, 
 		ALL_FILES(".mer");
 
 		private String type;
@@ -45,6 +69,11 @@ public class Enumerators {
 		public String extension(){
 			return this.type;
 		}
+		
+		@Override
+		public String toString(){
+			return "all files";
+		}
 
 	}
 
@@ -52,7 +81,12 @@ public class Enumerators {
 
 		//		PROTEIN_GPFF("protein.gpff"), 
 		GENOMIC_GBFF("genomic.gbff"),
-		CUSTOM_FILE("customGenBankFile");
+		CUSTOM_FILE("customGenBankFile"){
+			@Override
+			public String toString(){
+				return "custom genbank file ('.gbff')";
+			}
+		};
 
 		private String file;
 
@@ -62,6 +96,11 @@ public class Enumerators {
 
 		public String extension(){
 			return this.file;
+		}
+		
+		@Override
+		public String toString(){
+			return "gb file downloaded by merlin ('genomic.gbff')";
 		}
 
 	}
