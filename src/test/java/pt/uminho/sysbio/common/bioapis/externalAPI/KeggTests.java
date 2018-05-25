@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggAPI;
-import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggOperation;
-import pt.uminho.sysbio.common.bioapis.externalAPI.kegg.KeggRestful;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggAPI;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggOperation;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggRestful;
 
 public class KeggTests {
 

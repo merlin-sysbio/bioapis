@@ -35,21 +35,20 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.CreateGenomeFile;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezFetch;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezService;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezServiceFactory;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.EntrezTaxonomy;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.NcbiDatabases;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummary;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
-//import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.PrintWriter;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ELinkResult;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESearchResult;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.ESummaryResult;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.GBSet;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ncbi.containers.TaxaSet;
-import pt.uminho.sysbio.common.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.CreateGenomeFile;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.EntrezFetch;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.EntrezService;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.EntrezServiceFactory;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.EntrezTaxonomy;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.NcbiDatabases;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummary;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ELinkResult;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESummaryResult;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.GBSet;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.TaxaSet;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
 import retrofit.RetrofitError;
 
 public class NcbiAPITests {
