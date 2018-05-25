@@ -19,11 +19,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.EbiAPI;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.EbiRestful;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro.InterProMain;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.interpro.InterProResultsList;
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.phobius.PhobiusParser;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.EbiWebServices;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.EbiAPI;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.EbiRestful;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.interpro.InterProMain;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.interpro.InterProResultsList;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.phobius.PhobiusParser;
 
 /**
  * @author Oscar Dias

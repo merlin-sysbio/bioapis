@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import pt.uminho.sysbio.common.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
 
 public class UniProtAPI_tests {
 

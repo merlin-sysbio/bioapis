@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>pt.uminho.sysbio.common</groupId>
+	<groupId>pt.uminho.ceb.biosystems.merlin</groupId>
 	<artifactId>bioapis</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>bioapis</name>
@@ -15,7 +15,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<pt.uminho.sysbio.version>0.0.1-SNAPSHOT</pt.uminho.sysbio.version>
+		<pt.uminho.ceb.biosystems.merlin.version>0.0.2-SNAPSHOT</pt.uminho.ceb.biosystems.merlin.version>
+		<pt.uminho.ceb.biosystems.merlin.groupId>pt.uminho.ceb.biosystems.merlin</pt.uminho.ceb.biosystems.merlin.groupId>
 		<axis2.version>1.6.2</axis2.version>
 		<axiom.version>1.2.14</axiom.version>
 	</properties>
@@ -112,7 +113,7 @@
 		<dependency>
 			<groupId>uk.ac.ebi.uniprot</groupId>
 			<artifactId>japi</artifactId>
-			<version>1.0.16</version>
+			<version>1.0.19</version>
 		</dependency>
 		<!-- <dependency> <groupId>uk.ac.ebi.uniprot.kraken</groupId> <artifactId>uniprotjapi</artifactId> 
 			<version>2015.07</version> </dependency> -->
@@ -162,14 +163,9 @@
 			<version>1.1.3</version>
 		</dependency>
 		<dependency>
-			<groupId>pt.uminho.sysbio.merlin</groupId>
+			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
 			<artifactId>merlin-utilities</artifactId>
-			<version>${pt.uminho.sysbio.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>pt.uminho.ceb.biosystems.mew</groupId>
-			<artifactId>utilities</artifactId>
-			<version>0.0.1.M-SNAPSHOT</version>
+			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
 		</dependency>
 	</dependencies>
 
