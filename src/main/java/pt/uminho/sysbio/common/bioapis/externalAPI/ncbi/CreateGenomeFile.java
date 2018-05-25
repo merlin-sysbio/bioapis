@@ -335,7 +335,7 @@ public class CreateGenomeFile {
 					while ((bytesRead = inputStream.read(buffer)) != -1) {
 						outputStream.write(buffer, 0, bytesRead);
 					}
-
+					
 					outputStream.close();
 					inputStream.close();
 
