@@ -312,8 +312,6 @@ public class CreateGenomeFile {
 			String ftpUrlFile = ftpUrl + "/" + filePath;
 			String httpUrl = ftpUrlFile.replace("ftp:", "https:");
 
-
-
 			try {
 				URL u = new URL (httpUrl);
 				HttpURLConnection huc =  ( HttpURLConnection )  u.openConnection (); 
