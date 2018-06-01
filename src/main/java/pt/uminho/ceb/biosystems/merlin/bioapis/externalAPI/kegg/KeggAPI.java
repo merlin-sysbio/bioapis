@@ -359,6 +359,7 @@ public class KeggAPI {
 
 		} catch (Exception e) {
 
+			logger.error("error with entry {}", ecNumber);
 			logger.error("error {}",e);
 			throw e;
 		}
