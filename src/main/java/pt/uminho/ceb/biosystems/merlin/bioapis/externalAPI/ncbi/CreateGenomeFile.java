@@ -28,14 +28,19 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.features.FeatureRetriever;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
+
+import com.fasterxml.jackson.core.JsonFactory.Feature;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummary;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.GenBankFiles;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 public class CreateGenomeFile {
@@ -397,7 +402,7 @@ public class CreateGenomeFile {
 	public static boolean createFolder(String databaseName, Long taxonomyID) {
 
 		File newPath = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID));
-//		File newPath = new File(FileUtils.getWorkspacesFolderPath().concat(databaseName).concat("/").concat(taxonomyID.toString()));
+		//		File newPath = new File(FileUtils.getWorkspacesFolderPath().concat(databaseName).concat("/").concat(taxonomyID.toString()));
 
 		if (newPath.exists())
 			return false;
@@ -687,144 +692,27 @@ public class CreateGenomeFile {
 		return true;
 	}
 
-	//	/**
-	//	 * @param genomeID
-	//	 * @return 
-	//	 * @throws AxisFault 
-	//	 */
-	//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> getFastaAAGenomeFromEntrezProtein(String sourceDB) throws Exception{
-	//
-	//		List<String> ids_list = new ArrayList<String>();
-	//		ids_list.add(this.genomeID);
-	//
-	//		EntrezLink entrezLink = new EntrezLink();
-	//		List<List<String>> links_list = entrezLink.getLinksList(ids_list, NcbiDatabases.taxonomy, NcbiDatabases.protein,1000);
-	//
-	//		EntrezFetch entrezFetch;
-	//		entrezFetch = new EntrezFetch();
-	//
-	//		Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair = entrezFetch.getLocusAndSequencePairFromID(links_list,500,sourceDB);
-	//
-	//		pair = this.checkForDuplicates(pair);
-	//
-	//		return pair;
-	//	}
-
-	//	/**
-	//	 * @param pair
-	//	 * @return
-	//	 */
-	//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> checkForDuplicates(Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair) {
-	//
-	//		Map<String, String> locustags = pair.getValue();
-	//		Map<String, AbstractSequence<?>> sequences =  pair.getPairValue();
-	//		Set<String> locus_to_be_checked = new HashSet<String>();
-	//
-	//		List<String> duplicate_keys = new ArrayList<String>();
-	//
-	//		for(String key : locustags.keySet()) {
-	//
-	//			if(!duplicate_keys.contains(key)) {
-	//
-	//				String locus = locustags.get(key);
-	//				for(String test_key : locustags.keySet()) {
-	//
-	//					if(locustags.get(test_key).equals(locus)) {
-	//
-	//						duplicate_keys.add(test_key);
-	//						if(!test_key.equals(key)) {
-	//
-	//							locus_to_be_checked.add(key);
-	//						}
-	//					}
-	//				}
-	//				duplicate_keys.remove(key);
-	//			}
-	//		}
-	//
-	//		for(String key:duplicate_keys) {
-	//
-	//			locustags.remove(key);
-	//			sequences.remove(key);
-	//		}
-	//
-	//		duplicate_keys = new ArrayList<String>();
-	//		for(String key : sequences.keySet()) {
-	//
-	//			if(!duplicate_keys.contains(key)) {
-	//
-	//				AbstractSequence<?> sequence = sequences.get(key);
-	//				for(String test_key : sequences.keySet()) {
-	//
-	//					if(sequences.get(test_key).equals(sequence)) {
-	//
-	//						duplicate_keys.add(test_key);
-	//						if(!test_key.equals(key)) {
-	//
-	//							locus_to_be_checked.add(key);
-	//						}
-	//					}
-	//				}
-	//				duplicate_keys.remove(key);
-	//
-	//			}
-	//		}
-	//
-	//		for(String key:duplicate_keys) {
-	//
-	//			locustags.remove(key);
-	//			sequences.remove(key);
-	//		}
-	//
-	//		for(String acc : locus_to_be_checked) {
-	//
-	//			String locus = locustags.get(acc);
-	//			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(acc,0);
-	//			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-	//
-	//				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-	//			}
-	//			else {
-	//
-	//				uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(locustags.get(acc),0);
-	//				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-	//
-	//					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-	//				}
-	//			}
-	//
-	//			if(!locus.equalsIgnoreCase(locustags.get(acc))) {
-	//
-	//				locustags.put(acc, locus);
-	//			}
-	//		}
-	//		pair.setValue(locustags);
-	//		pair.setPairValue(sequences);
-	//		return pair;
-	//	}
-
-
-	//	/**
-	//	 * @return the genomeID
-	//	 */
-	//	public String getGenomeID() {
-	//		return genomeID;
-	//	}
-	//
-	//	/**
-	//	 * @param genomeID the genomeID to set
-	//	 */
-	//	public void setGenomeID(String genomeID) {
-	//		this.genomeID = genomeID;
-	//	}
-
-	//	public static void main(String [] args) throws Exception{
-	//		//new CreateGenomeFile("83333",5,"",".faa"); // ecoli k12
-	//		
-	//		NcbiEFetchSequenceStub_API fetchStub = new NcbiEFetchSequenceStub_API(50);
-	//		Set<String> querySet = new HashSet<String>();
-	//		querySet.add("NP_207514.1");
-	//		System.out.println(fetchStub.getLocusFromID(querySet,10).get("NP_207514.1"));
-	//	}
+//	public static Map<String, String> getLocusTagFromGenBank(String databaseName, Long taxonomyID, GenBankFiles genBankFile) {
+//
+//		try {
+//			Map<String, AbstractSequence<?>> ret = new HashMap<>();
+//
+//			
+//			Map<String,ProteinSequence> aas = GenbankReaderHelper.readGenbankProteinSequence(new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) 
+//					+ genBankFile.extension()));
+//
+//			FeatureRetriever k =  aas.get("da").getFeatureRetriever();
+//			
+//			k.getFeatures().
+//			
+//			return ret;
+//		}
+//		catch (Exception e) {
+//
+//			e.printStackTrace();
+//			throw e;
+//		}
+//		return null;
+//	}
 
 }
