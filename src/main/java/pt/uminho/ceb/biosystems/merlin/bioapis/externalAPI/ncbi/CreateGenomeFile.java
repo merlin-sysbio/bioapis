@@ -23,12 +23,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.features.FeatureInterface;
 import org.biojava.nbio.core.sequence.features.FeatureRetriever;
+import org.biojava.nbio.core.sequence.features.Qualifier;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
@@ -692,9 +697,11 @@ public class CreateGenomeFile {
 		return true;
 	}
 
-//	public static Map<String, String> getLocusTagFromGenBank(String databaseName, Long taxonomyID, GenBankFiles genBankFile) {
+	
+	
+	public static Map<String, String> getLocusTagFromGenBank(String databaseName, Long taxonomyID, GenBankFiles gbFile) throws Exception {
 //
-//		try {
+		try {
 //			Map<String, AbstractSequence<?>> ret = new HashMap<>();
 //
 //			
@@ -706,13 +713,32 @@ public class CreateGenomeFile {
 //			k.getFeatures().
 //			
 //			return ret;
-//		}
-//		catch (Exception e) {
-//
-//			e.printStackTrace();
-//			throw e;
-//		}
-//		return null;
-//	}
+			Map<String, String> genesLocusTags = new HashMap<>();
+
+			File genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + gbFile.extension());
+			LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
+
+			for(DNASequence cds : genBankReader.values()) {
+				for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> cdsFeature : cds.getFeatures()) {
+					if (cdsFeature.getType().equals("CDS")){   
+						Map<String, List<Qualifier>> qualifiers = cdsFeature.getQualifiers();
+						List<Qualifier> protein_id = qualifiers.get("protein_id");
+						List<Qualifier> locus_tag = qualifiers.get("locus_tag");
+
+						if(protein_id != null && locus_tag != null)
+							genesLocusTags.put(protein_id.get(0).getValue(), locus_tag.get(0).getValue());
+
+					}
+				}
+			}
+			
+			return genesLocusTags;
+		}
+		catch (Exception e) {
+
+			e.printStackTrace();
+			throw e;
+		}
+	}
 
 }
