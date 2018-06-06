@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -420,6 +421,8 @@ public class CreateGenomeFile {
 
 
 	/**
+	 * this method receives a rnaFastaFile and split it in two fasta filas (rRNA.fna and tRNA.fna)
+	 * 
 	 * @param dbName
 	 * @param taxID
 	 * @param rnaFastaFile
@@ -480,9 +483,16 @@ public class CreateGenomeFile {
 
 			//for(File fastFile : fastaFiles)				
 			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
-
-			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, null, sequences, extension);
+			
+			Map<String, String> locus_tags = getLocusTagFromGenBank(databaseName, taxonomyID, GenBankFiles.GENOMIC_GBFF.extension());
+			Map<String, String[]> sequencesData = new HashMap<>();
+			
+			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, null, sequences, sequencesData, extension);
 			CreateGenomeFile.createLogFile(databaseName, taxonomyID, extension);
+			
+//			PreparedStatement pStatement = connection.prepareStatement("INSERT INTO sequence(gene_idgene, sequence_type, sequence, sequence_length, entry_type, kegg_id) VALUES(?,?,?,?,?,?);");
+
+
 		}
 	}
 
@@ -539,13 +549,13 @@ public class CreateGenomeFile {
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, FileExtensions extension) throws IOException{
+	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, Map<String,String[]> processedSequences, FileExtensions extension) throws IOException{
 
 		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getExtension());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
-
+		
 		for(String key:sequences.keySet()) {
 
 			String fileKey = key;
@@ -556,7 +566,12 @@ public class CreateGenomeFile {
 				out.write(">"+fileKey+"|"+locusTag.get(key)+"\n");
 			else
 				out.write(">"+fileKey+"\n");
-
+			
+			String[] seqInfo = new String[2];
+			seqInfo[0] = Integer.toString(sequences.get(key).getLength());
+			seqInfo[1] = sequences.get(key).getSequenceAsString();
+			processedSequences.put(fileKey, seqInfo);
+			
 			out.write(sequences.get(key).getSequenceAsString()+"\n");
 
 		}
@@ -699,7 +714,16 @@ public class CreateGenomeFile {
 
 	
 	
-	public static Map<String, String> getLocusTagFromGenBank(String databaseName, Long taxonomyID, GenBankFiles gbFile) throws Exception {
+	/**
+	 * this method retrieve genes locus_tag by protein ids from genBank fasta file (genomic.gbff)
+	 * 
+	 * @param databaseName
+	 * @param taxonomyID
+	 * @param gbFile
+	 * @return
+	 * @throws Exception
+	 */
+	public static Map<String, String> getLocusTagFromGenBank(String databaseName, Long taxonomyID, String genBankFileName) throws Exception {
 //
 		try {
 //			Map<String, AbstractSequence<?>> ret = new HashMap<>();
@@ -714,25 +738,31 @@ public class CreateGenomeFile {
 //			
 //			return ret;
 			Map<String, String> genesLocusTags = new HashMap<>();
+			
+			File genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + genBankFileName);
+			
+			if(genBankFile.exists()){
 
-			File genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + gbFile.extension());
-			LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
+				LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
 
-			for(DNASequence cds : genBankReader.values()) {
-				for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> cdsFeature : cds.getFeatures()) {
-					if (cdsFeature.getType().equals("CDS")){   
-						Map<String, List<Qualifier>> qualifiers = cdsFeature.getQualifiers();
-						List<Qualifier> protein_id = qualifiers.get("protein_id");
-						List<Qualifier> locus_tag = qualifiers.get("locus_tag");
+				for(DNASequence cds : genBankReader.values()) {
+					for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> cdsFeature : cds.getFeatures()) {
+						if (cdsFeature.getType().equals("CDS")){   
+							Map<String, List<Qualifier>> qualifiers = cdsFeature.getQualifiers();
+							List<Qualifier> protein_id = qualifiers.get("protein_id");
+							List<Qualifier> locus_tag = qualifiers.get("locus_tag");
 
-						if(protein_id != null && locus_tag != null)
-							genesLocusTags.put(protein_id.get(0).getValue(), locus_tag.get(0).getValue());
+							if(protein_id != null && locus_tag != null)
+								genesLocusTags.put(protein_id.get(0).getValue(), locus_tag.get(0).getValue());
 
+						}
 					}
 				}
+
+				return genesLocusTags;
 			}
 			
-			return genesLocusTags;
+			return null;
 		}
 		catch (Exception e) {
 

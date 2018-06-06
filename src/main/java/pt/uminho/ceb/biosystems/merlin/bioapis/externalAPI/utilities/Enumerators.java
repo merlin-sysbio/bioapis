@@ -14,7 +14,12 @@ public class Enumerators {
 		},
 		//			FEATURE_TABLE("feature_table.txt"),
 		//			GENOMIC_FNA("genomic.fna"),
-		//			GENOMIC_GBFF("genomic.gbff"),
+//		GENOMIC_GBFF("genomic.gbff"){
+//			@Override
+//			public String toString(){
+//				return "genbank file ('.gbff')";
+//			}
+//		},
 		//			GENOMIC_GFF("genomic.gff"),
 		PROTEIN_FAA("protein.faa"), 
 		//			PROTEIN_GPFF("protein.gpff"),
@@ -29,7 +34,7 @@ public class Enumerators {
 		CUSTOM_GENBANK_FILE("customGenBankFile"){
 			@Override
 			public String toString(){
-				return "custom genbank file ('.gbff')";
+				return "custom genbank file ('.gbff'/'.gpff')";
 			}
 		};
 
@@ -84,7 +89,7 @@ public class Enumerators {
 		CUSTOM_FILE("customGenBankFile"){
 			@Override
 			public String toString(){
-				return "custom genbank file ('.gbff')";
+				return "custom genbank file ('.gbff'/'.gpff')";
 			}
 		};
 
@@ -103,23 +108,6 @@ public class Enumerators {
 			return "gb file downloaded by merlin ('genomic.gbff')";
 		}
 
-	}
-	
-	
-	public enum ModelSources{
-		
-		MODEL_SEED("ModelSEED smbl model");
-		
-		private String source;
-		
-		private ModelSources(String modelSource){
-			this.source = modelSource;
-		}
-		
-		public String source(){
-			return this.source;
-		}
-		
 	}
 	
 }
