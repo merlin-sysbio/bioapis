@@ -3,8 +3,8 @@ package pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.datastructures;
 import java.util.List;
 import java.util.Map;
 
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRef;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRefSource;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRef;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRefSource;
 
 public class KeggOrthologyEntry extends ExternalRef {
 

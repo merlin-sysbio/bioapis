@@ -3,8 +3,8 @@ package pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.datastructures;
 import java.util.List;
 import java.util.Set;
 
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRefSource;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.IExternalRef;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRefSource;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.IExternalRef;
 
 public class KeggECNumberEntry implements IExternalRef {
 

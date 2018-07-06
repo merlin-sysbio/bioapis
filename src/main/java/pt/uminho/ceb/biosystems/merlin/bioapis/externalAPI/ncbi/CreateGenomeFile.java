@@ -69,7 +69,7 @@ public class CreateGenomeFile {
 			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0, databaseName, taxonomyID, CreateGenomeFile.setToday(), proteinFaa)) {
 
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
-				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + proteinFaa.getExtension()));
+				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + proteinFaa.getName()));
 				ret.putAll(aas);
 
 				return ret;
@@ -529,7 +529,7 @@ public class CreateGenomeFile {
 	 */
 	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, FileExtensions extension) throws IOException{
 
-		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getExtension());
+		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getName());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
@@ -549,6 +549,33 @@ public class CreateGenomeFile {
 
 		}
 		out.close();
+	}
+	
+	
+	/**
+	 * @param path
+	 * @param sequences
+	 */
+	public static void buildFastaFile(String path, Map<String, AbstractSequence<?>> sequences){
+		
+		try {
+			File fastaFile = new File(path);
+			
+			FileWriter fstream = new FileWriter(fastaFile);  
+			BufferedWriter out = new BufferedWriter(fstream); 
+
+			for(AbstractSequence<?> sequence : sequences.values()) {
+				
+				out.write(">"+sequence.getOriginalHeader()+"\n");
+				out.write(sequence.getSequenceAsString()+"\n");
+
+			}
+			out.close();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -582,7 +609,7 @@ public class CreateGenomeFile {
 		FileWriter fstream = new FileWriter(tempPath+"genomes.log");  
 		BufferedWriter out = new BufferedWriter(fstream);
 		out.append(buffer);
-		out.write("genome_"+databaseName+"_"+taxID+"_"+extension.getExtension()+"\t"+today);
+		out.write("genome_"+databaseName+"_"+taxID+"_"+extension.getName()+"\t"+today);
 		out.close();
 	}
 
@@ -621,7 +648,7 @@ public class CreateGenomeFile {
 
 				String[] data = strLine.split("\t"); 
 
-				if(data[0].equalsIgnoreCase("genome_"+databaseName+"_"+ taxID +"_"+proteinFaa.getExtension())) {
+				if(data[0].equalsIgnoreCase("genome_"+databaseName+"_"+ taxID +"_"+proteinFaa.getName())) {
 
 					logFileDate = data[1];
 				}
@@ -670,7 +697,7 @@ public class CreateGenomeFile {
 				FileWriter fWriterStream = new FileWriter(tempPath+"genomes.log");  
 				BufferedWriter out = new BufferedWriter(fWriterStream);
 				out.append(buffer);
-				out.write("genome_"+databaseName+proteinFaa.getExtension()+"\t"+logFileDate);
+				out.write("genome_"+databaseName+proteinFaa.getName()+"\t"+logFileDate);
 				out.close();
 			}
 		}

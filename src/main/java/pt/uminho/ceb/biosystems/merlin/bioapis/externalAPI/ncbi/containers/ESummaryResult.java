@@ -6,6 +6,10 @@ import java.util.List;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+/**
+ * @author amaromorais
+ *
+ */
 @Root(name="ESummaryResult", strict=false)
 public class ESummaryResult {
 	

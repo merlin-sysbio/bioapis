@@ -599,7 +599,7 @@ public class UniProtAPI {
 	public static UniProtEntry getUniprotEntry(String uniprotID, int errorCount){
 
 		UniProtAPI.getInstance();
-
+		
 		UniProtEntry entry = null;
 		try
 		{

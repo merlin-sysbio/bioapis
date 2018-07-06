@@ -2,8 +2,8 @@ package pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.datastructures;
 
 import java.util.List;
 
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRefSource;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.MetaboliteExternalRef;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRefSource;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.MetaboliteExternalRef;
 
 public class KeggCompoundER extends MetaboliteExternalRef {
 

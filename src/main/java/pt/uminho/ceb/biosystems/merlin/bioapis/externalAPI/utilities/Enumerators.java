@@ -33,14 +33,18 @@ public class Enumerators {
 			}
 		};
 
-		private String extension;
+		private String name;
 
-		FileExtensions(String extension){
-			this.extension = extension;
+		FileExtensions(String name){
+			this.name = name;
 		}
 
+		public String getName(){
+			return name;
+		}
+		
 		public String getExtension(){
-			return extension;
+			return name.substring(name.lastIndexOf("."));
 		}
 		
 		@Override
