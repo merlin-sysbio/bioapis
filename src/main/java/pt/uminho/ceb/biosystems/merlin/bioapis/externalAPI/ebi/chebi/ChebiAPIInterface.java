@@ -11,7 +11,7 @@ import javax.xml.ws.WebServiceException;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggAPI;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.datastructures.KeggCompoundER;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRefSource;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRefSource;
 import uk.ac.ebi.chebi.webapps.chebiWS.client.ChebiWebServiceClient;
 import uk.ac.ebi.chebi.webapps.chebiWS.model.ChebiWebServiceFault_Exception;
 import uk.ac.ebi.chebi.webapps.chebiWS.model.DataItem;

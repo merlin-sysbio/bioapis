@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggAPI;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.kegg.KeggUtils;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRef;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.ExternalRefSource;
-import pt.uminho.ceb.biosystems.merlin.utilities.External.IExternalRef;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRef;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.ExternalRefSource;
+import pt.uminho.ceb.biosystems.merlin.utilities.external.IExternalRef;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.collection.CollectionUtils;
 
 

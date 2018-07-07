@@ -9,6 +9,10 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
+/**
+ * @author amaromorais
+ *
+ */
 @Root(name="DocumentSummary", strict=false)
 public class DocumentSummary {
 	
