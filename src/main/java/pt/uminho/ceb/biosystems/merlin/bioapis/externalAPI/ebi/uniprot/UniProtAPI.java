@@ -142,7 +142,7 @@ public class UniProtAPI {
 			for (int i = 0; i < uniprotIDs.size(); i++)
 				uniprotEntries.add(null);
 
-			List<List<String>> uniprotIDs_subsets = ListUtilities.split(uniprotIDs, 100);
+			List<List<String>> uniprotIDs_subsets = ListUtilities.split(uniprotIDs, 50);
 
 			for(List<String> uniprotIDs_subset : uniprotIDs_subsets) {
 
