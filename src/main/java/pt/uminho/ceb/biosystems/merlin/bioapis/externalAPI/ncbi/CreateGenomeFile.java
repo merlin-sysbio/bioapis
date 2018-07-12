@@ -564,11 +564,16 @@ public class CreateGenomeFile {
 			FileWriter fstream = new FileWriter(fastaFile);  
 			BufferedWriter out = new BufferedWriter(fstream); 
 
-			for(AbstractSequence<?> sequence : sequences.values()) {
+			for(String seqID : sequences.keySet()) {
 				
-				out.write(">"+sequence.getOriginalHeader()+"\n");
+				AbstractSequence<?> sequence = sequences.get(seqID);
+				
+				if(sequence.getOriginalHeader()==null || sequence.getOriginalHeader().isEmpty())
+					out.write(">"+seqID+"\n");
+				else
+					out.write(">"+sequence.getOriginalHeader()+"\n");
 				out.write(sequence.getSequenceAsString()+"\n");
-
+				
 			}
 			out.close();
 		} catch (IOException e) {
