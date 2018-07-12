@@ -82,7 +82,7 @@ public class CreateGenomeFile {
 		}
 		return null;
 	}
-
+	
 	//	/**
 	//	 * @param genomeID
 	//	 * @param path
@@ -575,8 +575,51 @@ public class CreateGenomeFile {
 			
 			e.printStackTrace();
 		}
-		
 	}
+	
+	
+	/**
+	 * @param path
+	 * @param sequences
+	 */
+	public static void buildSubFastaFiles(String filesPath, Map<String, AbstractSequence<?>> allSequences, 
+			List<Map<String,AbstractSequence<?>>> queriesSubSetList, List<String> queryFilesPaths, int numberOfFiles){
+		
+		Map<String, AbstractSequence<?>> queriesSubSet = new HashMap<>();
+		
+		int batch_size= allSequences.size()/numberOfFiles;
+		
+		String fastaFileName;
+		
+		int c=0;
+		for (String query : allSequences.keySet()) {
+			
+			queriesSubSet.put(query, allSequences.get(query));
+
+			if ((c+1)%batch_size==0 && ((c+1)/batch_size < numberOfFiles)) {
+				
+				fastaFileName = filesPath.concat("SubFastaFile_").concat(Integer.toString((c+1)/batch_size)).concat("_of_").
+						concat(Integer.toString(numberOfFiles)).concat(FileExtensions.PROTEIN_FAA.getExtension());
+				
+				CreateGenomeFile.buildFastaFile(fastaFileName, queriesSubSet);
+				queryFilesPaths.add(fastaFileName);
+				queriesSubSetList.add(queriesSubSet);
+				
+				queriesSubSet = new HashMap<>();
+			}
+			c++;
+		}
+		
+		fastaFileName = filesPath.concat("SubFastaFile_").concat(Integer.toString(numberOfFiles)).concat("_of_").
+				concat(Integer.toString(numberOfFiles)).concat(FileExtensions.PROTEIN_FAA.getExtension());
+		
+		CreateGenomeFile.buildFastaFile(fastaFileName, queriesSubSet);
+		queriesSubSetList.add(queriesSubSet);
+		queryFilesPaths.add(fastaFileName);
+
+	}
+	
+	
 
 	/**
 	 * @throws IOException
