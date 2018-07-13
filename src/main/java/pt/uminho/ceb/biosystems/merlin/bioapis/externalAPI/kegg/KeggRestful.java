@@ -157,13 +157,23 @@ public class KeggRestful {
 			int statusCode = client.executeMethod(method);
 			
 			if (statusCode != HttpStatus.SC_OK) {
-				if ( __DEBUG_API__) {
-
-					System.err.println("Method failed: " + method.getStatusLine());
-					System.err.println("fetch : " + args[0]);
+				
+				MySleep.myWait(10000);
+				
+				if(num<MAX_TRIES){
+					num++;
+					if(__DEBUG_API__) System.out.println("try number " + num+"\tstatus code: "+statusCode);
+					return fetch(operation, num, args);
 				}
-				method.releaseConnection();
-				return null;
+				else{
+					if ( __DEBUG_API__) {
+	
+						System.err.println("Method failed: " + method.getStatusLine());
+						System.err.println("fetch : " + args[0]);
+					}
+					method.releaseConnection();
+					return null;
+				}
 			}
 
 			// Read the response body.
