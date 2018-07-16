@@ -124,6 +124,8 @@ public class EbiBlastClientRest implements RemotePairwiseAlignmentService {
 			
 			logger.debug("line {}, {}", httpPost.getRequestLine(), nameValuePairs);
 			
+			System.out.println(httpPost.getRequestLine());
+			
 			HttpResponse httpResponse = httpClient.execute(httpPost);
 			HttpEntity httpEntity = httpResponse.getEntity();
 			

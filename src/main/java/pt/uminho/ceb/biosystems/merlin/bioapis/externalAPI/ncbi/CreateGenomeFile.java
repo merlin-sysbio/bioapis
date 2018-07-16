@@ -17,25 +17,36 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.features.FeatureInterface;
+import org.biojava.nbio.core.sequence.features.FeatureRetriever;
+import org.biojava.nbio.core.sequence.features.Qualifier;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
+
+import com.fasterxml.jackson.core.JsonFactory.Feature;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummary;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.GenBankFiles;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 public class CreateGenomeFile {
@@ -395,7 +406,7 @@ public class CreateGenomeFile {
 	public static boolean createFolder(String databaseName, Long taxonomyID) {
 
 		File newPath = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID));
-//		File newPath = new File(FileUtils.getWorkspacesFolderPath().concat(databaseName).concat("/").concat(taxonomyID.toString()));
+		//		File newPath = new File(FileUtils.getWorkspacesFolderPath().concat(databaseName).concat("/").concat(taxonomyID.toString()));
 
 		if (newPath.exists())
 			return false;
@@ -408,6 +419,8 @@ public class CreateGenomeFile {
 
 
 	/**
+	 * this method receives a rnaFastaFile and split it in two fasta filas (rRNA.fna and tRNA.fna)
+	 * 
 	 * @param dbName
 	 * @param taxID
 	 * @param rnaFastaFile
@@ -458,7 +471,7 @@ public class CreateGenomeFile {
 	 * @param fastaFiles
 	 * @throws Exception 
 	 */
-	public static void createGenomeFileFromFasta(String databaseName, Long taxonomyID, File fastaFile, FileExtensions extension) throws Exception {
+	public static void createGenomeFileFromFasta(String databaseName, Long taxonomyID, File fastaFile, FileExtensions extension, Map<String, String[]> genesData) throws Exception {
 
 		CreateGenomeFile.createFolder(databaseName, taxonomyID);
 
@@ -468,9 +481,30 @@ public class CreateGenomeFile {
 
 			//for(File fastFile : fastaFiles)				
 			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
-
-			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, null, sequences, extension);
+			
+			Map<String, String> locus_tags = null;
+			
+//			if(extension.equals(FileExtensions.PROTEIN_FAA) && extension.equals(FileExtensions.CDS_FROM_GENOMIC)){
+//				
+//				File genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID).concat(GenBankFiles.GENOMIC_GBFF.extension()));
+//				if(genBankFile.exists()){
+//					locus_tags = getLocusTagFromGenBankFastFile(genBankFile);
+//				}
+//				else if((genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID).concat(GenBankFiles.CUSTOM_FILE.extension()).concat(".gbff"))).exists()){
+//					locus_tags = getLocusTagFromGenBankFastFile(genBankFile);
+//				}
+//				else if((genBankFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID).concat(GenBankFiles.CUSTOM_FILE.extension()).concat(".gpff"))).exists()){
+//					locus_tags = getLocusTagFromGenBankFastFile(genBankFile);
+//				}
+//					
+//			}
+			
+			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, locus_tags, sequences, genesData, extension);
 			CreateGenomeFile.createLogFile(databaseName, taxonomyID, extension);
+			
+//			PreparedStatement pStatement = connection.prepareStatement("INSERT INTO sequence(gene_idgene, sequence_type, sequence, sequence_length, entry_type, kegg_id) VALUES(?,?,?,?,?,?);");
+
+
 		}
 	}
 
@@ -527,24 +561,51 @@ public class CreateGenomeFile {
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, FileExtensions extension) throws IOException{
+	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, Map<String,String[]> processedSequences, FileExtensions extension) throws IOException{
 
 		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getName());
 
 		FileWriter fstream = new FileWriter(myFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
-
+		
 		for(String key:sequences.keySet()) {
-
+			
 			String fileKey = key;
-			//Temp solution for new NCBI FASTA Headers
-			fileKey = fileKey.split("\\s")[0];
+			
+			if(extension.equals(FileExtensions.PROTEIN_FAA) || extension.equals(FileExtensions.RNA_FROM_GENOMIC)){
+				//Temp solution for new NCBI FASTA Headers
+				fileKey = fileKey.split("\\s")[0];
+//				System.out.println("-------------------------------------------");
+//				System.out.println("KEY---->"+key);
+//				System.out.println("FILE KEY---->"+fileKey);
+			}
+			else{
+				String [] header = key.split("\\s");
+				for(String qual : header){
+					if(qual.contains("protein_id=")){
+						fileKey = qual.substring(qual.indexOf("=")+1).replace("[", "").replace("]", "").trim();
+					}
+				}
+			}
 
-			if(locusTag!=null && locusTag.containsKey(key) && locusTag.get(key)!=null)
-				out.write(">"+fileKey+"|"+locusTag.get(key)+"\n");
+			if(locusTag!=null && locusTag.containsKey(fileKey) && locusTag.get(fileKey)!=null)
+				out.write(">"+fileKey+"|"+locusTag.get(fileKey)+"\n");
 			else
 				out.write(">"+fileKey+"\n");
-
+			
+			//Gene data to load into database
+			if(processedSequences!=null){
+				String[] seqInfo = new String[3];
+				if(locusTag!=null && locusTag.containsKey(fileKey) && locusTag.get(fileKey)!=null)
+					seqInfo[0] = locusTag.get(fileKey);
+				else
+					seqInfo[0] = fileKey;
+				seqInfo[1] = sequences.get(key).getSequenceAsString();
+				seqInfo[2] = Integer.toString(sequences.get(key).getLength());
+				processedSequences.put(fileKey, seqInfo);
+			}
+			//
+			
 			out.write(sequences.get(key).getSequenceAsString()+"\n");
 
 		}
@@ -760,144 +821,44 @@ public class CreateGenomeFile {
 		return true;
 	}
 
-	//	/**
-	//	 * @param genomeID
-	//	 * @return 
-	//	 * @throws AxisFault 
-	//	 */
-	//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> getFastaAAGenomeFromEntrezProtein(String sourceDB) throws Exception{
-	//
-	//		List<String> ids_list = new ArrayList<String>();
-	//		ids_list.add(this.genomeID);
-	//
-	//		EntrezLink entrezLink = new EntrezLink();
-	//		List<List<String>> links_list = entrezLink.getLinksList(ids_list, NcbiDatabases.taxonomy, NcbiDatabases.protein,1000);
-	//
-	//		EntrezFetch entrezFetch;
-	//		entrezFetch = new EntrezFetch();
-	//
-	//		Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair = entrezFetch.getLocusAndSequencePairFromID(links_list,500,sourceDB);
-	//
-	//		pair = this.checkForDuplicates(pair);
-	//
-	//		return pair;
-	//	}
+	
+	
+	/**
+	 * this method retrieve genes locus_tag by protein ids from genBank fasta file (genomic.gbff)
+	 * 
+	 * @param databaseName
+	 * @param taxonomyID
+	 * @param gbFile
+	 * @return
+	 * @throws Exception
+	 */
+	public static Map<String, String> getLocusTagFromGenBankFastFile(File genBankFile) throws Exception {
+//
+		Map<String, String> locusTags = new HashMap<>();
 
-	//	/**
-	//	 * @param pair
-	//	 * @return
-	//	 */
-	//	private Pair<Map<String, String>,Map<String, AbstractSequence<?>>> checkForDuplicates(Pair<Map<String, String>,Map<String, AbstractSequence<?>>> pair) {
-	//
-	//		Map<String, String> locustags = pair.getValue();
-	//		Map<String, AbstractSequence<?>> sequences =  pair.getPairValue();
-	//		Set<String> locus_to_be_checked = new HashSet<String>();
-	//
-	//		List<String> duplicate_keys = new ArrayList<String>();
-	//
-	//		for(String key : locustags.keySet()) {
-	//
-	//			if(!duplicate_keys.contains(key)) {
-	//
-	//				String locus = locustags.get(key);
-	//				for(String test_key : locustags.keySet()) {
-	//
-	//					if(locustags.get(test_key).equals(locus)) {
-	//
-	//						duplicate_keys.add(test_key);
-	//						if(!test_key.equals(key)) {
-	//
-	//							locus_to_be_checked.add(key);
-	//						}
-	//					}
-	//				}
-	//				duplicate_keys.remove(key);
-	//			}
-	//		}
-	//
-	//		for(String key:duplicate_keys) {
-	//
-	//			locustags.remove(key);
-	//			sequences.remove(key);
-	//		}
-	//
-	//		duplicate_keys = new ArrayList<String>();
-	//		for(String key : sequences.keySet()) {
-	//
-	//			if(!duplicate_keys.contains(key)) {
-	//
-	//				AbstractSequence<?> sequence = sequences.get(key);
-	//				for(String test_key : sequences.keySet()) {
-	//
-	//					if(sequences.get(test_key).equals(sequence)) {
-	//
-	//						duplicate_keys.add(test_key);
-	//						if(!test_key.equals(key)) {
-	//
-	//							locus_to_be_checked.add(key);
-	//						}
-	//					}
-	//				}
-	//				duplicate_keys.remove(key);
-	//
-	//			}
-	//		}
-	//
-	//		for(String key:duplicate_keys) {
-	//
-	//			locustags.remove(key);
-	//			sequences.remove(key);
-	//		}
-	//
-	//		for(String acc : locus_to_be_checked) {
-	//
-	//			String locus = locustags.get(acc);
-	//			UniProtEntry uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(acc,0);
-	//			if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-	//
-	//				locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-	//			}
-	//			else {
-	//
-	//				uniProtEntry = UniProtAPI.getUniProtEntryFromXRef(locustags.get(acc),0);
-	//				if(uniProtEntry!=null && UniProtAPI.getLocusTags(uniProtEntry)!=null && UniProtAPI.getLocusTags(uniProtEntry).size()>0) {
-	//
-	//					locus = UniProtAPI.getLocusTags(uniProtEntry).get(0);//.getValue();
-	//				}
-	//			}
-	//
-	//			if(!locus.equalsIgnoreCase(locustags.get(acc))) {
-	//
-	//				locustags.put(acc, locus);
-	//			}
-	//		}
-	//		pair.setValue(locustags);
-	//		pair.setPairValue(sequences);
-	//		return pair;
-	//	}
+		try {
+			LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
 
+			for(DNASequence cds : genBankReader.values()) {
+				for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> cdsFeature : cds.getFeatures()) {
+					if (cdsFeature.getType().equals("CDS")){   
+						Map<String, List<Qualifier>> qualifiers = cdsFeature.getQualifiers();
+						List<Qualifier> protein_id = qualifiers.get("protein_id");
+						List<Qualifier> locus_tag = qualifiers.get("locus_tag");
 
-	//	/**
-	//	 * @return the genomeID
-	//	 */
-	//	public String getGenomeID() {
-	//		return genomeID;
-	//	}
-	//
-	//	/**
-	//	 * @param genomeID the genomeID to set
-	//	 */
-	//	public void setGenomeID(String genomeID) {
-	//		this.genomeID = genomeID;
-	//	}
+						if(protein_id != null && locus_tag != null)
+							locusTags.put(protein_id.get(0).getValue(), locus_tag.get(0).getValue());
 
-	//	public static void main(String [] args) throws Exception{
-	//		//new CreateGenomeFile("83333",5,"",".faa"); // ecoli k12
-	//		
-	//		NcbiEFetchSequenceStub_API fetchStub = new NcbiEFetchSequenceStub_API(50);
-	//		Set<String> querySet = new HashSet<String>();
-	//		querySet.add("NP_207514.1");
-	//		System.out.println(fetchStub.getLocusFromID(querySet,10).get("NP_207514.1"));
-	//	}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+			
+		return locusTags;
+	}
 
 }

@@ -165,7 +165,6 @@ public class KeggRestful {
 					if(__DEBUG_API__) System.out.println("try number " + num+"\tstatus code: "+statusCode);
 					return fetch(operation, num, args);
 				}
-				
 				else{
 					if ( __DEBUG_API__) {
 	

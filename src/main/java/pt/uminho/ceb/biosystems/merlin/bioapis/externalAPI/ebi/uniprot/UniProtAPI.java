@@ -440,7 +440,7 @@ public class UniProtAPI {
 
 		try {
 
-			Query query = UniProtQueryBuilder.gene(""+taxID);
+			Query query = UniProtQueryBuilder.taxonID(Integer.parseInt(Long.toString(taxID)));
 
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
