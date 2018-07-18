@@ -664,7 +664,7 @@ public class CreateGenomeFile {
 
 			if ((c+1)%batch_size==0 && ((c+1)/batch_size < numberOfFiles)) {
 				
-				fastaFileName = filesPath.concat("SubFastaFile_").concat(Integer.toString((c+1)/batch_size)).concat("_of_").
+				fastaFileName = filesPath.concat("/SubFastaFile_").concat(Integer.toString((c+1)/batch_size)).concat("_of_").
 						concat(Integer.toString(numberOfFiles)).concat(FileExtensions.PROTEIN_FAA.getExtension());
 				
 				CreateGenomeFile.buildFastaFile(fastaFileName, queriesSubSet);
@@ -676,7 +676,7 @@ public class CreateGenomeFile {
 			c++;
 		}
 		
-		fastaFileName = filesPath.concat("SubFastaFile_").concat(Integer.toString(numberOfFiles)).concat("_of_").
+		fastaFileName = filesPath.concat("/SubFastaFile_").concat(Integer.toString(numberOfFiles)).concat("_of_").
 				concat(Integer.toString(numberOfFiles)).concat(FileExtensions.PROTEIN_FAA.getExtension());
 		
 		CreateGenomeFile.buildFastaFile(fastaFileName, queriesSubSet);
