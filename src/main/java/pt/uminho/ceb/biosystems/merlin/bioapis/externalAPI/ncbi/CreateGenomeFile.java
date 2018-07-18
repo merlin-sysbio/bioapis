@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,20 +32,16 @@ import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
 import org.biojava.nbio.core.sequence.features.FeatureInterface;
-import org.biojava.nbio.core.sequence.features.FeatureRetriever;
 import org.biojava.nbio.core.sequence.features.Qualifier;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
-
-import com.fasterxml.jackson.core.JsonFactory.Feature;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummary;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.DocumentSummarySet;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
-import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.GenBankFiles;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 public class CreateGenomeFile {
