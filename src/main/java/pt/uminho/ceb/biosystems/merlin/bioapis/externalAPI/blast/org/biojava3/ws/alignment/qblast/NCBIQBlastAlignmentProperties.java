@@ -408,7 +408,7 @@ RemotePairwiseAlignmentProperties {
 	 *            : a String to use as gap creation value
 	 * 
 	 * @throws Exception
-	 *             if matrix name is not part of allowed BLAST matrices
+	 *             if matrix name is not part of allowed Blast matrices
 	 */
 	public void setBlastMatrix(String mtx) throws InvalidArgumentException {
 		boolean isValid = false;
@@ -583,7 +583,7 @@ RemotePairwiseAlignmentProperties {
 	 * using the whole space)</li>
 	 * <li>-z: a real specifying the effective length of the database to use.
 	 * Default = 0 (0 represents the real size)</li>
-	 * <li>-c: an integer representing pseudocount constant for PSI-BLAST.
+	 * <li>-c: an integer representing pseudocount constant for PSI-Blast.
 	 * Default = 7</li>
 	 * <li>-F: any filtering directive</li>
 	 * </ul>

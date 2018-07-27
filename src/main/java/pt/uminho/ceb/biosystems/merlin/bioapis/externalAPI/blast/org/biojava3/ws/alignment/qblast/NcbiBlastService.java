@@ -40,7 +40,7 @@ import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.blast.org.biojava3.ws
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.blast.org.biojava3.ws.alignment.RemotePairwiseAlignmentService;
 
 /**
- * NCBIQBlastService - A simple way of submitting BLAST request to the QBlast
+ * NCBIQBlastService - A simple way of submitting Blast request to the QBlast
  * service at NCBI.
  * 
  * <p>
@@ -301,14 +301,14 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 		}
 		catch (IOException e) {
 			
-			//System.err.println("BLAST Service IO exception");
+			//System.err.println("Blast Service IO exception");
 			System.out.println(e.getMessage());
 			//e.printStackTrace();
-			throw new IOException("Can't submit sequence to BLAST server at this time.\n");
+			throw new IOException("Can't submit sequence to Blast server at this time.\n");
 		} 
 		catch (StackOverflowError e) {
 
-			System.err.println("BLAST Service stack overflow");
+			System.err.println("Blast Service stack overflow");
 			System.out.println(e.getMessage());
 			//System.out.println(line);
 			System.gc();
@@ -319,7 +319,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 
 			//System.out.println(e.getMessage());
 			e.printStackTrace();
-			throw new Exception("BLAST unsigned exception.\n");
+			throw new Exception("Blast unsigned exception.\n");
 		}
 
 		if(rid!=null) {
@@ -351,7 +351,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 	 *            : a <code>NCBIQBlastAlignmentProperties</code> object
 	 * @return rid : a <code>String</code> with the request ID for this sequence
 	 * @throws Exception
-	 *             if it is not possible to sent the BLAST command
+	 *             if it is not possible to sent the Blast command
 	 */
 	public String sendAlignmentRequest(String str,
 			RemotePairwiseAlignmentProperties rpa) throws Exception {
@@ -415,7 +415,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 	 * @return rid : a <code>String</code> with the request ID for this sequence
 	 * 
 	 * @throws Exception
-	 *             if it is not possible to sent the BLAST command
+	 *             if it is not possible to sent the Blast command
 	 */
 	public String sendAlignmentRequest(Sequence<Compound> rs,
 			RemotePairwiseAlignmentProperties rpa) throws Exception {
@@ -444,7 +444,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 	 *            :a <code>NCBIQBlastAlignmentProperties</code> object
 	 * @return rid : a String with the request ID for this sequence
 	 * @throws Exception
-	 *             if it is not possible to sent the BLAST command
+	 *             if it is not possible to sent the Blast command
 	 */
 	public String sendAlignmentRequest(int gid,
 			RemotePairwiseAlignmentProperties rpa) throws Exception {
@@ -540,7 +540,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 				}
 				catch (StackOverflowError e) {
 
-					System.err.println("BLAST Service stack overflow");
+					System.err.println("Blast Service stack overflow");
 					System.out.println(e.getMessage());
 					System.gc();
 					throw new IOException(
@@ -549,7 +549,7 @@ public class NcbiBlastService implements RemotePairwiseAlignmentService {
 				catch (Exception e)  {
 
 					e.printStackTrace();
-					throw new Exception("BLAST Failed");
+					throw new Exception("Blast Failed");
 				}
 				finally {
 					

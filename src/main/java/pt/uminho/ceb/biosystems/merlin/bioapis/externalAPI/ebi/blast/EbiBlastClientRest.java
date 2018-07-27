@@ -69,7 +69,7 @@ public class EbiBlastClientRest implements RemotePairwiseAlignmentService {
 	 *		URL	http://www.ebi.ac.uk/Tools/services/rest/ncbiblast/run/
 	 *    	POSTemail	 User e-mail address. See Why do you need my e-mail address?
 	 *		title	 an optional title for the job.
-	 *		program	BLAST program to use to perform the search.
+	 *		program	Blast program to use to perform the search.
 	 *		matrix	 Scoring matrix to be used in the search.
 	 *		alignments	 Maximum number of alignments displayed in the output.
 	 *		scores	 Maximum number of scores displayed in the output.
