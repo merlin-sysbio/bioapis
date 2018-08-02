@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.math3.analysis.function.Abs;
 import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
@@ -342,7 +343,7 @@ public class CreateGenomeFile {
 					
 					outputStream.close();
 					inputStream.close();
-
+					
 					if(!type.equals("ASSEMBLY_REPORT") && !type.equals("ASSEMBLY_STATS")) 
 						CreateGenomeFile.unGunzipFile(savePath, FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, Long.parseLong(ftpURLinfo.get(3))) + fileExtensions.get(type));
 
@@ -433,16 +434,16 @@ public class CreateGenomeFile {
 
 			for(String key:codingSequences.keySet()){
 
-				String fileKey = key;
-				fileKey = fileKey.split("\\s")[0];
+				String newHeader = key;
+				newHeader = newHeader.split("\\s")[0];
+				
+				if(key.contains("gbkey=tRNA")){
 
-				if(fileKey.contains("trna")){
-
-					tRNA.write(">"+fileKey+"\n");
+					tRNA.write(">"+newHeader+"\n");
 					tRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}
-				else{
-					rRNA.write(">"+fileKey+"\n");
+				else if(key.contains("gbkey=mRNA")){
+					rRNA.write(">"+newHeader+"\n");
 					rRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}
 			}
