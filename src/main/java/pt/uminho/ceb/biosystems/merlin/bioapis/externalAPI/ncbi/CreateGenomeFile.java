@@ -43,6 +43,7 @@ import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.Docum
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESummaryResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.Enumerators.FileExtensions;
+import pt.uminho.ceb.biosystems.merlin.utilities.io.ConfFileReader;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 public class CreateGenomeFile {
@@ -72,9 +73,9 @@ public class CreateGenomeFile {
 	public static Map<String, AbstractSequence<?>> getGenomeFromID(String databaseName, Long taxonomyID, FileExtensions proteinFaa) throws Exception {
 
 		try {
-
+			
 			if (!CreateGenomeFile.currentTemporaryDataIsNOTRecent(0, databaseName, taxonomyID, CreateGenomeFile.setToday(), proteinFaa)) {
-
+				
 				Map<String, AbstractSequence<?>> ret = new HashMap<>();
 				Map<String,ProteinSequence> aas = FastaReaderHelper.readFastaProteinSequence(new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + proteinFaa.getName()));
 				ret.putAll(aas);
@@ -263,33 +264,6 @@ public class CreateGenomeFile {
 	}
 
 
-	/**
-	 * @return HashMap of file extensions to be download from NCBI
-	 * @throws IOException
-	 */
-	public static HashMap<String,String> readExtensionsConf() throws IOException{
-
-		File extensionFile = new File(FileUtils.getConfFolderPath() + "ftpfiles_extensions.conf");
-
-		HashMap<String, String> extensions = new HashMap<String,String>();
-
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(extensionFile));
-
-		String text, type, extension;
-		while ((text = bufferedReader.readLine()) != null) {
-			if(text.toUpperCase().matches("^[A-Z].*$")) {
-				type = text.split("\t")[0];
-				extension = text.split("\t")[1];
-
-				extensions.put(type,extension);
-			}
-		}
-		bufferedReader.close();
-
-		return extensions;
-
-	}
-
 	/** Retrieves files from NCBI ftp
 	 * @param ftpURLinfo
 	 * @param fileType
@@ -304,7 +278,7 @@ public class CreateGenomeFile {
 		String filePath = null;
 		String savePath = null;
 
-		HashMap <String, String> fileExtensions = readExtensionsConf();
+		HashMap <String, String> fileExtensions = ConfFileReader.readExtensionsConf();
 
 		for(String type : fileExtensions.keySet()){
 			if(type.equals("ASSEMBLY_REPORT") || type.equals("ASSEMBLY_STATS")) {
@@ -345,7 +319,7 @@ public class CreateGenomeFile {
 					inputStream.close();
 					
 					if(!type.equals("ASSEMBLY_REPORT") && !type.equals("ASSEMBLY_STATS")) 
-						CreateGenomeFile.unGunzipFile(savePath, FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, Long.parseLong(ftpURLinfo.get(3))) + fileExtensions.get(type));
+						FileUtils.unGunzipFile(savePath, FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, Long.parseLong(ftpURLinfo.get(3))) + fileExtensions.get(type));
 
 					if(type.equals("RNA_FROM_GENOMIC")){
 						File rnaFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, Long.parseLong(ftpURLinfo.get(3))) + fileExtensions.get(type));
@@ -359,41 +333,7 @@ public class CreateGenomeFile {
 		}
 	}
 
-
-	/**
-	 * @param compressedFile
-	 * @param decompressedFile
-	 */
-	public static void unGunzipFile(String compressedFile, String decompressedFile) {
-
-		byte[] buffer = new byte[1024];
-
-		try {
-
-			FileInputStream fileIn = new FileInputStream(compressedFile);
-
-			GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
-
-			FileOutputStream fileOutputStream = new FileOutputStream(decompressedFile);
-
-			int bytes_read;
-
-			while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
-
-				fileOutputStream.write(buffer, 0, bytes_read);
-			}
-
-			gZIPInputStream.close();
-			fileOutputStream.close();
-
-			//			System.out.println("The file was decompressed successfully!");
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-
+	
 	/**
 	 * verify if a database directory exists, if not creats it
 	 * @param databaseName
@@ -442,7 +382,7 @@ public class CreateGenomeFile {
 					tRNA.write(">"+newHeader+"\n");
 					tRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}
-				else if(key.contains("gbkey=mRNA")){
+				else if(key.contains("gbkey=rRNA")){
 					rRNA.write(">"+newHeader+"\n");
 					rRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}
@@ -831,6 +771,8 @@ public class CreateGenomeFile {
 	public static Map<String, String> getLocusTagFromGenBankFastFile(File genBankFile) throws Exception {
 //
 		Map<String, String> locusTags = new HashMap<>();
+		
+		System.out.println("genBank file: "+genBankFile);
 
 		try {
 			LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
