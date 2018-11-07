@@ -772,8 +772,6 @@ public class CreateGenomeFile {
 //
 		Map<String, String> locusTags = new HashMap<>();
 		
-		System.out.println("genBank file: "+genBankFile);
-
 		try {
 			LinkedHashMap<String, DNASequence> genBankReader = GenbankReaderHelper.readGenbankDNASequence(genBankFile);
 
