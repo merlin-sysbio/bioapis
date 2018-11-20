@@ -442,7 +442,7 @@ public class CreateGenomeFile {
 					tRNA.write(">"+newHeader+"\n");
 					tRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}
-				else if(key.contains("gbkey=mRNA")){
+				else if(key.contains("gbkey=rRNA")){
 					rRNA.write(">"+newHeader+"\n");
 					rRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
 				}

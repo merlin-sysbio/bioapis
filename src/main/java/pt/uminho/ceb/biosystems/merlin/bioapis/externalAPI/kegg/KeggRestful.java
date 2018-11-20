@@ -630,9 +630,10 @@ public class KeggRestful {
 
 		List<String> ret = new ArrayList<>();
 		String[] lines = flatFile.split(NEW_LINE);
+		
 		for ( int i = 0; i < lines.length; i++) {
 
-			Pattern pattern = Pattern.compile("\\[(.+)\\]");
+			Pattern pattern = Pattern.compile("\\[EC:(.+)\\]");
 			Matcher matcher = pattern.matcher(lines[i]);
 
 			boolean addKO = false;
@@ -649,7 +650,7 @@ public class KeggRestful {
 			if(addKO)
 				ret.add(lines[i].split(TAB)[0].trim()); //prolly not needed !
 		}
-
+		
 		return ret;
 	}
 

@@ -1464,15 +1464,14 @@ public class UniProtAPI {
 			String[] result = new String[2];
 
 			Query query = UniProtQueryBuilder.taxonID(organismmId);
-			
 			QueryResult<UniProtEntry> entries = uniProtService.getEntries(query);
 
 			while (entries.hasNext()) {
-
+				
 				UniProtEntry entry = entries.next();
 				result[0] = entry.getOrganism().getScientificName().getValue();
 				result[1] = entry.getTaxonomy().toString().replace(",", ";").replace("[", "").replace("]", "");
-
+				
 				return result;
 			}
 
