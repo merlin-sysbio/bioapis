@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,15 +19,14 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.math3.analysis.function.Abs;
 import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
@@ -367,24 +365,24 @@ public class CreateGenomeFile {
 		PrintWriter tRNA, rRNA;
 
 		try {
-			codingSequences.putAll(FastaReaderHelper.readFastaProteinSequence(rnaFastaFile));
+			codingSequences.putAll(FastaReaderHelper.readFastaDNASequence(rnaFastaFile));
 
 			tRNA = new PrintWriter(FileUtils.getWorkspaceTaxonomyFolderPath(dbName, taxID) +"trna_from_genomic.fna", "UTF-8");
 			rRNA = new PrintWriter(FileUtils.getWorkspaceTaxonomyFolderPath(dbName, taxID) +"rrna_from_genomic.fna", "UTF-8");
 
 			for(String key:codingSequences.keySet()){
 
-				String newHeader = key;
-				newHeader = newHeader.split("\\s")[0];
+//				String newHeader = key;
+//				newHeader = newHeader.split("\\s")[0];
 				
 				if(key.contains("gbkey=tRNA")){
 
-					tRNA.write(">"+newHeader+"\n");
-					tRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
+					tRNA.write(">"+codingSequences.get(key).getOriginalHeader()+"\n");
+					tRNA.write(((DNASequence)codingSequences.get(key)).getRNASequence().getSequenceAsString()+"\n");
 				}
 				else if(key.contains("gbkey=rRNA")){
-					rRNA.write(">"+newHeader+"\n");
-					rRNA.write(codingSequences.get(key).getSequenceAsString()+"\n");
+					rRNA.write(">"+codingSequences.get(key).getOriginalHeader()+"\n");
+					rRNA.write(((DNASequence)codingSequences.get(key)).getRNASequence().getSequenceAsString()+"\n");
 				}
 			}
 			tRNA.close();
@@ -415,10 +413,17 @@ public class CreateGenomeFile {
 
 			Map<String, AbstractSequence<?>> sequences= new HashMap<String, AbstractSequence<?>>();
 
-			//for(File fastFile : fastaFiles)				
-			sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
+			//for(File fastFile : fastaFiles)	
 			
-			Map<String, String> locus_tags = null;
+			if(extension.equals(FileExtensions.RNA_FROM_GENOMIC))
+				sequences.putAll(FastaReaderHelper.readFastaRNASequence(fastaFile));
+			else if(extension.equals(FileExtensions.PROTEIN_FAA))
+				sequences.putAll(FastaReaderHelper.readFastaProteinSequence(fastaFile));
+			else
+				sequences.putAll(FastaReaderHelper.readFastaDNASequence(fastaFile));	//FileExtensions.CDS_FROM_GENOMIC AND FileExtensions.GENOMIC_FNA
+
+			
+//			Map<String, String> locus_tags = null;
 			
 //			if(extension.equals(FileExtensions.PROTEIN_FAA) && extension.equals(FileExtensions.CDS_FROM_GENOMIC)){
 //				
@@ -435,7 +440,7 @@ public class CreateGenomeFile {
 //					
 //			}
 			
-			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, locus_tags, sequences, genesData, extension);
+			CreateGenomeFile.buildFastFile(databaseName, taxonomyID, sequences, genesData, fastaFile, extension);//,locus_tags);
 			CreateGenomeFile.createLogFile(databaseName, taxonomyID, extension);
 			
 //			PreparedStatement pStatement = connection.prepareStatement("INSERT INTO sequence(gene_idgene, sequence_type, sequence, sequence_length, entry_type, kegg_id) VALUES(?,?,?,?,?,?);");
@@ -497,57 +502,132 @@ public class CreateGenomeFile {
 	 * @param sequences
 	 * @throws IOException
 	 */
-	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, String> locusTag, Map<String, AbstractSequence<?>> sequences, Map<String,String[]> processedSequences, FileExtensions extension) throws IOException{
+	private static void buildFastFile(String databaseName, Long taxonomyID, Map<String, AbstractSequence<?>> sequences,
+			Map<String,String[]> processedSequences, File fastaFile, FileExtensions extension) throws IOException{//, Map<String, String> locusTag) throws IOException{
 
-		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getName());
+//		File myFile = new File(FileUtils.getWorkspaceTaxonomyFolderPath(databaseName, taxonomyID) + extension.getName());
 
-		FileWriter fstream = new FileWriter(myFile);  
+		FileWriter fstream = new FileWriter(fastaFile);  
 		BufferedWriter out = new BufferedWriter(fstream); 
 		
 		for(String key:sequences.keySet()) {
-			
-			String fileKey = key;
-			
-			if(extension.equals(FileExtensions.PROTEIN_FAA) || extension.equals(FileExtensions.RNA_FROM_GENOMIC)){
-				//Temp solution for new NCBI FASTA Headers
-				fileKey = fileKey.split("\\s")[0];
-//				System.out.println("-------------------------------------------");
-//				System.out.println("KEY---->"+key);
-//				System.out.println("FILE KEY---->"+fileKey);
-			}
-			else{
-				String [] header = key.split("\\s");
-				for(String qual : header){
-					if(qual.contains("protein_id=")){
-						fileKey = qual.substring(qual.indexOf("=")+1).replace("[", "").replace("]", "").trim();
+
+			if(!sequences.get(key).getOriginalHeader().contains("pseudo=true")){
+				
+				String newFileHeader = "";// key;
+				String origianlHeader = sequences.get(key).getOriginalHeader();
+				Map<String,String> seqData = getInformationFromFastasHeader(origianlHeader);
+
+				if(extension.equals(FileExtensions.GENOMIC_FNA)){
+					newFileHeader = origianlHeader;				
+				}
+				else{
+					
+					//Building sequence's header
+					if(seqData.containsKey("protein_id")){
+						newFileHeader = newFileHeader + seqData.get("protein_id");
+
+						if(seqData.containsKey("locus_tag"))
+							newFileHeader = newFileHeader + " | " + seqData.get("locus_tag");
+
+						//IF WE CHOOSE TO PASS A MAP WITH THE SEQUENCES LOCUS_TAGS
+						//					else if(locusTag!=null && locusTag.containsKey(seqData.get("protein_id")) && locusTag.get(seqData.get("protein_id"))!=null) 
+						//						newFileHeader = newFileHeader + " | " + locusTag.get(seqData.get("protein_id"));
+
+					}
+					else if(seqData.containsKey("locus_tag")){
+						newFileHeader =  newFileHeader + seqData.get("locus_tag");
+					}
+					else{
+						newFileHeader = origianlHeader.split("\\s")[0];	//protein.faa header format : "<protein_id> <protein name> [<organism>]
+
+						//IF WE CHOOSE TO PASS A MAP WITH THE SEQUENCES LOCUS_TAGS
+						//					if(locusTag!=null && locusTag.containsKey(newFileHeader) && locusTag.get(newFileHeader)!=null)
+						//						newFileHeader = newFileHeader + " | " + locusTag.get(origianlHeader.split("\\s")[0]);
+					}
+					////////////////////
+
+					
+					//Gene data to load into database//
+					if(processedSequences!=null){
+						String[] seqInfo = new String[4];
+
+						//locusTag
+						if(seqData.get("locus_tag")!=null && !seqData.get("locus_tag").isEmpty()){
+							seqInfo[0] = seqData.get("locus_tag");
+						}
+						//IF WE CHOOSE TO PASS A MAP WITH THE SEQUENCES LOCUS_TAGS
+						//					else if(locusTag!=null && !locusTag.isEmpty()){														
+						//						if(seqData.keySet().contains("protein_id") && locusTag.get(seqData.get("protein_id"))!=null 
+						//								&& !locusTag.get(seqData.get("protein_id")).isEmpty()){
+						//							seqInfo[0] = locusTag.get(seqData.get("protein_id")); 
+						//						}
+						//						else if(locusTag.containsKey(newFileHeader.split("\\|")[0].trim()) && locusTag.get(newFileHeader.split("\\|")[0].trim())!=null 
+						//								&& !locusTag.get(newFileHeader.split("\\|")[0].trim()).isEmpty()){
+						//							seqInfo[0] = locusTag.get(newFileHeader.split("\\|")[0].trim());
+						//						}
+						//					}
+						/////
+
+						seqInfo[1] = sequences.get(key).getSequenceAsString();					//Protein/DNA sequence
+						seqInfo[2] = Integer.toString(sequences.get(key).getLength());			//Sequence Length
+
+						if(seqData.get("gene")!=null && !seqData.get("gene").isEmpty())			//Gene Name
+							seqInfo[3] = seqData.get("gene");
+						else
+							seqInfo[3]="";
+
+						processedSequences.put(newFileHeader.split("\\|")[0].trim(), seqInfo);
 					}
 				}
-			}
+				///////////////////
 
-			if(locusTag!=null && locusTag.containsKey(fileKey) && locusTag.get(fileKey)!=null)
-				out.write(">"+fileKey+"|"+locusTag.get(fileKey)+"\n");
-			else
-				out.write(">"+fileKey+"\n");
-			
-			//Gene data to load into database
-			if(processedSequences!=null){
-				String[] seqInfo = new String[3];
-				if(locusTag!=null && locusTag.containsKey(fileKey) && locusTag.get(fileKey)!=null)
-					seqInfo[0] = locusTag.get(fileKey);
-				else
-					seqInfo[0] = fileKey;
-				seqInfo[1] = sequences.get(key).getSequenceAsString();
-				seqInfo[2] = Integer.toString(sequences.get(key).getLength());
-				processedSequences.put(fileKey, seqInfo);
-			}
-			//
-			
-			out.write(sequences.get(key).getSequenceAsString()+"\n");
+				//Write the sequence's header
+				out.write(">"+newFileHeader+"\n");
+				
+				//Write the sequence
+				out.write(sequences.get(key).getSequenceAsString()+"\n");
 
+			}
 		}
 		out.close();
+		fstream.close();
 	}
 	
+	
+	/**
+	 * @param header
+	 * @return
+	 */
+	public static Map<String,String> getInformationFromFastasHeader(String header){
+		
+		Map<String,String> sequenceData = new HashMap<>();
+		
+		for(String headerComp : Arrays.asList(header.split("\\s"))){
+			
+			if(headerComp.matches("\\[locus_tag=.+\\]")){
+				
+				sequenceData.put("locus_tag", headerComp.replaceAll("(\\[locus_tag=)*\\]*", ""));
+			}
+			
+			else if(headerComp.matches("\\[gene=.+\\]")){
+
+				sequenceData.put("gene", headerComp.replaceAll("(\\[gene=)*\\]*", ""));
+			}
+			
+			else if(headerComp.matches("\\[product=.+\\]")){
+
+				sequenceData.put("product", headerComp.replaceAll("(\\[product=)*\\]*", ""));
+			}
+			
+			else if(headerComp.matches("\\[protein_id=.+\\]")){
+
+				sequenceData.put("protein_id", headerComp.replaceAll("(\\[protein_id=)*\\]*", ""));
+			}
+		}
+		
+		return sequenceData;
+	}
 	
 	/**
 	 * @param path

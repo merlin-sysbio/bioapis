@@ -6,6 +6,7 @@ public class Enumerators {
 
 		//			ASSEMBLY_REPORT("assembly_report.txt"),
 		//			ASSEMBLY_STATS("assembly_stats.txt"),
+		PROTEIN_FAA("protein.faa"), 
 		CDS_FROM_GENOMIC("cds_from_genomic.fna"){
 			@Override
 			public String toString(){
@@ -13,7 +14,12 @@ public class Enumerators {
 			}
 		},
 		//			FEATURE_TABLE("feature_table.txt"),
-		//			GENOMIC_FNA("genomic.fna"),
+		GENOMIC_FNA("genomic.fna"){
+			@Override
+			public String toString(){
+				return "genome file (genomic.fna)";
+			}
+		},
 //		GENOMIC_GBFF("genomic.gbff"){
 //			@Override
 //			public String toString(){
@@ -21,7 +27,6 @@ public class Enumerators {
 //			}
 //		},
 		//			GENOMIC_GFF("genomic.gff"),
-		PROTEIN_FAA("protein.faa"), 
 		//			PROTEIN_GPFF("protein.gpff"),
 		RNA_FROM_GENOMIC("rna_from_genomic.fna"){
 			@Override
