@@ -381,6 +381,7 @@ public class CreateGenomeFile {
 					tRNA.write(((DNASequence)codingSequences.get(key)).getRNASequence().getSequenceAsString()+"\n");
 				}
 				else if(key.contains("gbkey=rRNA")){
+					
 					rRNA.write(">"+codingSequences.get(key).getOriginalHeader()+"\n");
 					rRNA.write(((DNASequence)codingSequences.get(key)).getRNASequence().getSequenceAsString()+"\n");
 				}
