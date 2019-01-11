@@ -36,6 +36,7 @@ import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.datatypes.HomologuesD
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.uniprot.MyNcbiTaxon;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.uniprot.TaxonomyContainer;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ebi.uniprot.UniProtAPI;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.MySleep;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 import uk.ac.ebi.kraken.interfaces.uniprot.NcbiTaxon;
 
@@ -754,6 +755,8 @@ public class NcbiAPI {
 		query.add(orgID);
 
 		try {
+			
+			MySleep.myWait(3000);
 
 			EntrezSearch entrezSearch = new EntrezSearch();
 			results = entrezSearch.getDatabaseIDs(NcbiDatabases.protein, query, 100);
@@ -762,9 +765,10 @@ public class NcbiAPI {
 		}
 		catch (Exception e) {
 
-
+			MySleep.myWait(10000);
+			
 			if(trialNumber<_trials) {
-
+				
 				trialNumber=trialNumber+1;
 
 				logger.trace("newNcbiRefSeqID error trial {}",trialNumber);
@@ -772,7 +776,7 @@ public class NcbiAPI {
 			}
 			else {
 
-				logger.error("newOrgID error {} trial {} query {}",e.getMessage(),trialNumber,query);
+				logger.error("newNcbiRefSeqID error {} trial {} query {}",e.getMessage(),trialNumber,query);
 				logger.trace("StackTrace {}",e);
 				throw e;
 			}

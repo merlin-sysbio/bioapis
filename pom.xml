@@ -123,7 +123,7 @@
 			<groupId>org.biojava</groupId>
 			<artifactId>biojava-alignment</artifactId>
 			<!-- <version>4.2.7</version> -->
-			<version>5.0.0-alpha13</version>
+			<version>5.2.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.TaxaSet;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.Taxon;
+import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.MySleep;
 
 /**
  * @author odias

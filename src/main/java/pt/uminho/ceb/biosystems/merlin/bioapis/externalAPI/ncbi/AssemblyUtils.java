@@ -38,7 +38,7 @@ public class AssemblyUtils {
 		EntrezServiceFactory entrezServiceFactory = new EntrezServiceFactory("https://eutils.ncbi.nlm.nih.gov/entrez/eutils", false);
 		EntrezService entrezService = entrezServiceFactory.build();
 
-		ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, taxonomyID +"[Taxonomy ID]", "xml", "100");
+		ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.assembly, taxonomyID +"[Taxonomy ID]", "xml", "1000");
 
 		List<String> idList = eSearchResult.idList;
 

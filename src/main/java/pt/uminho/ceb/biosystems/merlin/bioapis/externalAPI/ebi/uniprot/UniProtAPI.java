@@ -299,8 +299,10 @@ public class UniProtAPI {
 	 */
 	public static UniProtEntry getUniProtEntryFromXRef(String crossReference, int errorCount) {
 
-		return UniProtAPI.getUniProtEntryFromXRef(crossReference, errorCount, -1);
+		return UniProtAPI.getUniProtEntryFromXRef(crossReference, -1, errorCount);
 	}
+	
+	
 	/**
 	 * @param crossReference
 	 * @param taxonomyID
@@ -397,7 +399,7 @@ public class UniProtAPI {
 			if(errorCount<5) {
 
 				MySleep.myWait(1000);
-				errorCount+=1;
+				errorCount=errorCount+1;
 				logger.trace("xRef trial {}",errorCount);
 				return getUniProtEntryFromXRef(crossReference, errorCount);
 			}
@@ -1288,9 +1290,13 @@ public class UniProtAPI {
 
 				uniProtEntry = UniProtAPI.getUniprotEntry(query, errorCount);
 				go = false;
-				for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())	
-					if(taxonomyID <0 || ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
-						go=true;
+				
+				if(taxonomyID <0)
+					go=true;
+				else if(uniProtEntry!=null && uniProtEntry.getNcbiTaxonomyIds() != null)
+					for(NcbiTaxonomyId ncbiTaxonomyID : uniProtEntry.getNcbiTaxonomyIds())	
+						if(ncbiTaxonomyID.getValue().equalsIgnoreCase(String.valueOf(taxonomyID)))
+							go=true;
 			}
 
 			if(go) {

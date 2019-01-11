@@ -6,8 +6,6 @@ package pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ctc.wstx.exc.WstxIOException;
-
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.EntrezLink.KINGDOM;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.ncbi.containers.ESearchResult;
 import pt.uminho.ceb.biosystems.merlin.bioapis.externalAPI.utilities.MySleep;
@@ -21,6 +19,7 @@ public class EntrezSearch {
 
 
 	private EntrezService entrezService;
+	private static final int _WAIT_FOR = 15000;
 
 	/**
 	 * @param numConnections
@@ -60,7 +59,7 @@ public class EntrezSearch {
 			}
 			}
 
-			ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.genome, term, "xml", "100000");
+			ESearchResult eSearchResult = entrezService.eSearch(NcbiDatabases.genome, term, "xml", "10000");
 
 			int n = eSearchResult.count;
 
@@ -89,6 +88,7 @@ public class EntrezSearch {
 	 */
 	public List<Pair<String, String>> getDatabaseIDs(NcbiDatabases database, List<String> ids, int queryResponseConcatenationSize) throws Exception {
 
+		String term = "";
 		try {
 			
 			List<Pair<String, String>> result = new ArrayList<>();
@@ -141,8 +141,8 @@ public class EntrezSearch {
 			int counter = 0;
 			for(String query : queryList) {
 
-				String term = new String(query.toString().replace("[", "").replace("]", "").getBytes(), "UTF-8");
-				ESearchResult eSearchResult = entrezService.eSearch(database, term, "xml",  ids.size()+"");
+				term = new String(query.toString().replace("[", "").replace("]", "").getBytes(), "UTF-8");
+				ESearchResult eSearchResult = entrezService.eSearch(database, term, "xml",  queryResponseConcatenationSize+"");
 
 				if(eSearchResult.idList!=null){
 					// results output
@@ -161,12 +161,11 @@ public class EntrezSearch {
 		} 
 		catch (Exception e) {
 
-			MySleep.myWait(10000);
 			
-			e.printStackTrace();
+			System.err.println(EntrezSearch.class+" getDatabaseIDs request error " + e.getMessage()+" for request "+database+" "+term+" xml " +queryResponseConcatenationSize+" Waiting "+(_WAIT_FOR/1000)+" seconds.");
+			MySleep.myWait(_WAIT_FOR);
+			//e.printStackTrace();
 			throw e;
-			
-			
 		}
 	}
 
